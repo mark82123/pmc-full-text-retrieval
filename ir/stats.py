@@ -6,7 +6,15 @@ from collections import Counter
 
 from .pmc_parser import Document
 from .sentence import naive_split, split_sentences
-from .tokenizer import TOKEN_RE, WORD_RE, Tokenizer
+from .tokenizer import TOKEN_RE, WORD_HYPHEN_RE, WORD_RE, Tokenizer
+
+
+def _chars_no_punct(text: str) -> int:
+    """Characters excluding punctuation and symbols (letters, digits and whitespace only).
+
+    Some tools report abstract length this way; keeping both numbers side by side makes
+    the two conventions comparable instead of looking like a parsing bug."""
+    return sum(1 for c in text if c.isalnum() or c.isspace())
 
 
 def document_stats(doc: Document, tokenizer: Tokenizer, top_n: int = 15) -> dict:
@@ -28,7 +36,9 @@ def document_stats(doc: Document, tokenizer: Tokenizer, top_n: int = 15) -> dict
         fterms = tokenizer.terms(ftext)
         fields[fld] = {
             "characters": len(ftext),
+            "characters_no_punct": _chars_no_punct(ftext),
             "words": len(WORD_RE.findall(ftext)),
+            "words_hyphen_merged": len(WORD_HYPHEN_RE.findall(ftext)),
             "sentences": sum(len(split_sentences(t)) for f, t in units if (f == fld or (fld == "body" and f == "heading"))),
             "index_terms": len(fterms),
             "unique_terms": len(set(fterms)),
@@ -38,10 +48,12 @@ def document_stats(doc: Document, tokenizer: Tokenizer, top_n: int = 15) -> dict
         "doc_id": doc.doc_id,
         "characters": len(text),
         "characters_no_spaces": sum(1 for c in text if not c.isspace()),
+        "characters_no_punct": _chars_no_punct(text),
         "letters": sum(1 for c in text if c.isalpha()),
         "digits": sum(1 for c in text if c.isdigit()),
         "tokens": len(tokens),
         "words": len(words),
+        "words_hyphen_merged": len(WORD_HYPHEN_RE.findall(text)),
         "unique_words": len(set(lowered)),
         "stop_words": stop_count,
         "index_terms": len(terms),

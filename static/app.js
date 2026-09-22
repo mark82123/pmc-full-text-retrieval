@@ -175,8 +175,9 @@
     try { d = await api(`/api/doc/${encodeURIComponent(id)}?${params}`); } catch (e) { alert(e.message); return; }
     const st = d.stats, m = d.meta;
     const tiles = [
-      ['characters', 'Characters'], ['characters_no_spaces', 'Characters (no spaces)'], ['words', 'Words'],
-      ['unique_words', 'Unique words'], ['sentences', 'Sentences (rule-based)'], ['sentences_naive', 'Sentences (naive . ! ?)'],
+      ['characters', 'Characters'], ['characters_no_spaces', 'Characters (no spaces)'],
+      ['characters_no_punct', 'Characters (no punctuation)'], ['words', 'Words'],
+      ['words_hyphen_merged', 'Words (hyphen-merged)'], ['unique_words', 'Unique words'], ['sentences', 'Sentences (rule-based)'], ['sentences_naive', 'Sentences (naive . ! ?)'],
       ['paragraphs', 'Body paragraphs'], ['sections', 'Sections'], ['avg_words_per_sentence', 'Avg words / sentence'],
       ['avg_word_length', 'Avg word length'], ['stop_words', 'Stop words'], ['index_terms', 'Index terms (after stop/stem)'],
       ['unique_terms', 'Unique index terms'], ['lexical_diversity', 'Lexical diversity'], ['abstract_words', 'Abstract words'], ['body_words', 'Body words'],
@@ -193,7 +194,7 @@
     const frow = (k, label) => `<tr><td>${label}</td><td class="f-title">${fmt(fs.title[k])}</td><td class="f-abstract">${fmt(fs.abstract[k])}</td><td class="f-body">${fmt(fs.body[k])}</td><td><b>${fmt(st[k])}</b></td></tr>`;
     h += `<h4 class="sub-h">Statistics by field</h4>
       <table class="kv bystats"><tr><th></th><th class="f-title">title</th><th class="f-abstract">abstract</th><th class="f-body">body</th><th>whole document</th></tr>
-      ${frow('characters', 'Characters')}${frow('words', 'Words')}${frow('sentences', 'Sentences (rule-based)')}${frow('index_terms', 'Index terms')}${frow('unique_terms', 'Unique index terms')}</table>`;
+      ${frow('characters', 'Characters')}${frow('characters_no_punct', 'Characters (no punctuation)')}${frow('words', 'Words')}${frow('words_hyphen_merged', 'Words (hyphen-merged)')}${frow('sentences', 'Sentences (rule-based)')}${frow('index_terms', 'Index terms')}${frow('unique_terms', 'Unique index terms')}</table>`;
     if (d.query) {
       h += `<div class="tiles"><div class="tile accent"><b>${d.query_hits}</b><span>highlighted matches for “${esc(d.query)}”</span></div>` +
         Object.entries(d.term_freq_for_query).map(([t, c]) => `<div class="tile"><b>${c}</b><span>tf(${esc(t)})</span></div>`).join('') + '</div>';

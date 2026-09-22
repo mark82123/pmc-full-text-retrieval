@@ -86,6 +86,14 @@ _SPACE_BEFORE_PUNCT = re.compile(r"\s+([.,;:!?)\]])")
 def _clean(text: str) -> str:
     text = _EMPTY_CITE.sub("", text)
     text = _SPACE_BEFORE_PUNCT.sub(r"\1", text)      # "common [1]." -> "common." not "common ."
+    # _WS is r"\s+", and on str patterns Python 3's \s is Unicode-aware, so this also folds the
+    # typesetting whitespace publishers leave in the XML -- most often U+00A0 NO-BREAK SPACE,
+    # shipped by NCBI as "&#xa0;" (e.g. "May 25,&#xa0;2024" so the year cannot wrap to a new line).
+    # The character count is unchanged (one character in, one out) but the class is: '\xa0' is
+    # isspace() yet not ' ', so tools that count "characters minus punctuation" as
+    # `isalnum() or c == ' '` drop it and report one character fewer than we do.  Normalising is
+    # deliberate: it keeps display offsets, sentence splitting and the statistics free of
+    # invisible characters.  Tokenisation is unaffected either way (\xa0 is a token separator).
     return _WS.sub(" ", text).strip()
 
 
