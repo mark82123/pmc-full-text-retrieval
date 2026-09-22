@@ -2,7 +2,7 @@
 
 Author: 胡元楨 (student ID P77141105)
 
-Project #1 for the Biomedical Information Retrieval course: a full-text search
+Project #1 for the AI Information Retrieval (人工智慧資訊檢索) course: a full-text search
 engine for PubMed Central (PMC) XML articles with keyword retrieval, result
 visualisation, document statistics and rule-based sentence (EOS) detection.
 
