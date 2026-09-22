@@ -1,0 +1,1165 @@
+<?xml version="1.0"  ?><!DOCTYPE pmc-articleset PUBLIC "-//NLM//DTD ARTICLE SET 2.0//EN" "https://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd"><pmc-articleset><article id="tca14626" xml:lang="en" article-type="review-article" dtd-version="1.4"><processing-meta base-tagset="archiving" mathml-version="3.0" table-model="xhtml" tagset-family="jats"><restricted-by>pmc</restricted-by></processing-meta><front><journal-meta><journal-id journal-id-type="nlm-ta">Thorac Cancer</journal-id><journal-id journal-id-type="iso-abbrev">Thorac Cancer</journal-id><journal-id journal-id-type="pmc-domain-id">2735</journal-id><journal-id journal-id-type="pmc-domain">tca</journal-id><journal-id journal-id-type="nlm-id">101531441</journal-id><journal-id journal-id-type="publisher-id">TCA</journal-id><journal-title-group><journal-title>Thoracic Cancer</journal-title></journal-title-group><issn pub-type="ppub">1759-7706</issn><issn pub-type="epub">1759-7714</issn><publisher><publisher-name>Wiley</publisher-name></publisher></journal-meta><article-meta><article-id pub-id-type="pmcid">PMC9527168</article-id><article-id pub-id-type="pmcid-ver">PMC9527168.1</article-id><article-id pub-id-type="pmcaid">9527168</article-id><article-id pub-id-type="pmcaiid">9527168</article-id><article-id pub-id-type="pmid">36043345</article-id><article-id pub-id-type="doi">10.1111/1759-7714.14626</article-id><article-id pub-id-type="publisher-id">TCA14626</article-id><article-version article-version-type="pmc-version">1</article-version><article-categories><subj-group subj-group-type="overline"><subject>Review</subject></subj-group><subj-group subj-group-type="heading"><subject>Reviews</subject></subj-group></article-categories><title-group><article-title>Gut microbiota shed new light on the management of <styled-content style="fixed-case" toggle="no">immune‐related</styled-content> adverse events</article-title><alt-title alt-title-type="left-running-head">Tan et al.</alt-title></title-group><contrib-group><contrib id="tca14626-cr-0001" contrib-type="author"><name name-style="western"><surname>Tan</surname><given-names initials="B">Bei</given-names></name><contrib-id contrib-id-type="orcid" authenticated="false">https://orcid.org/0000-0002-0053-7399</contrib-id><xref rid="tca14626-aff-0001" ref-type="aff">
+<sup>1</sup>
+</xref><xref rid="tca14626-note-0001" ref-type="author-notes">
+<sup>†</sup>
+</xref></contrib><contrib id="tca14626-cr-0002" contrib-type="author"><name name-style="western"><surname>Liu</surname><given-names initials="YX">Yun‐xin</given-names></name><xref rid="tca14626-aff-0002" ref-type="aff">
+<sup>2</sup>
+</xref><xref rid="tca14626-note-0001" ref-type="author-notes">
+<sup>†</sup>
+</xref></contrib><contrib id="tca14626-cr-0003" contrib-type="author"><name name-style="western"><surname>Tang</surname><given-names initials="H">Hao</given-names></name><xref rid="tca14626-aff-0003" ref-type="aff">
+<sup>3</sup>
+</xref></contrib><contrib id="tca14626-cr-0004" contrib-type="author"><name name-style="western"><surname>Chen</surname><given-names initials="D">Dan</given-names></name><xref rid="tca14626-aff-0004" ref-type="aff">
+<sup>4</sup>
+</xref></contrib><contrib id="tca14626-cr-0005" contrib-type="author"><name name-style="western"><surname>Xu</surname><given-names initials="Y">Yan</given-names></name><contrib-id contrib-id-type="orcid" authenticated="false">https://orcid.org/0000-0002-2832-2664</contrib-id><xref rid="tca14626-aff-0005" ref-type="aff">
+<sup>5</sup>
+</xref></contrib><contrib id="tca14626-cr-0006" contrib-type="author" corresp="yes"><name name-style="western"><surname>Chen</surname><given-names initials="MJ">Min‐jiang</given-names></name><contrib-id contrib-id-type="orcid" authenticated="false">https://orcid.org/0000-0002-4040-6115</contrib-id><xref rid="tca14626-aff-0005" ref-type="aff">
+<sup>5</sup>
+</xref><address><email>minjiangchen@163.com</email></address></contrib><contrib id="tca14626-cr-0007" contrib-type="author" corresp="yes"><name name-style="western"><surname>Li</surname><given-names initials="Y">Yue</given-names></name><xref rid="tca14626-aff-0001" ref-type="aff">
+<sup>1</sup>
+</xref><address><email>yuelee76@gmail.com</email></address></contrib><contrib id="tca14626-cr-0008" contrib-type="author"><name name-style="western"><surname>Wang</surname><given-names initials="MZ">Meng‐zhao</given-names></name><xref rid="tca14626-aff-0005" ref-type="aff">
+<sup>5</sup>
+</xref></contrib><contrib id="tca14626-cr-0009" contrib-type="author"><name name-style="western"><surname>Qian</surname><given-names initials="JM">Jia‐ming</given-names></name><xref rid="tca14626-aff-0001" ref-type="aff">
+<sup>1</sup>
+</xref></contrib></contrib-group><aff id="tca14626-aff-0001">
+<label>
+<sup>1</sup>
+</label>
+<named-content content-type="organisation-division">Department of Gastroenterology</named-content>
+<institution>Peking Union Medical College Hospital, Peking Union Medical College &amp; Chinese Academy of Medical Science</institution>
+<city>Beijing</city>
+<country country="CN">China</country>
+</aff><aff id="tca14626-aff-0002">
+<label>
+<sup>2</sup>
+</label>
+<institution>Medical Doctor Program, Peking Union Medical College &amp; Chinese Academy of Medical Science</institution>
+<city>Beijing</city>
+<country country="CN">China</country>
+</aff><aff id="tca14626-aff-0003">
+<label>
+<sup>3</sup>
+</label>
+<named-content content-type="organisation-division">Department of Internal Medicine</named-content>
+<institution>Peking Union Medical College Hospital, Peking Union Medical College &amp; Chinese Academy of Medical Science</institution>
+<city>Beijing</city>
+<country country="CN">China</country>
+</aff><aff id="tca14626-aff-0004">
+<label>
+<sup>4</sup>
+</label>
+<named-content content-type="organisation-division">Department of Gastroenterology</named-content>
+<institution>Beijing Hospital, National Center of Gerontology, Institute of Geriatric Medicine, Chinese Academy of Medical Science</institution>
+<city>Beijing</city>
+<country country="CN">China</country>
+</aff><aff id="tca14626-aff-0005">
+<label>
+<sup>5</sup>
+</label>
+<named-content content-type="organisation-division">Department of Respiratory and Critical Care Medicine</named-content>
+<institution>Peking Union Medical College Hospital, Peking Union Medical College &amp; Chinese Academy of Medical Science</institution>
+<city>Beijing</city>
+<country country="CN">China</country>
+</aff><author-notes><corresp id="correspondenceTo">
+<label>*</label>
+<bold>Correspondence</bold>
+<break/>
+Minjiang Chen, Department of Respiratory and Critical Care Medicine, Peking Union Medical College Hospital, Chinese Academy of Medical Science &amp; Peking Union Medical College, Beijing China, No.1 Shuaifuyuan, Dongcheng District, Beijing 100730, China.<break/>
+Email: <email>minjiangchen@163.com</email>
+<break/>
+Yue Li, Department of Gastroenterology, Peking Union Medical College Hospital, Chinese Academy of Medical Science &amp; Peking Union Medical College, Beijing China, No.1 Shuaifuyuan, Dongcheng District, Beijing 100730, China.<break/>
+Email: <email>yuelee76@gmail.com</email>
+<break/>
+</corresp><fn id="tca14626-note-0001" fn-type="equal"><label>†</label><p>These authors have contributed equally to this work and share first authorship.</p></fn></author-notes><pub-date pub-type="epub"><day>31</day><month>8</month><year>2022</year></pub-date><pub-date pub-type="ppub"><month>10</month><year>2022</year></pub-date><volume>13</volume><issue seq="30">19</issue><issue-id pub-id-type="pmc-issue-id">418370</issue-id><issue-id pub-id-type="doi">10.1111/tca.v13.19</issue-id><fpage>2681</fpage><lpage>2691</lpage><history><date date-type="received"><day>24</day><month>7</month><year>2022</year></date><date date-type="accepted"><day>11</day><month>8</month><year>2022</year></date></history><pub-history><event event-type="pmc-release"><date><day>01</day><month>10</month><year>2022</year></date></event><event event-type="pmc-live"><date><day>06</day><month>10</month><year>2022</year></date></event><event event-type="pmc-last-change"><date iso-8601-date="2026-09-04 15:26:10.330"><day>04</day><month>09</month><year>2026</year></date></event></pub-history><permissions><copyright-statement content-type="article-copyright">© 2022 The Authors. <italic toggle="yes">Thoracic Cancer</italic> published by China Lung Oncology Group and John Wiley &amp; Sons Australia, Ltd.</copyright-statement><license><ali:license_ref xmlns:ali="http://www.niso.org/schemas/ali/1.0/" specific-use="textmining" content-type="ccbynclicense">https://creativecommons.org/licenses/by-nc/4.0/</ali:license_ref><license-p>This is an open access article under the terms of the <ext-link xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="uri" xlink:href="https://creativecommons.org/licenses/by-nc/4.0/">http://creativecommons.org/licenses/by-nc/4.0/</ext-link> License, which permits use, distribution and reproduction in any medium, provided the original work is properly cited and is not used for commercial purposes.</license-p></license></permissions><self-uri xmlns:xlink="http://www.w3.org/1999/xlink" content-type="pmc-pdf" xlink:href="TCA-13-2681.pdf"/><self-uri xmlns:xlink="http://www.w3.org/1999/xlink" content-type="pdf" xlink:href="file:TCA-13-2681.pdf"/><abstract><title>Abstract</title><p>Immunotherapy has dramatically revolutionized the therapeutic landscape for patients with cancer. Although immune checkpoint inhibitors are now accepted as effective anticancer therapies, they introduce a novel class of toxicity, termed immune‐related adverse events, which can lead to the temporary or permanent discontinuation of immunotherapy and life‐threatening tumor progression. Therefore, the effective prevention and treatment of immune‐related adverse events is a clinical imperative to maximize the utility of immunotherapies. Immune‐related adverse events are related to the intestinal microbiota, baseline gut microbiota composition is an important determinant of immune checkpoint inhibitor‐related colitis, and antibiotics exacerbate these undesirable side‐effects. Supplementation with specific probiotics reduces immune checkpoint inhibitor‐related colitis in mice, and fecal microbiota transplantation has now been shown to effectively treat refractory immune checkpoint inhibitor‐related colitis in the clinic. Hence, modifying the microbiota holds great promise for preventing and treating immune‐related adverse events. Microbiomes and their metabolites play important roles in the potential underlying mechanisms through interactions with both innate and adaptive immune cells. Here we review the gut microbiota and immune regulation; the changes occurring in the microbiota during immune checkpoint inhibitor therapy; the relationship between the microbiota and immune‐related adverse events, antibiotics, probiotics/prebiotics, and fecal microbiota transplantation in immune checkpoint inhibitor‐related colitis; and the protective mechanisms mediated by the microbiome and metabolites in immune‐related adverse events.</p></abstract><abstract abstract-type="graphical"><p>(A) Whether the intestinal microbiota changes after ICI therapy is still uncertain. (B) The baseline gut microbiota composition is an important determinant of ICIs‐related colitis. (C) After the onset of ICIs‐related colitis, the antibiotic application is a harmful factor, particularly those with anaerobic activity. The supplementation of specific probiotics e.g., Bifidobacterium and Lactobacillus could reduce ICIs‐related colitis in mice. FMT could effectively treat refractory ICIs‐related colitis in clinical cases.<boxed-text position="anchor" content-type="graphic" id="tca14626-blkfxd-0001" orientation="portrait"><graphic xmlns:xlink="http://www.w3.org/1999/xlink" position="anchor" id="jats-graphic-1" orientation="portrait" xlink:href="TCA-13-2681-g002.jpg"/></boxed-text>
+</p></abstract><kwd-group kwd-group-type="author-generated"><kwd id="tca14626-kwd-0001">fecal microbiota transplantation</kwd><kwd id="tca14626-kwd-0002">immune checkpoint inhibitors</kwd><kwd id="tca14626-kwd-0003">immune‐related adverse events</kwd><kwd id="tca14626-kwd-0004">intestinal microbiota</kwd><kwd id="tca14626-kwd-0005">probiotics</kwd></kwd-group><funding-group><award-group id="funding-0001"><funding-source><institution-wrap><institution>National Natural Science Foundation of China
+</institution><institution-id institution-id-type="doi">10.13039/501100001809</institution-id></institution-wrap></funding-source><award-id>82000526</award-id></award-group><award-group id="funding-0002"><funding-source><institution-wrap><institution>Natural Science Foundation of Beijing Municipality
+</institution><institution-id institution-id-type="doi">10.13039/501100005089</institution-id></institution-wrap></funding-source><award-id>7192172</award-id></award-group></funding-group><counts><fig-count count="3"/><table-count count="2"/><page-count count="11"/><word-count count="7306"/></counts><custom-meta-group><custom-meta><meta-name>pmc-status-qastatus</meta-name><meta-value>0</meta-value></custom-meta><custom-meta><meta-name>pmc-status-live</meta-name><meta-value>yes</meta-value></custom-meta><custom-meta><meta-name>pmc-status-embargo</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-status-released</meta-name><meta-value>yes</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-open-access</meta-name><meta-value>yes</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-olf</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-manuscript</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-legally-suppressed</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-has-pdf</meta-name><meta-value>yes</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-has-supplement</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-pdf-only</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-suppress-copyright</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-is-real-version</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-is-scanned-article</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-preprint</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-in-epmc</meta-name><meta-value>yes</meta-value></custom-meta><custom-meta><meta-name>pmc-license-ref</meta-name><meta-value>CC BY-NC</meta-value></custom-meta><custom-meta><meta-name>source-schema-version-number</meta-name><meta-value>2.0</meta-value></custom-meta><custom-meta><meta-name>cover-date</meta-name><meta-value>October 2022</meta-value></custom-meta><custom-meta><meta-name>details-of-publishers-convertor</meta-name><meta-value>Converter:WILEY_ML3GV2_TO_JATSPMC version:6.1.9 mode:remove_FC converted:02.10.2022</meta-value></custom-meta></custom-meta-group></article-meta><notes><p content-type="self-citation">
+<mixed-citation publication-type="journal" id="tca14626-cit-9001">
+<string-name name-style="western">
+<surname>Tan</surname>
+<given-names>B</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Liu</surname>
+<given-names>Y</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Tang</surname>
+<given-names>H</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Chen</surname>
+<given-names>D</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Xu</surname>
+<given-names>Y</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Chen</surname>
+<given-names>M</given-names>
+</string-name>, et al. <article-title>Gut microbiota shed new light on the management of <styled-content style="fixed-case" toggle="no">immune‐related</styled-content> adverse events</article-title>. <source>Thorac Cancer</source>. <year>2022</year>;<volume>13</volume>(<issue>19</issue>):<fpage>2681</fpage>–<lpage>2691</lpage>. <pub-id pub-id-type="doi">10.1111/1759-7714.14626</pub-id>
+<pub-id pub-id-type="pmcid">PMC9527168</pub-id><pub-id pub-id-type="pmid">36043345</pub-id></mixed-citation>
+</p><fn-group id="tca14626-ntgp-0001"><fn id="tca14626-note-1002"><p>
+<bold>Funding information</bold> National Natural Science Foundation of China, Grant/Award Number: 82000526; Natural Science Foundation of Beijing Municipality, Grant/Award Number: 7192172</p></fn></fn-group></notes></front><body id="tca14626-body-0001"><sec id="tca14626-sec-0001"><title>INTRODUCTION</title><p>Immunotherapy, especially when combined with other therapies, continues to revolutionize anticancer therapy and improve outcomes for cancer patients. Immune checkpoint inhibitors (ICIs) are now widely used in cancer management and include antiprogrammed cell death protein‐1 (PD‐1) or antiprogrammed cell death ligand 1 (PD‐L1) inhibitors and cytotoxic T lymphocyte‐associated antigen‐4 (CTLA‐4) inhibitors, mainly as monoclonal antibody therapies. ICIs are now being used to treat many different types of cancer, especially melanoma and non‐small cell lung cancer (NSCLC).<xref rid="tca14626-bib-0001" ref-type="bibr">
+<sup>1</sup>
+</xref>
+</p><p>Although efficacious, ICIs also introduce a novel class of toxicity termed immune‐related adverse events (irAEs). IrAEs occur due to overactivation of the immune system against both tumor and self antigens, resulting in autoimmune phenomena and consequent damage to normal tissues or organs.<xref rid="tca14626-bib-0002" ref-type="bibr">
+<sup>2</sup>
+</xref> IrAEs range from self‐limiting (e.g., rash) to life‐threatening (e.g., myocarditis, pneumonitis) and frequently preclude the continuation of ICIs in patients who are otherwise experiencing clinical responses. Furthermore, patients experiencing irAEs in fact demonstrate better progression‐free survival (PFS), overall survival (OS), and overall response rates (ORR) compared with those not experiencing toxicity.<xref rid="tca14626-bib-0003" ref-type="bibr">
+<sup>3</sup>
+</xref> Specifically, any grade (severity) of gastrointestinal irAE is associated with an improved OS and PFS.<xref rid="tca14626-bib-0004" ref-type="bibr">
+<sup>4</sup>
+</xref> However, severe irAEs lead to the temporary or permanent discontinuation of immunotherapy, resulting in life‐threatening tumor progression. Therefore, the effective prevention and treatment of irAEs are essential to ensure the continuing success of immunotherapy.</p><p>The efficacy of immunotherapy is mediated by ICI‐elicited immune responses. In 2018, three ground‐breaking studies indicated that ICI efficacy is related to the intestinal microbiota. These studies showed that, at baseline, responders have higher baseline α‐diversity (species richness in the gut microbiome within a single sample) and relative abundance of <italic toggle="yes">Ruminococcaceae</italic> family members than non‐responders. ICI treatment has been shown to be more effective in germ‐free mice treated by fecal microbiota transplantation (FMT) from ICI responders than those treated with FMT from ICI nonresponders.<xref rid="tca14626-bib-0005" ref-type="bibr">
+<sup>5</sup>
+</xref>, <xref rid="tca14626-bib-0006" ref-type="bibr">
+<sup>6</sup>
+</xref> Furthermore, microbiota‐based interventions (e.g., supplementation with <italic toggle="yes">Akkermansia muciniphila</italic>) reversed ICI resistance or restored ICI efficacy in mice initially failing to respond to FMT.<xref rid="tca14626-bib-0007" ref-type="bibr">
+<sup>7</sup>
+</xref> Recently, two clinical FMT studies demonstrated that allogeneic FMT from responders reversed primary anti‐PD‐1 resistance in 6/15 and 3/10 melanoma patients.<xref rid="tca14626-bib-0008" ref-type="bibr">
+<sup>8</sup>
+</xref>, <xref rid="tca14626-bib-0009" ref-type="bibr">
+<sup>9</sup>
+</xref> These results are promising, and modifications to the diverse baseline gut microbiota is likely to impact ICI efficacy through complex interactions between host immunity, diet, probiotics, prebiotics, postbiotics, and/or FMT.<xref rid="tca14626-bib-0010" ref-type="bibr">
+<sup>10</sup>
+</xref>
+</p><p>However, IrAEs are the “dark” side of the immune response stimulated by ICIs. As with ICI responses, there is mounting evidence that irAEs are similarly associated with the intestinal microbiota. Therefore, microbiota‐based interventions may be promising not only to improve ICI efficacy but also for the prevention and treatment of irAEs, thereby ensuring the optimal and maximal use of immunotherapy and significantly improving outcomes for cancer patients. Here,we review the role of the gut microbiota in immune regulation, alterations occurring in the microbiota during ICI therapy, the relationship between the microbiota and irAEs, antibiotics, probiotics/prebiotics, and FMT in ICI‐related colitis, and the putative protective mechanisms exerted by the microbiome and metabolites in irAEs.</p></sec><sec id="tca14626-sec-0002"><title>THE GUT MICROBIOTA AND IMMUNE REGULATION</title><p>Thousands of microbial species live in the human gastrointestinal tract, mainly from the <italic toggle="yes">Bacteroidetes</italic> and <italic toggle="yes">Firmicutes</italic> phyla, which form a gut microbiota that plays crucial roles in numerous host functions.<xref rid="tca14626-bib-0011" ref-type="bibr">
+<sup>11</sup>
+</xref> The interactions between the gut microbiota and host cells not only allow for nutrient metabolism and antigen tolerance but also regulate innate and adaptive immunity both locally and systemically, contributing to immune homeostasis and thus a healthy host.<xref rid="tca14626-bib-0012" ref-type="bibr">
+<sup>12</sup>
+</xref>, <xref rid="tca14626-bib-0013" ref-type="bibr">
+<sup>13</sup>
+</xref>, <xref rid="tca14626-bib-0014" ref-type="bibr">
+<sup>14</sup>
+</xref> Briefly, pathogen‐associated molecular patterns (PAMPs) on/in bacteria or bacterial metabolites (e.g., short‐chain fatty acids; SCFAs) are transported by M cells for subsequent recognition by toll‐like receptors (TLRs) on dendritic cells in the lamina propria of the gut mucosa, facilitating the dendritic cell maturation. Mature dendritic cells migrate to mesenteric lymph nodes, where they initiate adaptive immune responses by stimulating naïve T cell differentiation into CD4<sup>+</sup> T cells, specifically CD4<sup>+</sup> T regulatory cells (Tregs) and T helper 17 (Th17) cells, and B cell maturation into plasma cells.<xref rid="tca14626-bib-0015" ref-type="bibr">
+<sup>15</sup>
+</xref> The Treg/Th17 axis balances host immunity: Th17 cells produce interleukin (IL)‐17, which stimulates the release of other inflammatory cytokines and recruits neutrophils from the bloodstream into the gut, while Treg cells produce IL‐10, which functions as an immunosuppressive cytokine. Moreover, plasma cells produce IgA to block bacterial adherence to intestinal epithelial cells. The crosstalk between diverse gut microbiomes and host immune systems prevents bacterial invasion and infection and modulates tumor growth (Figure <xref rid="tca14626-fig-0001" ref-type="fig">1a</xref>).</p><fig position="float" fig-type="FIGURE" id="tca14626-fig-0001" orientation="portrait"><label>FIGURE 1</label><caption><p>Mechanisms of gut microbiota and immune‐related adverse events. (a) Gut microbiota and immune regulation. (b) Classic immune hypotheses about irAE pathogenesis. (c) The protective mechanism of the gut microbiome in irAEs. (d) The protective mechanisms of gut microbiota metabolites in irAEs. DCs, dendritic cells; Foxp3, forkhead box P3; ICIs, immune checkpoint inhibitors; IFN‐γ, interferon‐γ; IgA, immunoglobulin A;IL, interleukin; irAE, immune‐related adverse events; NF‐κB, nuclear factor‐κB; PAMPs, pathogen‐associated molecular patterns; PSA, polysaccharide A; sCD, soluble CD; SCFAs, short‐chain fatty acids; TGF‐β, transforming growth factor‐β; Th, T helper; TLRs, toll‐like receptors; TNF‐α, tumor necrosis factor‐α; Treg, T regulatory cell.</p></caption><graphic xmlns:xlink="http://www.w3.org/1999/xlink" position="anchor" id="jats-graphic-3" orientation="portrait" xlink:href="TCA-13-2681-g001.jpg"/></fig></sec><sec id="tca14626-sec-0003"><title>CHANGES IN THE GUT MICROBIOTA DURING <styled-content style="fixed-case" toggle="no">ICI</styled-content> THERAPY</title><p>ICIs lack efficacy without an intact intestinal microbiota, at least experimentally. Antibiotic‐treated or germ‐free tumor‐bearing mice do not respond to anti‐CTLA‐4 antibody therapy. Furthermore, ICI treatment may alter the intestinal microbiota. In 2,4,6‐trinitrobenzene sulfonic acid (TNBS)‐treated mice, a classic inflammatory bowel disease (IBD) model, anti‐PD‐1 therapy improved the α‐diversity and restored the β‐diversity of the intestinal microbiota. It also significantly enriched for SCFA‐producing <italic toggle="yes">Firmicutes</italic> and <italic toggle="yes">Bacteroidetes</italic> bacteria but depopulated <italic toggle="yes">Proteobacteria</italic>.<xref rid="tca14626-bib-0016" ref-type="bibr">
+<sup>16</sup>
+</xref> In clinical studies, there is still uncertainty about if and how the intestinal microbiota changes after ICI therapy. Vetizou et al. found that only a single injection of anti‐CTLA‐4 induced rapid underrepresentation of both <italic toggle="yes">Bacteroides</italic> and <italic toggle="yes">Burkholderiales</italic> and a relative increase in <italic toggle="yes">Clostridiales</italic> in fecal samples. Additionally, the relative abundance of <italic toggle="yes">Bacteroides thetaiotaomicron</italic> and <italic toggle="yes">Bacteroides fragilis</italic> increased in the small intestine mucosa, but there was no increase in <italic toggle="yes">Bacteroides fragilis</italic> in the colonic mucosa.<xref rid="tca14626-bib-0017" ref-type="bibr">
+<sup>17</sup>
+</xref> However, Chaput et al. demonstrated relatively stable microbiota composition after anti‐CTLA‐4 treatment, except in the case of ICI‐related colitis. The α‐diversity was not altered, and the main <italic toggle="yes">Firmicutes</italic> and <italic toggle="yes">Bacteroidetes</italic> phyla remained stable. While the genera proportions differed at different time points, these changes were not significantly different.<xref rid="tca14626-bib-0018" ref-type="bibr">
+<sup>18</sup>
+</xref> However, the sample size was very small and further, large scale studies that account for confounders are now required for validation (Figure <xref rid="tca14626-fig-0002" ref-type="fig">2a</xref>).</p><fig position="float" fig-type="FIGURE" id="tca14626-fig-0002" orientation="portrait"><label>FIGURE 2</label><caption><p>An overview of the gut microbiota and immune‐related adverse events. (a) Changes in the microbiota after ICIs. (b) Gut microbiota and irAE occurrence. (c) Antibiotics, probiotics/prebiotics, and FMT in ICI‐related colitis. CTLA‐4, cytotoxic T lymphocyte‐associated antigen; FMT, fecal microbiota transplantation; ICIs, immune checkpoint inhibitors; ICU, intensive care unit; ILC3, group 3 innate lymphoid cell; irAE, immune‐related adverse event; PD‐1, programmed cell death‐1; SCFAs, short‐chain fatty acids; Treg, T regulatory cell</p></caption><graphic xmlns:xlink="http://www.w3.org/1999/xlink" position="anchor" id="jats-graphic-5" orientation="portrait" xlink:href="TCA-13-2681-g003.jpg"/></fig></sec><sec id="tca14626-sec-0004"><title>THE GUT MICROBIOTA AND <styled-content style="fixed-case" toggle="no">IRAE</styled-content> OCCURRENCE</title><p>IrAEs can affect different organs, and in general <italic toggle="yes">Firmicutes</italic> are associated with a higher incidence of irAEs and <italic toggle="yes">Bacteroidetes, Bifidobacterium</italic> of the <italic toggle="yes">Actinobacteria</italic> phylum, and <italic toggle="yes">Desulfovibrio</italic> of the <italic toggle="yes">Proteobacteria</italic> phylum are associated with a lower incidence.<xref rid="tca14626-bib-0019" ref-type="bibr">
+<sup>19</sup>
+</xref>, <xref rid="tca14626-bib-0020" ref-type="bibr">
+<sup>20</sup>
+</xref> Intuitively, gastrointestinal irAEs might be expected to be related to the intestinal microbiota. Indeed, ICI‐related colitis does not occur in germ‐free mice because its onset relies on the gut microbiota.<xref rid="tca14626-bib-0017" ref-type="bibr">
+<sup>17</sup>
+</xref> In humans, the baseline gut microbiota composition is an important determinant of whether ICI‐related adverse events occur. Patients who develop ICI‐related colitis have associated decreased diversity and a shift in gut microbiota composition. More specifically, they have a relative high abundance of <italic toggle="yes">Firmicutes</italic> (e.g., <italic toggle="yes">Faecalibacterium prausnitzii</italic>, <italic toggle="yes">Gemmiger formicilis</italic>, <italic toggle="yes">Roseburia inulinivorans</italic>, butyrate‐producing bacteria), while those without colitis have a high abundance of <italic toggle="yes">Bacteroidetes</italic> (e.g., <italic toggle="yes">Bacteroidetes uniformis</italic>, <italic toggle="yes">Bacteroidetes vulgatus</italic>, and <italic toggle="yes">Parabacteroides distasonis</italic>).<xref rid="tca14626-bib-0018" ref-type="bibr">
+<sup>18</sup>
+</xref>, <xref rid="tca14626-bib-0021" ref-type="bibr">
+<sup>21</sup>
+</xref> Dubin et al. analyzed baseline microbiota from 34 metastatic melanoma patients prior to ipilimumab treatment, and conclusively established that patients who did not develop ICI‐related colitis also had a higher abundance of <italic toggle="yes">Bacteroidetes</italic>, including <italic toggle="yes">Bacteroidaceae, Rikenellaceae</italic>, and <italic toggle="yes">Barnesiellaceae</italic>. Andrews et al. found that a more varied peripheral T cell repertoire was associated with a higher risk of developing irAEs.<xref rid="tca14626-bib-0022" ref-type="bibr">
+<sup>22</sup>
+</xref>
+<italic toggle="yes">Bacteroides intestinalis</italic> were significantly enriched in baseline gut microbiomes and the peripheral T cell repertoire was more diverse in melanoma patients who developed grade 3–5 irAEs, which was shown to be related to the upregulation of mucosal IL‐1β in murine models.<xref rid="tca14626-bib-0022" ref-type="bibr">
+<sup>22</sup>
+</xref> Furthermore, deficiencies in polyamine transport and B vitamin biosynthesis pathways were associated with a risk of colitis<xref rid="tca14626-bib-0021" ref-type="bibr">
+<sup>21</sup>
+</xref>, <xref rid="tca14626-bib-0023" ref-type="bibr">
+<sup>23</sup>
+</xref> (Table <xref rid="tca14626-tbl-0001" ref-type="table">1</xref>).</p><table-wrap position="float" id="tca14626-tbl-0001" content-type="TABLE" orientation="portrait"><label>TABLE 1</label><caption><p>Current data on microbiota and irAEs</p></caption><table frame="hsides" rules="groups"><col align="left" span="1"/><col align="left" span="1"/><col align="left" span="1"/><col align="left" span="1"/><col align="left" span="1"/><col align="left" span="1"/><col align="left" span="1"/><col align="left" span="1"/><thead valign="bottom"><tr><th align="left" valign="bottom" rowspan="1" colspan="1">Reference</th><th align="left" valign="bottom" rowspan="1" colspan="1">Species</th><th align="left" valign="bottom" rowspan="1" colspan="1">Disease</th><th align="left" valign="bottom" rowspan="1" colspan="1">Intervention</th><th align="left" valign="bottom" rowspan="1" colspan="1">irAE organ affected</th><th align="left" valign="bottom" rowspan="1" colspan="1">Microbiota analysis method</th><th align="left" valign="bottom" rowspan="1" colspan="1">Significant outcome</th><th align="left" valign="bottom" rowspan="1" colspan="1">Potential mechanism</th></tr></thead><tbody valign="top"><tr><td rowspan="2" align="left" valign="top" colspan="1">
+<p>Chaput et al.<xref rid="tca14626-bib-0018" ref-type="bibr">
+<sup>18</sup>
+</xref>
+</p>
+</td><td rowspan="2" align="left" valign="top" colspan="1">26 patients</td><td rowspan="2" align="left" valign="top" colspan="1">Metastatic melanoma</td><td rowspan="2" align="left" valign="top" colspan="1">Anti‐CTLA‐4</td><td rowspan="2" align="left" valign="top" colspan="1">Colitis</td><td rowspan="2" align="left" valign="top" colspan="1">16 s rRNA</td><td rowspan="2" align="left" valign="top" colspan="1">
+<p>Baseline phyla level: enriched <italic toggle="yes">Firmicutes</italic> in patients with colitis, high proportions of <italic toggle="yes">Bacteroidetes</italic> in patients without colitis</p>
+<p>15 bacterial OTUs were detected as potential biomarkers of colitis onset. 5/6 OTUs (e.g., <italic toggle="yes">B. uniformis, B. vulgatus, Parabacteroides distasonis, Prevotella</italic>) from the <italic toggle="yes">Bacteroidetes</italic> phylum were associated with an absence of colitis. 8/9 OTUs (e.g., <italic toggle="yes">Faecalibacterium prausnitzii, Gemmiger formicilis, Roseburia inulinivorans, Fusicatenibacter saccharivorans, Blautia obeum, Clostridiales</italic> bacterium, butyrate‐producing bacteria from the <italic toggle="yes">Firmicutes</italic> phylum) were associated with colitis.</p>
+</td><td align="left" valign="top" rowspan="1" colspan="1">
+<p>Low proportion of peripheral blood regulatory T cells (Tregs), α4<sup>+</sup>β7<sup>+</sup> CD4<sup>+</sup> T cells, and α4<sup>+</sup>β7<sup>+</sup> CD8<sup>+</sup> T cells in patients enriched with <italic toggle="yes">Faecalibacterium</italic> and other <italic toggle="yes">Firmicutes</italic>.</p>
+<p>Patients with irAE colitis tended to have significantly higher CD4<sup>+</sup> T cells, IL‐6, IL‐8 and sCD25.</p>
+<p>Higher inducible T cell costimulator induction on CD4<sup>+</sup> T cells and serum CD25 in patients who enriched with <italic toggle="yes">Faecalibacterium</italic>.</p>
+</td></tr><tr><td align="left" valign="top" rowspan="1" colspan="1"/></tr><tr><td align="left" valign="top" rowspan="1" colspan="1">Dubin et al.<xref rid="tca14626-bib-0023" ref-type="bibr">
+<sup>23</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">34 patients</td><td align="left" valign="top" rowspan="1" colspan="1">Metastatic melanoma</td><td align="left" valign="top" rowspan="1" colspan="1">Anti‐CTLA‐4</td><td align="left" valign="top" rowspan="1" colspan="1">Colitis</td><td align="left" valign="top" rowspan="1" colspan="1">16 s rRNA; shotgun sequencing</td><td align="left" valign="top" rowspan="1" colspan="1">
+<p>Patients with or without colitis shared many bacterial taxa belonging to the <italic toggle="yes">Firmicutes</italic> phylum.</p>
+<p>Patients without colitis harbored a greater proportion of the <italic toggle="yes">Bacteroidaceae</italic> family.</p>
+<p>Patients without colitis had a higher abundance of <italic toggle="yes">Bacteroidaceae, Rikenellaceae</italic>, and <italic toggle="yes">Barnesiellaceae</italic> from the <italic toggle="yes">Bacteroidetes</italic> phylum.</p>
+</td><td align="left" valign="top" rowspan="1" colspan="1">Genetic pathways involved in polyamine transport and B vitamin biosynthesis were associated with an increased risk of colitis.</td></tr><tr><td align="left" valign="top" rowspan="1" colspan="1">Liu et al.<xref rid="tca14626-bib-0024" ref-type="bibr">
+<sup>24</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">26 patients</td><td align="left" valign="top" rowspan="1" colspan="1">Advanced lung cancer</td><td align="left" valign="top" rowspan="1" colspan="1">Anti‐PD‐1</td><td align="left" valign="top" rowspan="1" colspan="1">Colitis</td><td align="left" valign="top" rowspan="1" colspan="1">16 s rRNA</td><td align="left" valign="top" rowspan="1" colspan="1">
+<p>Species abundance and diversity tended to be lower in patients with diarrhea/colitis, but without a statistical difference.</p>
+<p>
+<italic toggle="yes">Firmicutes</italic> and <italic toggle="yes">Bacteroidetes</italic> phylum were the most abundant in patients with or without diarrhea/colitis, respectively.</p>
+<p>Probable risk factors for diarrhea/colitis: <italic toggle="yes">Bacteroides</italic> and <italic toggle="yes">Parabacteroides</italic> from the <italic toggle="yes">Bacteroidetes</italic> phylum, <italic toggle="yes">Phascolarcto</italic> bacterium from the <italic toggle="yes">Firmicutes</italic> phylum, and <italic toggle="yes">Veillonella</italic> from the <italic toggle="yes">Proteobacteria</italic> phylum.</p>
+</td><td align="left" valign="top" rowspan="1" colspan="1">NA</td></tr><tr><td align="left" valign="top" rowspan="1" colspan="1">Chau et al.<xref rid="tca14626-bib-0020" ref-type="bibr">
+<sup>20</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">13 patients</td><td align="left" valign="top" rowspan="1" colspan="1">Lung cancer</td><td align="left" valign="top" rowspan="1" colspan="1">Anti‐PD‐1/PD‐L1</td><td align="left" valign="top" rowspan="1" colspan="1">Rash/colitis/myositis/pneumonitis/thrombocytopenia</td><td align="left" valign="top" rowspan="1" colspan="1">16 s rRNA</td><td align="left" valign="top" rowspan="1" colspan="1">Enrichment of <italic toggle="yes">Bifidobacterium</italic> of <italic toggle="yes">Actinobacteria</italic> phylum and <italic toggle="yes">Desulfovibrio</italic> of <italic toggle="yes">Proteobacteria</italic> phylum were significantly associated with lower incidence and grade of irAEs.</td><td align="left" valign="top" rowspan="1" colspan="1">NA</td></tr><tr><td align="left" valign="top" rowspan="1" colspan="1">SaKai et al.<xref rid="tca14626-bib-0025" ref-type="bibr">
+<sup>25</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">18 patients</td><td align="left" valign="top" rowspan="1" colspan="1">Lung/stomach/kidney/ovary cancer</td><td align="left" valign="top" rowspan="1" colspan="1">ICIs</td><td align="left" valign="top" rowspan="1" colspan="1">Colitis</td><td align="left" valign="top" rowspan="1" colspan="1">16 s rRNA</td><td align="left" valign="top" rowspan="1" colspan="1">Decreased abundance of <italic toggle="yes">Bacteroides</italic> species and enriched <italic toggle="yes">Enterobacteria</italic> in inflamed regions of irAE colitis.</td><td align="left" valign="top" rowspan="1" colspan="1">Pathways associated with molecular transport systems, including fatty acids, were enriched in irAE colitis.</td></tr><tr><td align="left" valign="top" rowspan="1" colspan="1">McCulloch et al.<xref rid="tca14626-bib-0026" ref-type="bibr">
+<sup>26</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">57 patients</td><td align="left" valign="top" rowspan="1" colspan="1">Melanoma</td><td align="left" valign="top" rowspan="1" colspan="1">Anti‐PD‐1</td><td align="left" valign="top" rowspan="1" colspan="1">Pneumonitis/colitis/hepatitis/nephritis/arthritis/throid/adrenal/dermatologic/neurologic</td><td align="left" valign="top" rowspan="1" colspan="1">16 s rRNA</td><td align="left" valign="top" rowspan="1" colspan="1">Enriched for <italic toggle="yes">Lachnospiraceae</italic> spp. and <italic toggle="yes">Streptococcus</italic> spp.</td><td align="left" valign="top" rowspan="1" colspan="1">NA</td></tr></tbody></table><table-wrap-foot id="tca14626-ntgp-0002"><fn id="tca14626-note-0002"><p>Abbreviations: CTLA‐4, cytotoxic T lymphocyte antigen‐4; ICIs, immune checkpoint inhibitors; irAEs, immune‐related adverse events; NA, not applicable; OTUs, operational taxonomic units; PD‐1, programmed cell death‐1; qPCR, quantitative polymerase chain reaction; TNBS, 2,4,6‐trinitrobenzene sulfonic acid.</p></fn></table-wrap-foot></table-wrap><p>It is particularly worth mentioning a Chinese clinical study that explored the baseline microbiota of 26 advanced NSCLC patients receiving anti‐PD‐1 treatment. Eight of these patients experiencing diarrhea had low microbiota diversity and species abundance compared with the nondiarrhea patients. It was a pity that the difference did not achieve statistical significance, probably due to the limited number of patients. However, there was a significant difference in microbiota composition, with a higher abundance of <italic toggle="yes">Bacteroidetes</italic> and lower abundance of <italic toggle="yes">Firmicutes</italic> in non‐diarrhea patients. <italic toggle="yes">Bacteroides</italic> (<italic toggle="yes">Parabacteroides</italic> belonging to the <italic toggle="yes">Bacteroidetes</italic> phylum) and <italic toggle="yes">Phascolarctobacterium</italic> of <italic toggle="yes">Firmicutes</italic> were more abundant, whereas <italic toggle="yes">Veillonella</italic> of the <italic toggle="yes">Proteobacteria</italic> phylum was sparse.<xref rid="tca14626-bib-0024" ref-type="bibr">
+<sup>24</sup>
+</xref> Moreover, the decreased abundance of <italic toggle="yes">Bacteroides</italic> species and fatty acid pathways were observed not only in inflamed regions but also the non‐inflamed regions of irAE colitis, where immune cells are reconstituted.<xref rid="tca14626-bib-0025" ref-type="bibr">
+<sup>25</sup>
+</xref> The latest meta‐analysis showed two taxonomic groups with opposing effects on anti‐PD‐1 response, and enrichment with either <italic toggle="yes">Lachnospiraceae</italic> spp. or <italic toggle="yes">Streptococcus</italic> spp. was associated with irAEs<xref rid="tca14626-bib-0026" ref-type="bibr">
+<sup>26</sup>
+</xref> (Table <xref rid="tca14626-tbl-0001" ref-type="table">1</xref>, Figure <xref rid="tca14626-fig-0002" ref-type="fig">2b</xref>).</p><p>Thus, it may be possible to predict the risk of irAEs based on the baseline intestinal microbiota composition. Furthermore, supplementation with probiotics and FMT appear to alleviate or reduce the risk of irAEs without affecting current therapeutic efficacy.</p></sec><sec id="tca14626-sec-0005"><title>ANTIBIOTICS, PROBIOTICS/PREBIOTICS, AND <styled-content style="fixed-case" toggle="no">FMT</styled-content> IN <styled-content style="fixed-case" toggle="no">ICI</styled-content>‐RELATED COLITIS</title><sec id="tca14626-sec-0006"><title>Antibiotics</title><p>In real world clinical practice, up to 68.9% patients with cancer, including melanoma, solid tumors, and hematological tumors, receive antibiotic treatment before or after ICI therapy. Antibiotics targeting anaerobic bacteria were prescribed in 51% of cases.<xref rid="tca14626-bib-0027" ref-type="bibr">
+<sup>27</sup>
+</xref> Antibiotics are likely to change the intestinal microbiota composition, so how they affect ICI‐related colitis is a further interesting question. In mouse experiments, oral administration of vancomycin, a broad‐spectrum antibiotic with activity against Gram‐positive bacteria, significantly aggravated ICI‐related colitis.<xref rid="tca14626-bib-0028" ref-type="bibr">
+<sup>28</sup>
+</xref>, <xref rid="tca14626-bib-0029" ref-type="bibr">
+<sup>29</sup>
+</xref> In clinical studies, antibiotics given before ICIs do not seem to influence the baseline dominant microbiota, potentially predictive operational taxonomic units (OTUs), or bacterial taxons, although prescription of antibiotics may alter microbiota composition.<xref rid="tca14626-bib-0018" ref-type="bibr">
+<sup>18</sup>
+</xref> Prescribing antibiotics after ICIs was associated with a higher rate of ICI‐related diarrhea/colitis accompanied by an increased risk of requiring immunosuppressive therapy and hospitalization compared with patients given antibiotics either before ICIs or both before and after ICIs. In particular, patients given antibiotics with activity against anaerobes after anti‐PD‐1 or anti‐CTLA‐4 treatment may experience severe ICI‐related diarrhea/colitis with a requirement for immunosuppressive therapy, hospitalization, and intensive care unit admission. After the onset of ICI‐related diarrhea/colitis, patients who received prophylactic antibiotics also had severe diarrhea/colitis requiring immunosuppressive therapy, intravenous glucocorticoids, and infliximab/vedolizumab and a high risk of hospitalization, longer hospital duration, and higher rate of recurrence. Thus, after the onset of ICI‐related diarrhea/colitis, antibiotics (especially those targeting anaerobic microbiomes) appear to be an adverse risk factor for irAEs and, overall, prescribing antibiotics (especially those targeting anaerobic microbiomes) risks ICI‐related diarrhea/colitis.<xref rid="tca14626-bib-0027" ref-type="bibr">
+<sup>27</sup>
+</xref> Certain anaerobes (e.g., <italic toggle="yes">Akkermansia muciniphila</italic>) may attenuate colitis.<xref rid="tca14626-bib-0007" ref-type="bibr">
+<sup>7</sup>
+</xref> Therefore, the unfavorable gut microbiota changes driven by the application of antibiotics targeting anaerobes may significantly affect the host immune system, facilitating immune dysregulation and ICI‐related diarrhea/colitis.<xref rid="tca14626-bib-0004" ref-type="bibr">
+<sup>4</sup>
+</xref>, <xref rid="tca14626-bib-0027" ref-type="bibr">
+<sup>27</sup>
+</xref> Adding further complexity, a recent study showed that baseline coadministration of antibiotics, glucocorticoids, proton pump inhibitors, and nonsteroidal anti‐inflammatory drugs (NSAIDs) was associated with a decreased occurrence of irAEs<xref rid="tca14626-bib-0030" ref-type="bibr">
+<sup>30</sup>
+</xref> (Table <xref rid="tca14626-tbl-0002" ref-type="table">2</xref>, Figure <xref rid="tca14626-fig-0002" ref-type="fig">2c</xref>).</p><table-wrap position="float" id="tca14626-tbl-0002" content-type="TABLE" orientation="portrait"><label>TABLE 2</label><caption><p>Current findings on interventions targeting the microbiota and irAEs</p></caption><table frame="hsides" rules="groups"><col align="left" span="1"/><col align="left" span="1"/><col align="left" span="1"/><col align="left" span="1"/><col align="left" span="1"/><col align="left" span="1"/><thead valign="bottom"><tr style="border-bottom:solid 1px #000000"><th align="left" valign="bottom" rowspan="1" colspan="1">Section</th><th align="left" valign="bottom" rowspan="1" colspan="1">Reference</th><th align="left" valign="bottom" rowspan="1" colspan="1">Species</th><th align="left" valign="bottom" rowspan="1" colspan="1">Disease/intervention</th><th align="left" valign="bottom" rowspan="1" colspan="1">Microbiota analysis method</th><th align="left" valign="bottom" rowspan="1" colspan="1">Significant outcome</th></tr></thead><tbody valign="top"><tr><td rowspan="4" align="left" valign="top" colspan="1">Antibiotics in ICIs‐related colitis</td><td align="left" valign="top" rowspan="1" colspan="1">Wang et al.<xref rid="tca14626-bib-0028" ref-type="bibr">
+<sup>28</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">Mouse</td><td align="left" valign="top" rowspan="1" colspan="1">DSS + anti‐CTLA‐4</td><td align="left" valign="top" rowspan="1" colspan="1">16 s rRNA</td><td align="left" valign="top" rowspan="1" colspan="1">
+<list list-type="bullet" id="tca14626-list-0001"><list-item id="tca14626-li-0001"><p>Oral vancomycin increased the mortality, colonic histopathological scores, and serum inflammatory cytokines KC, CSF3, and IL‐6.</p></list-item></list>
+</td></tr><tr><td align="left" valign="top" rowspan="1" colspan="1">Wang et al.<xref rid="tca14626-bib-0029" ref-type="bibr">
+<sup>29</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">Mouse</td><td align="left" valign="top" rowspan="1" colspan="1">DSS + anti‐PD‐1 + anti‐CTLA‐4</td><td align="left" valign="top" rowspan="1" colspan="1">16 s rRNA</td><td align="left" valign="top" rowspan="1" colspan="1">
+<list list-type="bullet" id="tca14626-list-0002"><list-item id="tca14626-li-0002"><p>Vancomycin increased the mortality, weight loss, colonic histopathological scores, serum inflammatory cytokines KC, TNF‐α, IL‐6, and IFN‐γ.</p></list-item></list>
+</td></tr><tr><td align="left" valign="top" rowspan="1" colspan="1">Abu‐Sbeih H et al.<xref rid="tca14626-bib-0027" ref-type="bibr">
+<sup>27</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">826 patients</td><td align="left" valign="top" rowspan="1" colspan="1">Anti‐PD‐1, anti‐CTLA‐4, anti‐PD‐1 + anti‐CTLA‐4</td><td align="left" valign="top" rowspan="1" colspan="1">NA</td><td align="left" valign="top" rowspan="1" colspan="1">
+<list list-type="bullet" id="tca14626-list-0003"><list-item id="tca14626-li-0003"><p>Antibiotic use was associated with reduced occurrence/recurrence rates and increased severity of diarrhea/colitis.</p></list-item><list-item id="tca14626-li-0004"><p>Post‐ICI antibiotics associated with a higher diarrhea/colitis rate, need for immunosuppressive therapy, and hospitalization.</p></list-item><list-item id="tca14626-li-0005"><p>Antibiotics with anaerobic activity were associated with increased immunosuppressant use, hospitalization, intensive care unit admission, and diarrhea/colitis severity.</p></list-item><list-item id="tca14626-li-0006"><p>Empiric prophylactic antibiotic therapy at diarrhea/colitis onset increased the need of immunosuppressive therapy, intravenous steroids, and infliximab/vedolizumab; increased frequency and hospitalization duration, diarrhea/colitis severity; and recurrence frequency.</p></list-item></list>
+</td></tr><tr><td align="left" valign="top" rowspan="1" colspan="1">Kostine et al.<xref rid="tca14626-bib-0030" ref-type="bibr">
+<sup>30</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">276 patients</td><td align="left" valign="top" rowspan="1" colspan="1">ICIs</td><td align="left" valign="top" rowspan="1" colspan="1">NA</td><td align="left" valign="top" rowspan="1" colspan="1">
+<list list-type="bullet" id="tca14626-list-0004"><list-item id="tca14626-li-0007"><p>Antibiotics were associated with decreased occurrence of irAEs (odds ratio 0.5, 95% CI: 0.33–0.76, <italic toggle="yes">p</italic> = 0.0007).</p></list-item></list>
+</td></tr><tr><td rowspan="3" align="left" valign="top" colspan="1">Probiotics/prebiotics in ICIs‐related colitis</td><td align="left" valign="top" rowspan="1" colspan="1">Wang F et al.<xref rid="tca14626-bib-0028" ref-type="bibr">
+<sup>28</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">Mouse</td><td align="left" valign="top" rowspan="1" colspan="1">DSS + anti‐CTLA‐4</td><td align="left" valign="top" rowspan="1" colspan="1">16 s rRNA</td><td align="left" valign="top" rowspan="1" colspan="1">
+<list list-type="bullet" id="tca14626-list-0005"><list-item id="tca14626-li-0008"><p>
+<italic toggle="yes">Bifidobacterium</italic> supplementation decreased weight loss, histopathological score, and serum inflammatory cytokines KC, TNF‐α, IL‐6, and IFN‐γ without influencing the antitumor effect.</p></list-item></list>
+</td></tr><tr><td align="left" valign="top" rowspan="1" colspan="1">Sun et al.<xref rid="tca14626-bib-0031" ref-type="bibr">
+<sup>31</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">Mouse</td><td align="left" valign="top" rowspan="1" colspan="1">DSS + anti‐CTLA‐4</td><td align="left" valign="top" rowspan="1" colspan="1">NA</td><td align="left" valign="top" rowspan="1" colspan="1">
+<list list-type="bullet" id="tca14626-list-0006"><list-item id="tca14626-li-0009"><p>
+<italic toggle="yes">Bifidobacterium</italic> mixture increased the abundance of <italic toggle="yes">Bifidobacterium</italic> as well <italic toggle="yes">Lactobacillus</italic>, <italic toggle="yes">Kosakonia</italic>, and <italic toggle="yes">Cronobacter</italic>.</p></list-item><list-item id="tca14626-li-0010"><p>Both <italic toggle="yes">Bifidobacterium breve</italic> and <italic toggle="yes">Lactobacillus rhamnosum</italic> improved weight loss, histopathological manifestation, and decreased serum inflammatory cytokines IL‐6, CSF3, and KC.</p></list-item></list>
+</td></tr><tr><td align="left" valign="top" rowspan="1" colspan="1">Wang et al.<xref rid="tca14626-bib-0029" ref-type="bibr">
+<sup>29</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">Mouse</td><td align="left" valign="top" rowspan="1" colspan="1">DSS + anti‐PD‐1 + anti‐CTLA‐4</td><td align="left" valign="top" rowspan="1" colspan="1">16 s rRNA</td><td align="left" valign="top" rowspan="1" colspan="1">
+<list list-type="bullet" id="tca14626-list-0007"><list-item id="tca14626-li-0011"><p>
+<italic toggle="yes">Lactobacillus reuteri</italic> decreased colitis severity on histopathological scoring and serum inflammatory cytokines KC, TNF‐α, IFN‐γ, and IL‐6.</p></list-item></list>
+</td></tr><tr><td rowspan="2" align="left" valign="top" colspan="1">FMT in refractory ICI‐related colitis</td><td align="left" valign="top" rowspan="1" colspan="1">Wang et al.<xref rid="tca14626-bib-0037" ref-type="bibr">
+<sup>37</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">Two patients with refractory ICI‐related colitis</td><td align="left" valign="top" rowspan="1" colspan="1">First patient: anti‐PD‐1 + anti‐CTLA‐4; second patient: anti‐CTLA‐4</td><td align="left" valign="top" rowspan="1" colspan="1">16 s rRNA</td><td align="left" valign="top" rowspan="1" colspan="1">
+<list list-type="bullet" id="tca14626-list-0008"><list-item id="tca14626-li-0012"><p>Both patients had complete resolution of clinical symptoms and marked improvement as observed by colonoscopy.</p></list-item><list-item id="tca14626-li-0013"><p>OTUs raised without observed trend in α‐diversity after FMT.</p><p>First patient: higher abundance of <italic toggle="yes">Akkermansia</italic> and <italic toggle="yes">Bifidobacterium</italic>; reduction in CD8<sup>+</sup> T cell density and increase in CD4<sup>+</sup> FoxP3<sup>+</sup> T cells after single dose of FMT.</p></list-item><list-item id="tca14626-li-0014"><p>Second patient: higher abundance of <italic toggle="yes">Blautia</italic>, <italic toggle="yes">Bifidobacterium</italic> species, and <italic toggle="yes">Bacteroides</italic>; lower abundance of <italic toggle="yes">Escherichia</italic> after FMT; decreased CD4<sup>+</sup>, CD8<sup>+</sup>, and FoxP3<sup>+</sup> T cells, while CD4<sup>+</sup> T cells were relatively spared compared with CD8<sup>+</sup> T cells after two doses of FMT.</p></list-item></list>
+</td></tr><tr><td align="left" valign="top" rowspan="1" colspan="1">Fasanello et al.<xref rid="tca14626-bib-0038" ref-type="bibr">
+<sup>38</sup>
+</xref>
+</td><td align="left" valign="top" rowspan="1" colspan="1">One patient with refractory ICI‐related colitis</td><td align="left" valign="top" rowspan="1" colspan="1">Anti‐PD‐1</td><td align="left" valign="top" rowspan="1" colspan="1">NA</td><td align="left" valign="top" rowspan="1" colspan="1">
+<list list-type="bullet" id="tca14626-list-0009"><list-item id="tca14626-li-0015"><p>Improvement in bowel movement frequency and abdominal pain, discharged on a steroid taper after single FMT.</p></list-item></list>
+</td></tr></tbody></table><table-wrap-foot id="tca14626-ntgp-0003"><fn id="tca14626-note-0003"><p>Abbreviations: CSF3, colony stimulating factor 3; CTLA‐4, cytotoxic T lymphocyte antigen‐4; DSS, dextran sulfate sodium; FMT, fecal microbiota transplantation; ICIs, immune checkpoint inhibitors; IFN‐γ, interferon‐γ; IL‐6, interleukin‐6; irAEs, immune‐related adverse events; KC, chemokines; OTUs, operational taxonomic units; PD‐1, programmed cell death‐1; TNF‐α, tumor necrosis factor‐α.</p></fn></table-wrap-foot></table-wrap></sec><sec id="tca14626-sec-0007"><title>Probiotics/prebiotics</title><p>Probiotics are living microorganisms that provide health benefits when consumed. Probiotics may contain a variety of bacteria, such as well‐known <italic toggle="yes">Lactobacillus</italic> and <italic toggle="yes">Bifidobacterium</italic>. With respect to irAEs, supplementing diets with specific probiotics has been shown to effectively reduce the risk of ICI‐related colitis in mice. Wang et al. first established the anti‐CTLA‐4 colitis mouse model, and, in this model, the colitis is aggravated after oral administration of vancomycin and the Gram‐positive component of the microbiota appears to have a mitigating effect. Indeed, supplementation with the widely used Gram‐positive probiotic <italic toggle="yes">Bifidobacterium</italic> significantly reduced colitis in this model without affecting the antitumor effect of ICIs. The protective effect of <italic toggle="yes">Bifidobacterium</italic> was abrogated in Treg‐knockout mice, suggesting that the protective role of <italic toggle="yes">Bifidobacteria</italic> on ICI‐related colitis depended on Tregs. Thus, modulating the abundance of specific gut microbiomes and the presence of Tregs may maximize the efficacy of immunotherapy and minimize the risk of irAEs. If applied to humans, this strategy to regulate the intestinal microbiota could be used to prevent and treat irAEs without diminishing the anticancer responses of ICIs.<xref rid="tca14626-bib-0028" ref-type="bibr">
+<sup>28</sup>
+</xref> Interestingly, a follow‐up study demonstrated that <italic toggle="yes">Bifidobacterium</italic> altered the composition of the gut microbiota by increasing the abundance of probiotic <italic toggle="yes">Lactobacillus</italic> and Treg cells. Both the metabolic and immune‐inhibitory functions of Tregs in the gut were intensified by probiotics and the adjusted commensal microbiota, thereby maintaining regional immune homeostasis after the application of CTLA‐4 inhibitor.<xref rid="tca14626-bib-0031" ref-type="bibr">
+<sup>31</sup>
+</xref> The result was also confirmed in a subsequent mouse experiment. Wang et al. found that the microbiota was altered after the establishment of ICI‐related colitis in mice, and principal component analysis showed an obvious reduction in the abundance of <italic toggle="yes">Lactobacillus</italic>. The ICI‐related colitis was augmented by oral administration of vancomycin and was associated with complete depletion of <italic toggle="yes">Lactobacillus</italic>. Finally, supplementation with the oral, widely available probiotic <italic toggle="yes">Lactobacillus reuteri</italic> eliminated the ICI‐related colitis. Mechanistically, the protective effect of <italic toggle="yes">Lactobacillus reuteri</italic> was associated with a decrease in the population of group 3 innate lymphocytes induced by ICI‐related colitis.<xref rid="tca14626-bib-0029" ref-type="bibr">
+<sup>29</sup>
+</xref> Conversely, Spencer et al. found that probiotic supplementation (<italic toggle="yes">Bifidobacterium longum</italic> or <italic toggle="yes">Lactobacillus rhamnosus</italic> GG) significantly decreased the frequency of interferon‐γ‐positive CD8<sup>+</sup> T cells in mice, suggesting an impaired antitumor response.<xref rid="tca14626-bib-0032" ref-type="bibr">
+<sup>32</sup>
+</xref> Hence, the multifaceted roles of probiotics in immunotherapy efficacy and irAE still require further investigation (Table <xref rid="tca14626-tbl-0002" ref-type="table">2</xref>, Figure <xref rid="tca14626-fig-0002" ref-type="fig">2c</xref>).</p><p>Prebiotics are various fibers that can be digested by gut commensals, and can be obtained from high‐fiber sources such as fruits, vegetables, nuts, and certain grains. Prebiotics promote proliferation of commensal bacteria and production of their metabolites such as SCFAs including propionate, acetate, butyrate, and succinate.<xref rid="tca14626-bib-0033" ref-type="bibr">
+<sup>33</sup>
+</xref> Prebiotics are generally accepted as a safe, noninvasive supplement to modulate the microbiota.<xref rid="tca14626-bib-0034" ref-type="bibr">
+<sup>34</sup>
+</xref> High intake of dietary fiber has been shown to be a beneficial supplement in patients taking ICIs, prolonging PFS in melanoma patients.<xref rid="tca14626-bib-0032" ref-type="bibr">
+<sup>32</sup>
+</xref> There is no direct research on the protective effect of prebiotics on irAEs. However, two studies have shown that SCFAs, as metabolites of gut bacteria, could promote the proliferation of colonic Tregs to exert immunomodulatory effects. Smith et al. demonstrated that the ability of SCFAs to induce colonic Treg proliferation in germ‐free mice depended on free fatty acid receptor 2.<xref rid="tca14626-bib-0035" ref-type="bibr">
+<sup>35</sup>
+</xref> Another study by Arpaia et al. showed that butyrate induced peripheral Treg proliferation.<xref rid="tca14626-bib-0036" ref-type="bibr">
+<sup>36</sup>
+</xref> These findings suggest that prebiotics might play a protective role in ICI‐related colitis by regulating Treg cells via SCFA production (Table <xref rid="tca14626-tbl-0002" ref-type="table">2</xref>, Figure <xref rid="tca14626-fig-0002" ref-type="fig">2c</xref>).</p></sec><sec id="tca14626-sec-0008"><title>Fecal microbiota transplantation (<styled-content style="fixed-case" toggle="no">FMT</styled-content>)</title><p>Therefore, the occurrence of ICI‐related colitis is related to the composition of the intestinal microbiota, and antibiotics or supplementation with specific probiotics can augment or reduce ICI‐related colitis. These data promoted the hypothesis that altering the intestinal microbiota by fecal transplantation could be a promising method to effectively treat irAEs, especially refractory irAEs resistant to glucocorticoids and biologics. FMT is a process in which stools from healthy donors (allo‐FMT) or previous stools from the same individual (auto‐FMT) are transplanted into the gastrointestinal tract of recipients to balance or restore gut microbial composition. FMT is already used to treat refractory <italic toggle="yes">Clostridium difficile</italic> colitis and IBD, which have similar manifestations and immune dysregulation to ICI‐related colitis.</p><p>In the first application of FMT in the ICI setting, Wang et al. reported two cases of refractory ICI‐related colitis which were successfully treated by FMT from healthy donors. The intestinal microbiota of the recipient was dynamically monitored, and it became most similar to the donor after the first FMT, after which it gradually returned to baseline. This result indicated that multiple FMTs might be needed to guarantee microbiota stability after FMT. Moreover, dynamic changes in T cell immunity were also monitored. FMT treatment significantly reduced the density of CD8<sup>+</sup> T cells by increasing Treg density in the colonic mucosa. In addition, beneficial <italic toggle="yes">Bifidobacterium</italic> and <italic toggle="yes">Akkermansia</italic> were also significantly enriched after FMT, perhaps playing a protective role in preventing colitis.<xref rid="tca14626-bib-0007" ref-type="bibr">
+<sup>7</sup>
+</xref>, <xref rid="tca14626-bib-0037" ref-type="bibr">
+<sup>37</sup>
+</xref> Fasanello et al. also reported that patients with refractory ICI‐related colitis resistant to corticosteroids and biologic therapy could achieve clinical and colonoscopic remission after FMT<xref rid="tca14626-bib-0038" ref-type="bibr">
+<sup>38</sup>
+</xref> (Table <xref rid="tca14626-tbl-0002" ref-type="table">2</xref>, Figure <xref rid="tca14626-fig-0002" ref-type="fig">2c</xref>).</p><p>As a result, the 2020 National Comprehensive Cancer Network (NCCN) guidelines included FMT as an optional treatment for immunosuppressant‐refractory colitis based on institutional availability and expertise.<xref rid="tca14626-bib-0039" ref-type="bibr">
+<sup>39</sup>
+</xref>
+</p></sec></sec><sec id="tca14626-sec-0009"><title>THE PROTECTIVE MECHANISM OF THE GUT MICROBIOTA IN <styled-content style="fixed-case" toggle="no">IRAES</styled-content>
+</title><sec id="tca14626-sec-0010"><title>Classic immune hypotheses about <styled-content style="fixed-case" toggle="no">irAE</styled-content> pathogenesis</title><p>Given the role of gut microbiota in mediating host immune responses, either microbiomes themselves or their metabolites may significantly mediate not only response but also toxicity to immunotherapy. To our knowledge, studies about the potential mechanisms underlying the relationship between the intestinal microbiota and irAEs are very limited. There are several classical hypotheses about irAE pathogenesis: (1) T cell attack: T cells stimulated by ICIs attack both tumor cells and healthy tissues due to similar antigenic epitopes<xref rid="tca14626-bib-0040" ref-type="bibr">
+<sup>40</sup>
+</xref>; (2) B cell and autoantibody involvement: T cell expansion induced by ICIs may over‐activate B cells to produce antibodies against self‐antigens, leading to tissue or organ damage; (3) cytokine release: the imbalance between proinflammatory cytokines (e.g., IL‐1, IL‐6, interferon‐γ [IFN‐γ]) and anti‐inflammatory cytokines (e.g., IL‐10 and transforming growth factor‐β [TGF‐β]) may lead to irAEs, where Th17 activation and IL‐17 secretion favor the Treg/Th17 axis; and (4) innate immunity involvement: neutrophil‐mediated inflammatory responses, a high level of circulating eosinophils, and an increased neutrophil/lymphocyte ratio are associated with irAE development<xref rid="tca14626-bib-0041" ref-type="bibr">
+<sup>41</sup>
+</xref> (Figure <xref rid="tca14626-fig-0001" ref-type="fig">1b</xref>).</p></sec><sec id="tca14626-sec-0011"><title>Gut microbiomes</title><p>In their preclinical study, Chaput et al. analyzed the correlation between baseline immune populations and microbiota composition. They demonstrated that patients who ultimately developed colitis had decreased baseline serum IL‐6, IL‐8, and soluble CD (sCD)‐25.<xref rid="tca14626-bib-0017" ref-type="bibr">
+<sup>17</sup>
+</xref> IL‐6 and IL‐8 are proinflammatory cytokines, and sCD‐25 plays an essential role in IL‐2 production and thereby the development of Tregs.<xref rid="tca14626-bib-0042" ref-type="bibr">
+<sup>42</sup>
+</xref> Patients belonging to the <italic toggle="yes">Faecalibacterium</italic>‐driven cluster had a low proportion of baseline Tregs (α4<sup>+</sup>β7<sup>+</sup>CD4<sup>+</sup>, α4<sup>+</sup>β7<sup>+</sup>CD8<sup>+</sup>) compared with the <italic toggle="yes">Bacteroides</italic>‐driven cluster.<xref rid="tca14626-bib-0018" ref-type="bibr">
+<sup>18</sup>
+</xref> In mouse experiments, <italic toggle="yes">Bifidobacterium</italic> altered the composition of the gut microbiota depending on the existence of Tregs. Moreover, this adjusted commensal microbiota improved both the metabolic function of mitochondria and the IL‐10–mediated inhibitory functions of intestinal Tregs, facilitating the amelioration of ICI‐related colitis. Interestingly, <italic toggle="yes">Bifidobacterium breve</italic> might be the key functional strain responsible for alleviating colitis, since there was a correlation between the abundance of <italic toggle="yes">Bifidobacterium</italic> and <italic toggle="yes">Lactobacillus</italic> at the genus level, and these two bacteria lead to decreased serum inflammatory cytokines IL‐6, colony stimulating factor 3, and chemokines. Thus, <italic toggle="yes">Bifidobacterium breve</italic> and <italic toggle="yes">Lactobacillus rhamnosum</italic> are potential key influencing bacteria to improve gastrointestinal adverse effects during ICI treatment.<xref rid="tca14626-bib-0031" ref-type="bibr">
+<sup>31</sup>
+</xref>
+<italic toggle="yes">Akkermansia muciniphila</italic> is currently the leading bacteria related to ICI efficacy, and it is also significantly reduced in IBD patients and mouse colitis models. Supplementation with <italic toggle="yes">Akkermansia muciniphila</italic> could improve colitis and reduce infiltrating macrophages and CD8<sup>+</sup> T cells in the colon<xref rid="tca14626-bib-0043" ref-type="bibr">
+<sup>43</sup>
+</xref> (Figure <xref rid="tca14626-fig-0001" ref-type="fig">1c</xref>).</p></sec><sec id="tca14626-sec-0012"><title>Gut microbiota metabolites</title><p>In addition to gut microbiomes, metabolites (e.g., SCFAs, polyamines, and microbial fragments such as polysaccharide A) can potentially induce or relieve irAEs. SCFAs, including acetic acid, butyric acid, and propionic acid, are primary metabolic end‐products of gut microbiota; the SCFA concentration in the gut depends on the host diet, especially fiber content. SCFAs not only acts as an energy source for the gut microbiota and intestinal epithelial cells but also affect host immunity and thereby irAEs after ICI therapy in cancer patients. In the blood, the interaction between peripheral blood mononuclear cells and SCFAs inactivates nuclear factor‐κB (NF‐κB) and inhibits the production of TNF‐α, which is a pro‐inflammatory cytokine.<xref rid="tca14626-bib-0044" ref-type="bibr">
+<sup>44</sup>
+</xref>, <xref rid="tca14626-bib-0045" ref-type="bibr">
+<sup>45</sup>
+</xref> The inhibition of histone deacetylases by SCFAs increases the expression of forkhead box P3 (Foxp3) and Treg numbers. In mice, Tao et al. found that enhanced Treg function mitigates colitis in mice.<xref rid="tca14626-bib-0046" ref-type="bibr">
+<sup>46</sup>
+</xref> Accordingly, microbe‐related SCFAs function as a suppressive factor against inflammation and therefore a potential mediator of irAEs. In addition, bacteria produce polyamines essential for host cell function and immunity, including spermine and spermidine. Zhang et al. found that spermine inhibits the proinflammatory macrophage phenotype without affecting the production of anti‐inflammatory TGF‐β and IL‐10. Consequently, a lack of polyamine production driven by dysbiosis may lead to over‐production of inflammatory cytokines and thereby the development of irAEs.</p><p>Finally, microbial components such as polysaccharide A also play an important role in host immunity and the development of irAEs. Polysaccharide A is secreted by <italic toggle="yes">Bacteroides fragilis</italic> in the colon and is recognized by TLR2 on dendritic cells, which activate CD4<sup>+</sup> T cells and CD25<sup>+</sup>Foxp3<sup>+</sup> Tregs to release IL‐10, which suppresses inflammation.<xref rid="tca14626-bib-0047" ref-type="bibr">
+<sup>47</sup>
+</xref>, <xref rid="tca14626-bib-0048" ref-type="bibr">
+<sup>48</sup>
+</xref> Collectively, microbial components and metabolites, including SCFAs, polysaccharide A, and polyamines, are anti‐inflammatory mediators that may suppress the development of irAEs by interacting with both innate and adaptive immune cells (Figure <xref rid="tca14626-fig-0001" ref-type="fig">1d</xref>).</p></sec></sec><sec sec-type="conclusions" id="tca14626-sec-0013"><title>CONCLUSIONS</title><p>The occurrence of IrAEs relies on the presence of the gut microbiota. Baseline gut microbiota composition is an important determinant of ICI‐related colitis, especially the proportion of <italic toggle="yes">Firmicutes</italic> and <italic toggle="yes">Bacteroidetes</italic>. After the onset of ICI‐related colitis, administering antibiotics is harmful, particularly those targeting anaerobic organisms. Supplementation with specific probiotics, e.g., <italic toggle="yes">Bifidobacterium</italic> and <italic toggle="yes">Lactobacillus</italic>, seems to reduce the severity of ICI‐related colitis in mice. FMT is emerging as an effective treatment for refractory ICI‐related colitis in the clinic. Our knowledge about the potential underlying mechanisms is still limited, but the microbiomes and their metabolites appear to play important roles by interacting with both innate and adaptive immune cells.</p></sec><sec sec-type="COI-statement" id="tca14626-sec-0015"><title>CONFLICT OF INTEREST</title><p>The authors declare that the research was conducted in the absence of any commercial or financial relationships that could be construed as a potential conflict of interest.</p></sec></body><back><ack id="tca14626-sec-0014"><title>ACKNOWLEDGMENTS</title><p>This work was supported by the Youth Program of National Natural Science Foundation of China (82000526, 81702292); and the General Program of Natural Science Foundation of Beijing Municipality (7192172). The authors are grateful to the BioRender software for aiding the creation of figures.</p></ack><ref-list id="tca14626-bibl-0001" content-type="cited-references"><title>REFERENCES</title><ref id="tca14626-bib-0001"><label>1</label><mixed-citation publication-type="journal" id="tca14626-cit-0001">
+<string-name name-style="western">
+<surname>Vaddepally</surname>
+<given-names>RK</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Kharel</surname>
+<given-names>P</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Pandey</surname>
+<given-names>R</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Garje</surname>
+<given-names>R</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Chandra</surname>
+<given-names>AB</given-names>
+</string-name>. <article-title>Review of indications of FDA‐approved immune checkpoint inhibitors per NCCN guidelines with the level of evidence</article-title>. <source>Cancers</source>. <year>2020</year>;<volume>12</volume>:<elocation-id>738</elocation-id>. <pub-id pub-id-type="doi">10.3390/cancers12030738</pub-id>
+<pub-id pub-id-type="pmcid">PMC7140028</pub-id><pub-id pub-id-type="pmid">32245016</pub-id></mixed-citation></ref><ref id="tca14626-bib-0002"><label>2</label><mixed-citation publication-type="journal" id="tca14626-cit-0002">
+<string-name name-style="western">
+<surname>Darvin</surname>
+<given-names>P</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Toor</surname>
+<given-names>SM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Sasidharan Nair</surname>
+<given-names>V</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Elkord</surname>
+<given-names>E</given-names>
+</string-name>. <article-title>Immune checkpoint inhibitors: recent progress and potential biomarkers</article-title>. <source>Exp Mol Med</source>. <year>2018</year>;<volume>50</volume>:<fpage>1</fpage>–<lpage>11</lpage>. <pub-id pub-id-type="doi">10.1038/212276-018-0191-1</pub-id>
+<pub-id pub-id-type="pmcid">PMC6292890</pub-id><pub-id pub-id-type="pmid">30546008</pub-id></mixed-citation></ref><ref id="tca14626-bib-0003"><label>3</label><mixed-citation publication-type="journal" id="tca14626-cit-0003">
+<string-name name-style="western">
+<surname>Das</surname>
+<given-names>S</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Johnson</surname>
+<given-names>DB</given-names>
+</string-name>. <article-title>Immune‐related irAE events and anti‐tumor efficacy of immune checkpoint inhibitors</article-title>. <source>J Immunother Cancer</source>. <year>2019</year>;<volume>7</volume>:<elocation-id>306</elocation-id>. <pub-id pub-id-type="doi">10.1186/240425-019-0805-8</pub-id>
+<pub-id pub-id-type="pmid">31730012</pub-id><pub-id pub-id-type="pmcid">PMC6858629</pub-id></mixed-citation></ref><ref id="tca14626-bib-0004"><label>4</label><mixed-citation publication-type="journal" id="tca14626-cit-0004">
+<string-name name-style="western">
+<surname>Abu‐Sbeih</surname>
+<given-names>H</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Ali</surname>
+<given-names>FS</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Qiao</surname>
+<given-names>W</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Lu</surname>
+<given-names>Y</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Patal</surname>
+<given-names>S</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Diab</surname>
+<given-names>A</given-names>
+</string-name>, et al. <article-title>Immune checkpoint inhibitor‐induced colitis as a predictor of survival in metastatic melanoma</article-title>. <source>Cancer Immunol Immunother</source>. <year>2019</year>;<volume>68</volume>:<fpage>553</fpage>–<lpage>61</lpage>. <pub-id pub-id-type="doi">10.1007/s00262-019-02303-1</pub-id>
+<pub-id pub-id-type="pmid">30666357</pub-id><pub-id pub-id-type="pmcid">PMC11028302</pub-id></mixed-citation></ref><ref id="tca14626-bib-0005"><label>5</label><mixed-citation publication-type="journal" id="tca14626-cit-0005">
+<string-name name-style="western">
+<surname>Matson</surname>
+<given-names>V</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Fessier</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Bao</surname>
+<given-names>R</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Chongsuwat</surname>
+<given-names>T</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Zha</surname>
+<given-names>Y</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Alegre</surname>
+<given-names>ML</given-names>
+</string-name>, et al. <article-title>The commensal microbiome is associated with anti‐PD‐1 efficacy in metastatic melanoma patients</article-title>. <source>Science</source>. <year>2018</year>;<volume>359</volume>:<fpage>104</fpage>–<lpage>8</lpage>. <pub-id pub-id-type="doi">10.1126/science.aao3290</pub-id>
+<pub-id pub-id-type="pmid">29302014</pub-id><pub-id pub-id-type="pmcid">PMC6707353</pub-id></mixed-citation></ref><ref id="tca14626-bib-0006"><label>6</label><mixed-citation publication-type="journal" id="tca14626-cit-0006">
+<string-name name-style="western">
+<surname>Gopalakrishnan</surname>
+<given-names>V</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Spencer</surname>
+<given-names>CN</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Nezi</surname>
+<given-names>L</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Reuben</surname>
+<given-names>A</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Andrews</surname>
+<given-names>MC</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Karpinets</surname>
+<given-names>TV</given-names>
+</string-name>, et al. <article-title>Gut microbiome modulates response to anti‐PD‐1 immunotherapy in melanoma patients</article-title>. <source>Science</source>. <year>2018</year>;<volume>359</volume>:<fpage>97</fpage>–<lpage>103</lpage>. <pub-id pub-id-type="doi">10.1126/science.aan4236</pub-id>
+<pub-id pub-id-type="pmid">29097493</pub-id><pub-id pub-id-type="pmcid">PMC5827966</pub-id></mixed-citation></ref><ref id="tca14626-bib-0007"><label>7</label><mixed-citation publication-type="journal" id="tca14626-cit-0007">
+<string-name name-style="western">
+<surname>Routy</surname>
+<given-names>B</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Le Chatelier</surname>
+<given-names>E</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Derosa</surname>
+<given-names>L</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Duong</surname>
+<given-names>CPM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Alou</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Daillere</surname>
+<given-names>R</given-names>
+</string-name>, et al. <article-title>Gut microbiome influences efficacy of PD‐1‐based immunotherapy against epithelial tumors</article-title>. <source>Science</source>. <year>2018</year>;<volume>359</volume>:<fpage>91</fpage>–<lpage>7</lpage>. <pub-id pub-id-type="doi">10.1126/science.aan3706</pub-id>
+<pub-id pub-id-type="pmid">29097494</pub-id></mixed-citation></ref><ref id="tca14626-bib-0008"><label>8</label><mixed-citation publication-type="journal" id="tca14626-cit-0008">
+<string-name name-style="western">
+<surname>Davar</surname>
+<given-names>D</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Dzutsev</surname>
+<given-names>AK</given-names>
+</string-name>, <string-name name-style="western">
+<surname>MuCulloch</surname>
+<given-names>JA</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Rodrigues</surname>
+<given-names>RR</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Chauvin</surname>
+<given-names>JM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Morrison</surname>
+<given-names>RM</given-names>
+</string-name>, et al. <article-title>Fecal microbiota transplant overcomes resistance to anti‐PD‐1 therapy in melanoma patients</article-title>. <source>Science</source>. <year>2021</year>;<volume>371</volume>:<fpage>595</fpage>–<lpage>602</lpage>. <pub-id pub-id-type="doi">10.1126/science.abf3363</pub-id>
+<pub-id pub-id-type="pmid">33542131</pub-id><pub-id pub-id-type="pmcid">PMC8097968</pub-id></mixed-citation></ref><ref id="tca14626-bib-0009"><label>9</label><mixed-citation publication-type="journal" id="tca14626-cit-0009">
+<string-name name-style="western">
+<surname>Baruch</surname>
+<given-names>EN</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Youngster</surname>
+<given-names>I</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Ben‐Betzalel</surname>
+<given-names>G</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Ortenberg</surname>
+<given-names>R</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Lahat</surname>
+<given-names>A</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Katz</surname>
+<given-names>L</given-names>
+</string-name>, et al. <article-title>Fecal microbiota transplant promotes response in immunotherapy‐refractory melanoma patients</article-title>. <source>Science</source>. <year>2021</year>;<volume>371</volume>:<fpage>602</fpage>–<lpage>9</lpage>. <pub-id pub-id-type="doi">10.1126/science.abb5920</pub-id>
+<pub-id pub-id-type="pmid">33303685</pub-id></mixed-citation></ref><ref id="tca14626-bib-0010"><label>10</label><mixed-citation publication-type="journal" id="tca14626-cit-0010">
+<string-name name-style="western">
+<surname>Zhou</surname>
+<given-names>Y</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Liu</surname>
+<given-names>Z</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Chen</surname>
+<given-names>T</given-names>
+</string-name>. <article-title>Gut microbiota: a promising milestone in enhancing the efficacy of PD1/PD‐L1 blockade therapy</article-title>. <source>Front Oncol</source>. <year>2022</year>;<volume>12</volume>:<elocation-id>847350</elocation-id>. <pub-id pub-id-type="doi">10.3389/fonc.2022.847350</pub-id>.<pub-id pub-id-type="pmid">35252014</pub-id><pub-id pub-id-type="pmcid">PMC8890472</pub-id></mixed-citation></ref><ref id="tca14626-bib-0011"><label>11</label><mixed-citation publication-type="journal" id="tca14626-cit-0011">
+<collab collab-type="authors">Human Microbiome Project Consortium</collab>
+. <article-title>Structure, function and diversity of the healthy human microbiome</article-title>. <source>Nature</source>. <year>2012</year>;<volume>486</volume>:<fpage>207</fpage>–<lpage>14</lpage>. <pub-id pub-id-type="doi">10.1038/nature11234</pub-id>
+<pub-id pub-id-type="pmid">22699609</pub-id><pub-id pub-id-type="pmcid">PMC3564958</pub-id></mixed-citation></ref><ref id="tca14626-bib-0012"><label>12</label><mixed-citation publication-type="journal" id="tca14626-cit-0012">
+<string-name name-style="western">
+<surname>Lozupone</surname>
+<given-names>CA</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Stombaugh</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Gordon</surname>
+<given-names>J</given-names>
+</string-name>, et al. <article-title>Diversity, stability and resilience of the human gut microbiota</article-title>. <source>Nature</source>. <year>2012</year>;<volume>489</volume>:<fpage>220</fpage>–<lpage>30</lpage>. <pub-id pub-id-type="doi">10.1038/nature11550</pub-id>
+<pub-id pub-id-type="pmid">22972295</pub-id><pub-id pub-id-type="pmcid">PMC3577372</pub-id></mixed-citation></ref><ref id="tca14626-bib-0013"><label>13</label><mixed-citation publication-type="journal" id="tca14626-cit-0013">
+<string-name name-style="western">
+<surname>Lloyd‐Price</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Mahurkar</surname>
+<given-names>A</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Rahnavard</surname>
+<given-names>G</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Crabtree</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Orvis</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Hall</surname>
+<given-names>AB</given-names>
+</string-name>, et al. <article-title>Strains, functions and dynamics in the expanded human microbiome project</article-title>. <source>Nature</source>. <year>2017</year>;<volume>550</volume>:<fpage>61</fpage>–<lpage>6</lpage>. <pub-id pub-id-type="doi">10.1038/nature23889</pub-id>
+<pub-id pub-id-type="pmid">28953883</pub-id><pub-id pub-id-type="pmcid">PMC5831082</pub-id></mixed-citation></ref><ref id="tca14626-bib-0014"><label>14</label><mixed-citation publication-type="journal" id="tca14626-cit-0014">
+<string-name name-style="western">
+<surname>Honda</surname>
+<given-names>K</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Littman</surname>
+<given-names>DR</given-names>
+</string-name>. <article-title>The microbiota in adaptive immune homeostasis and disease</article-title>. <source>Nature</source>. <year>2016</year>;<volume>535</volume>:<fpage>75</fpage>–<lpage>84</lpage>. <pub-id pub-id-type="doi">10.1038/nature18848</pub-id>
+<pub-id pub-id-type="pmid">27383982</pub-id></mixed-citation></ref><ref id="tca14626-bib-0015"><label>15</label><mixed-citation publication-type="journal" id="tca14626-cit-0015">
+<string-name name-style="western">
+<surname>Lathrop</surname>
+<given-names>SK</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Bloom</surname>
+<given-names>SM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Rao</surname>
+<given-names>SM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Nutsch</surname>
+<given-names>K</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Lio</surname>
+<given-names>CW</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Santacruz</surname>
+<given-names>N</given-names>
+</string-name>, et al. <article-title>Peripheral education of the immune system by colonic commensal microbiota</article-title>. <source>Nature</source>. <year>2011</year>;<volume>478</volume>:<fpage>250</fpage>–<lpage>4</lpage>. <pub-id pub-id-type="doi">10.1038/nature10434</pub-id>
+<pub-id pub-id-type="pmid">21937990</pub-id><pub-id pub-id-type="pmcid">PMC3192908</pub-id></mixed-citation></ref><ref id="tca14626-bib-0016"><label>16</label><mixed-citation publication-type="journal" id="tca14626-cit-0016">
+<string-name name-style="western">
+<surname>Xu</surname>
+<given-names>HM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Zhou</surname>
+<given-names>YL</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Xu</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Li</surname>
+<given-names>YF</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Zhao</surname>
+<given-names>C</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Huang</surname>
+<given-names>HL</given-names>
+</string-name>, et al. <article-title>Inhibition of PD‐1 protects against TNBS‐induced colitis via alteration of enteric microbiota</article-title>. <source>Biomed Res Int</source>. <year>2021</year>;<volume>2021</volume>:<elocation-id>4192451</elocation-id>. <pub-id pub-id-type="doi">10.1155/2021/4182451</pub-id>
+<pub-id pub-id-type="pmid">33506015</pub-id><pub-id pub-id-type="pmcid">PMC7810563</pub-id></mixed-citation></ref><ref id="tca14626-bib-0017"><label>17</label><mixed-citation publication-type="journal" id="tca14626-cit-0017">
+<string-name name-style="western">
+<surname>Vetizou</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Pitt</surname>
+<given-names>JM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Daillere</surname>
+<given-names>R</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Lepage</surname>
+<given-names>P</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Waldschmitt</surname>
+<given-names>N</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Flament</surname>
+<given-names>C</given-names>
+</string-name>, et al. <article-title>Anticancer immunotherapy by CTLA‐4 blockade relies on the gut microbiota</article-title>. <source>Science</source>. <year>2015</year>;<volume>350</volume>:<fpage>1079</fpage>–<lpage>84</lpage>. <pub-id pub-id-type="doi">10.1126/science.aad1329</pub-id>
+<pub-id pub-id-type="pmid">26541610</pub-id><pub-id pub-id-type="pmcid">PMC4721659</pub-id></mixed-citation></ref><ref id="tca14626-bib-0018"><label>18</label><mixed-citation publication-type="journal" id="tca14626-cit-0018">
+<string-name name-style="western">
+<surname>Chaput</surname>
+<given-names>N</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Lepage</surname>
+<given-names>P</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Coutzac</surname>
+<given-names>C</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Soularue</surname>
+<given-names>E</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Roux</surname>
+<given-names>KL</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Monot</surname>
+<given-names>C</given-names>
+</string-name>, et al. <article-title>Baseline gut microbiota predicts clinical response and colitis in metastatic melanoma patients treated with ipilimumab</article-title>. <source>Ann Oncol</source>. <year>2017</year>;<volume>28</volume>:<fpage>1368</fpage>–<lpage>79</lpage>. <pub-id pub-id-type="doi">10.1093/annonc/mdx108</pub-id>
+<pub-id pub-id-type="pmid">28368458</pub-id></mixed-citation></ref><ref id="tca14626-bib-0019"><label>19</label><mixed-citation publication-type="journal" id="tca14626-cit-0019">
+<string-name name-style="western">
+<surname>Huang</surname>
+<given-names>C</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Li</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Liu</surname>
+<given-names>B</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Zhu</surname>
+<given-names>H</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Dai</surname>
+<given-names>Q</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Fan</surname>
+<given-names>X</given-names>
+</string-name>, et al. <article-title>Relating gut microbiome and its modulating factors to immunotherapy in solid tumors: a systematic review</article-title>. <source>Front Oncol</source>. <year>2021</year>;<volume>11</volume>:<elocation-id>642110</elocation-id>. <pub-id pub-id-type="doi">10.3389/fonc.2021.642110</pub-id>
+<pub-id pub-id-type="pmid">33816289</pub-id><pub-id pub-id-type="pmcid">PMC8012896</pub-id></mixed-citation></ref><ref id="tca14626-bib-0020"><label>20</label><mixed-citation publication-type="journal" id="tca14626-cit-0020">
+<string-name name-style="western">
+<surname>Chau</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Yadav</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Liu</surname>
+<given-names>B</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Furqan</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Dai</surname>
+<given-names>Q</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Shahi</surname>
+<given-names>S</given-names>
+</string-name>, et al. <article-title>Prospective correlation between the patient microbiome with response to and development of immune‐mediated adverse effects to immunotherapy in lung cancer</article-title>. <source>BMC Cancer</source>. <year>2021</year>;<volume>21</volume>:<elocation-id>808</elocation-id>. <pub-id pub-id-type="doi">10.1186/s12885-021-08530-z</pub-id>
+<pub-id pub-id-type="pmid">34256732</pub-id><pub-id pub-id-type="pmcid">PMC8278634</pub-id></mixed-citation></ref><ref id="tca14626-bib-0021"><label>21</label><mixed-citation publication-type="journal" id="tca14626-cit-0021">
+<string-name name-style="western">
+<surname>Pierrard</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Seront</surname>
+<given-names>E</given-names>
+</string-name>. <article-title>Impact of the gut microbiome on immune checkpoint inhibitor efficacy‐a systematic review</article-title>. <source>Curr Oncol</source>. <year>2019</year>;<volume>26</volume>:<fpage>395</fpage>–<lpage>403</lpage>. <pub-id pub-id-type="doi">10.3747/co.26.5177</pub-id>
+<pub-id pub-id-type="pmid">31896938</pub-id><pub-id pub-id-type="pmcid">PMC6927774</pub-id></mixed-citation></ref><ref id="tca14626-bib-0022"><label>22</label><mixed-citation publication-type="journal" id="tca14626-cit-0022">
+<string-name name-style="western">
+<surname>Andrews</surname>
+<given-names>MC</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Duong</surname>
+<given-names>CPM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Gopalakrishnan</surname>
+<given-names>V</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Iebba</surname>
+<given-names>V</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Chen</surname>
+<given-names>WS</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Derosa</surname>
+<given-names>L</given-names>
+</string-name>, et al. <article-title>Gut microbiota signatures are associated with toxicity to combined CTLA‐4 and PD‐1 blockade</article-title>. <source>Nat Med</source>. <year>2021</year>;<volume>27</volume>:<fpage>1432</fpage>–<lpage>41</lpage>. <pub-id pub-id-type="doi">10.1038/s41591-021-01406</pub-id>
+<pub-id pub-id-type="pmid">34239137</pub-id><pub-id pub-id-type="pmcid">PMC11107795</pub-id></mixed-citation></ref><ref id="tca14626-bib-0023"><label>23</label><mixed-citation publication-type="journal" id="tca14626-cit-0023">
+<string-name name-style="western">
+<surname>Dubin</surname>
+<given-names>K</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Callahan</surname>
+<given-names>MK</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Ren</surname>
+<given-names>B</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Khanin</surname>
+<given-names>R</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Viale</surname>
+<given-names>A</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Ling</surname>
+<given-names>L</given-names>
+</string-name>, et al. <article-title>Intestinal microbiome analyses identify melanoma patients at risk for checkpoint‐blockade‐induced colitis</article-title>. <source>Nat Commun</source>. <year>2016</year>;<volume>7</volume>:<elocation-id>10391</elocation-id>. <pub-id pub-id-type="doi">10.1038/ncomms10391</pub-id>
+<pub-id pub-id-type="pmid">26837003</pub-id><pub-id pub-id-type="pmcid">PMC4740747</pub-id></mixed-citation></ref><ref id="tca14626-bib-0024"><label>24</label><mixed-citation publication-type="journal" id="tca14626-cit-0024">
+<string-name name-style="western">
+<surname>Liu</surname>
+<given-names>T</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Xiong</surname>
+<given-names>Q</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Li</surname>
+<given-names>L</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Hu</surname>
+<given-names>Y</given-names>
+</string-name>. <article-title>Intestinal microbiota predicts lung cancer patients at risk of immune‐related diarrhea</article-title>. <source>Immunotherapy</source>. <year>2019</year>;<volume>11</volume>:<fpage>385</fpage>–<lpage>96</lpage>. <pub-id pub-id-type="doi">10.2217/imt-2018-0144</pub-id>
+<pub-id pub-id-type="pmid">30693820</pub-id></mixed-citation></ref><ref id="tca14626-bib-0025"><label>25</label><mixed-citation publication-type="journal" id="tca14626-cit-0025">
+<string-name name-style="western">
+<surname>Sakai</surname>
+<given-names>K</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Sakurai</surname>
+<given-names>T</given-names>
+</string-name>, <string-name name-style="western">
+<surname>De Velasco</surname>
+<given-names>MA</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Nagai</surname>
+<given-names>T</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Chikugo</surname>
+<given-names>T</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Ueshima</surname>
+<given-names>K</given-names>
+</string-name>, et al. <article-title>Intestinal microbiota and gene expression reveal similarity and dissimilarity between immune‐mediated colitis and ulcerative colitis</article-title>. <source>Front Oncol</source>. <year>2021</year>;<volume>11</volume>:<elocation-id>763468</elocation-id>. <pub-id pub-id-type="doi">10.3389/fonc.2021.763468</pub-id>
+<pub-id pub-id-type="pmid">34778085</pub-id><pub-id pub-id-type="pmcid">PMC8578892</pub-id></mixed-citation></ref><ref id="tca14626-bib-0026"><label>26</label><mixed-citation publication-type="journal" id="tca14626-cit-0026">
+<string-name name-style="western">
+<surname>McCulloch</surname>
+<given-names>JA</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Davar</surname>
+<given-names>D</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Rodrigues</surname>
+<given-names>RR</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Badger</surname>
+<given-names>JH</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Fang</surname>
+<given-names>JR</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Cole</surname>
+<given-names>AM</given-names>
+</string-name>, et al. <article-title>Intestinal microbiota signatures of clinical response and immune‐related adverse events in melanoma patients treated with anti‐PD‐1</article-title>. <source>Nat Med</source>. <year>2022</year>;<volume>28</volume>:<fpage>545</fpage>–<lpage>56</lpage>. <pub-id pub-id-type="doi">10.1038/s41591-022-01698-2</pub-id>
+<pub-id pub-id-type="pmid">35228752</pub-id><pub-id pub-id-type="pmcid">PMC10246505</pub-id></mixed-citation></ref><ref id="tca14626-bib-0027"><label>27</label><mixed-citation publication-type="journal" id="tca14626-cit-0027">
+<string-name name-style="western">
+<surname>Abu‐Sbeih</surname>
+<given-names>H</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Herrera</surname>
+<given-names>LN</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Tang</surname>
+<given-names>T</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Altan</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Chaftari</surname>
+<given-names>AMP</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Okhuysen</surname>
+<given-names>PC</given-names>
+</string-name>, et al. <article-title>Impact of antibiotic therapy on the development and response to treatment of immune checkpoint inhibitor‐mediated diarrhea and colitis</article-title>. <source>J Immunother Cancer</source>. <year>2019</year>;<volume>7</volume>:<elocation-id>242</elocation-id>. <pub-id pub-id-type="doi">10.1186/s40425-019-0714-x</pub-id>
+<pub-id pub-id-type="pmid">31488205</pub-id><pub-id pub-id-type="pmcid">PMC6729015</pub-id></mixed-citation></ref><ref id="tca14626-bib-0028"><label>28</label><mixed-citation publication-type="journal" id="tca14626-cit-0028">
+<string-name name-style="western">
+<surname>Wang</surname>
+<given-names>F</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Yin</surname>
+<given-names>Q</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Chen</surname>
+<given-names>L</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Davis</surname>
+<given-names>MM</given-names>
+</string-name>, et al. <article-title>Bifidobacterium can mitigate intestinal immunopathology in the context of CTLA‐4 blockade</article-title>. <source>Proc Natl Acad Sci U S A</source>. <year>2018</year>;<volume>115</volume>:<fpage>157</fpage>–<lpage>61</lpage>. <pub-id pub-id-type="doi">10.1073/pnas.1712901115</pub-id>
+<pub-id pub-id-type="pmid">29255057</pub-id><pub-id pub-id-type="pmcid">PMC5776803</pub-id></mixed-citation></ref><ref id="tca14626-bib-0029"><label>29</label><mixed-citation publication-type="journal" id="tca14626-cit-0029">
+<string-name name-style="western">
+<surname>Wang</surname>
+<given-names>T</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Zheng</surname>
+<given-names>N</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Luo</surname>
+<given-names>Q</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Jiang</surname>
+<given-names>L</given-names>
+</string-name>, <string-name name-style="western">
+<surname>He</surname>
+<given-names>B</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Yuan</surname>
+<given-names>X</given-names>
+</string-name>, et al. <article-title>Probiotics Lactobacillus reuteri abrogates immune checkpoint blockade‐associated colitis by inhibiting group 3 innate lymphoid cells</article-title>. <source>Front Immunol</source>. <year>2019</year>;<volume>10</volume>:<elocation-id>1235</elocation-id>. <pub-id pub-id-type="doi">10.3389/fimmu.2019.01235</pub-id>
+<pub-id pub-id-type="pmid">31214189</pub-id><pub-id pub-id-type="pmcid">PMC6558076</pub-id></mixed-citation></ref><ref id="tca14626-bib-0030"><label>30</label><mixed-citation publication-type="journal" id="tca14626-cit-0030">
+<string-name name-style="western">
+<surname>Kostine</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Mauric</surname>
+<given-names>E</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Tison</surname>
+<given-names>A</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Barnetche</surname>
+<given-names>T</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Barre</surname>
+<given-names>A</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Nikolski</surname>
+<given-names>M</given-names>
+</string-name>, et al. <article-title>Baseline co‐medications may alter the anti‐tumoural effect of checkpoint inhibitors as well as the risk of immune‐related adverse events</article-title>. <source>Eur J Cancer</source>. <year>2021</year>;<volume>157</volume>:<fpage>474</fpage>–<lpage>84</lpage>. <pub-id pub-id-type="doi">10.1016/j.ejca.2021.08.036</pub-id>
+<pub-id pub-id-type="pmid">34649118</pub-id></mixed-citation></ref><ref id="tca14626-bib-0031"><label>31</label><mixed-citation publication-type="journal" id="tca14626-cit-0031">
+<string-name name-style="western">
+<surname>Sun</surname>
+<given-names>S</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Luo</surname>
+<given-names>L</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Liang</surname>
+<given-names>W</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Yin</surname>
+<given-names>Q</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Cuo</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Rush</surname>
+<given-names>AM</given-names>
+</string-name>, et al. <article-title>Bifidobacterium alters the gut microbiota and modulates the functional metabolism of T regulatory cells in the context of immune checkpoint blockade</article-title>. <source>Proc Natl Acad Sci U S A</source>. <year>2020</year>;<volume>117</volume>:<fpage>27509</fpage>–<lpage>15</lpage>. <pub-id pub-id-type="doi">10.1073/pnas.1921223117</pub-id>
+<pub-id pub-id-type="pmid">33077598</pub-id><pub-id pub-id-type="pmcid">PMC7959554</pub-id></mixed-citation></ref><ref id="tca14626-bib-0032"><label>32</label><mixed-citation publication-type="journal" id="tca14626-cit-0032">
+<string-name name-style="western">
+<surname>Spencer</surname>
+<given-names>CN</given-names>
+</string-name>, <string-name name-style="western">
+<surname>McQuade</surname>
+<given-names>JL</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Gopalakrishnan</surname>
+<given-names>V</given-names>
+</string-name>, <string-name name-style="western">
+<surname>McCulloch</surname>
+<given-names>JA</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Vetizou</surname>
+<given-names>M</given-names>
+</string-name>, et al. <article-title>Dietary fiber and probiotics influence the gut microbiome and melanoma immunotherapy response</article-title>. <source>Science</source>. <year>2021</year>;<volume>374</volume>:<fpage>1632</fpage>–<lpage>40</lpage>. <pub-id pub-id-type="doi">10.1126/science.aaz7015</pub-id>
+<pub-id pub-id-type="pmid">34941392</pub-id><pub-id pub-id-type="pmcid">PMC8970537</pub-id></mixed-citation></ref><ref id="tca14626-bib-0033"><label>33</label><mixed-citation publication-type="journal" id="tca14626-cit-0033">
+<string-name name-style="western">
+<surname>Jacobson</surname>
+<given-names>A</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Lam</surname>
+<given-names>L</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Rajendram</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Tamburini</surname>
+<given-names>F</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Honeycutt</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Pham</surname>
+<given-names>T</given-names>
+</string-name>, et al. <article-title>A gut commensal‐produced metabolite mediates colonization resistance to salmonella infection</article-title>. <source>Cell Host Microbe</source>. <year>2018</year>;<volume>24</volume>:<fpage>296</fpage>–<lpage>307.e7</lpage>. <pub-id pub-id-type="doi">10.1016/j.chom.2018.07.002</pub-id>
+<pub-id pub-id-type="pmid">30057174</pub-id><pub-id pub-id-type="pmcid">PMC6223613</pub-id></mixed-citation></ref><ref id="tca14626-bib-0034"><label>34</label><mixed-citation publication-type="journal" id="tca14626-cit-0034">
+<string-name name-style="western">
+<surname>Schwartz</surname>
+<given-names>DJ</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Rebeck</surname>
+<given-names>ON</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Dantas</surname>
+<given-names>G</given-names>
+</string-name>. <article-title>Complex interactions between the microbiome and cancer immune therapy</article-title>. <source>Crit Rev Clin Lab Sci</source>. <year>2019</year>;<volume>56</volume>:<fpage>567</fpage>–<lpage>85</lpage>. <pub-id pub-id-type="doi">10.1080/10408363.2019.1660303</pub-id>
+<pub-id pub-id-type="pmid">31526274</pub-id><pub-id pub-id-type="pmcid">PMC6776419</pub-id></mixed-citation></ref><ref id="tca14626-bib-0035"><label>35</label><mixed-citation publication-type="journal" id="tca14626-cit-0035">
+<string-name name-style="western">
+<surname>Smith</surname>
+<given-names>PM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Howitt</surname>
+<given-names>MR</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Panikov</surname>
+<given-names>N</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Michaud</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Gallini</surname>
+<given-names>CA</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Bohlooly‐Y</surname>
+<given-names>M</given-names>
+</string-name>, et al. <article-title>The microbial metabolites, short‐chain fatty acids, regulate colonic Treg cell homeostasis</article-title>. <source>Science</source>. <year>2013</year>;<volume>341</volume>(<issue>6145</issue>):<fpage>569</fpage>–<lpage>73</lpage>. <pub-id pub-id-type="doi">10.1126/science.1241165</pub-id>
+<pub-id pub-id-type="pmid">23828891</pub-id><pub-id pub-id-type="pmcid">PMC3807819</pub-id></mixed-citation></ref><ref id="tca14626-bib-0036"><label>36</label><mixed-citation publication-type="journal" id="tca14626-cit-0036">
+<string-name name-style="western">
+<surname>Arpaia</surname>
+<given-names>N</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Campbell</surname>
+<given-names>C</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Fan</surname>
+<given-names>X</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Dikiy</surname>
+<given-names>S</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Veeken</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>deRoos</surname>
+<given-names>P</given-names>
+</string-name>, et al. <article-title>Metabolites produced by commensal bacteria promote peripheral regulatory T‐cell generation</article-title>. <source>Nature</source>. <year>2013</year>;<volume>504</volume>:<fpage>451</fpage>–<lpage>5</lpage>. <pub-id pub-id-type="doi">10.1038/nature12726</pub-id>
+<pub-id pub-id-type="pmid">24226773</pub-id><pub-id pub-id-type="pmcid">PMC3869884</pub-id></mixed-citation></ref><ref id="tca14626-bib-0037"><label>37</label><mixed-citation publication-type="journal" id="tca14626-cit-0037">
+<string-name name-style="western">
+<surname>Wang</surname>
+<given-names>Y</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Wiesnoski</surname>
+<given-names>DH</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Helmink</surname>
+<given-names>BA</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Gopalakrishnan</surname>
+<given-names>V</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Choi</surname>
+<given-names>K</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Dupont</surname>
+<given-names>HL</given-names>
+</string-name>, et al. <article-title>Fecal microbiota transplantation for refractory immune checkpoint inhibitor‐associated colitis</article-title>. <source>Nat Med</source>. <year>2018</year>;<volume>24</volume>:<fpage>1804</fpage>–<lpage>8</lpage>. <pub-id pub-id-type="doi">10.1038/s41591-018-0238-9</pub-id>
+<pub-id pub-id-type="pmid">30420754</pub-id><pub-id pub-id-type="pmcid">PMC6322556</pub-id></mixed-citation></ref><ref id="tca14626-bib-0038"><label>38</label><mixed-citation publication-type="journal" id="tca14626-cit-0038">
+<string-name name-style="western">
+<surname>Fasanello</surname>
+<given-names>MK</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Robillard</surname>
+<given-names>KT</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Boland</surname>
+<given-names>PM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Bain</surname>
+<given-names>AJ</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Kanehira</surname>
+<given-names>K</given-names>
+</string-name>. <article-title>Use of fecal microbial transplantation for immune checkpoint inhibitor colitis</article-title>. <source>ACG Case Rep J</source>. <year>2020</year>;<volume>7</volume>:<elocation-id>e00360</elocation-id>. <pub-id pub-id-type="doi">10.14309/crj.0000000000000360</pub-id>
+<pub-id pub-id-type="pmid">32548190</pub-id><pub-id pub-id-type="pmcid">PMC7224717</pub-id></mixed-citation></ref><ref id="tca14626-bib-0039"><label>39</label><mixed-citation publication-type="journal" id="tca14626-cit-0039">
+<string-name name-style="western">
+<surname>Thompson</surname>
+<given-names>JA</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Schneider</surname>
+<given-names>BJ</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Brahmer</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Andrews</surname>
+<given-names>S</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Armand</surname>
+<given-names>P</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Bhatia</surname>
+<given-names>S</given-names>
+</string-name>, et al. <article-title>NCCN guidelines insights: management of immunotherapy‐related toxicities, version 1.2020</article-title>. <source>J Natl Compr Cancer Network</source>. <year>2020</year>;<volume>18</volume>:<fpage>230</fpage>–<lpage>41</lpage>.<pub-id pub-id-type="doi" assigning-authority="pmc">10.6004/jnccn.2020.0012</pub-id><pub-id pub-id-type="pmid">32135517</pub-id></mixed-citation></ref><ref id="tca14626-bib-0040"><label>40</label><mixed-citation publication-type="journal" id="tca14626-cit-0040">
+<string-name name-style="western">
+<surname>Snyder</surname>
+<given-names>A</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Makarov</surname>
+<given-names>V</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Merghoub</surname>
+<given-names>T</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Yuan</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Zaretsky</surname>
+<given-names>JM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Desrichard</surname>
+<given-names>A</given-names>
+</string-name>, et al. <article-title>Genetic basis for clinical response to CTLA‐4 blockade in melanoma</article-title>. <source>N Engl J Med</source>. <year>2014</year>;<volume>371</volume>:<fpage>2189</fpage>–<lpage>99</lpage>. <pub-id pub-id-type="doi">10.1056/NEJMoa1406498</pub-id>
+<pub-id pub-id-type="pmid">25409260</pub-id><pub-id pub-id-type="pmcid">PMC4315319</pub-id></mixed-citation></ref><ref id="tca14626-bib-0041"><label>41</label><mixed-citation publication-type="journal" id="tca14626-cit-0041">
+<string-name name-style="western">
+<surname>Drobni</surname>
+<given-names>ZD</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Zafar</surname>
+<given-names>A</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Zubiri</surname>
+<given-names>L</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Zlotoff</surname>
+<given-names>DA</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Alvi</surname>
+<given-names>MR</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Lee</surname>
+<given-names>C</given-names>
+</string-name>, et al. <article-title>Decreased absolute lymphocyte count and increased neutrophil/lymphocyte ratio with immune checkpoint inhibitor‐associated myocarditis</article-title>. <source>J Am Heart Assoc</source>. <year>2020</year>;<volume>9</volume>:<elocation-id>e018306</elocation-id>.<pub-id pub-id-type="pmid">33190570</pub-id><pub-id pub-id-type="doi" assigning-authority="pmc">10.1161/JAHA.120.018306</pub-id><pub-id pub-id-type="pmcid">PMC7763791</pub-id></mixed-citation></ref><ref id="tca14626-bib-0042"><label>42</label><mixed-citation publication-type="journal" id="tca14626-cit-0042">
+<string-name name-style="western">
+<surname>Bell</surname>
+<given-names>CJ</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Sun</surname>
+<given-names>Y</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Nowak</surname>
+<given-names>UM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Clark</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Howlett</surname>
+<given-names>S</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Pekalski</surname>
+<given-names>ML</given-names>
+</string-name>, et al. <article-title>Sustained in vivo signaling by long‐lived IL‐2 induces prolonged increases of regulatory T cells</article-title>. <source>J Autoimmun</source>. <year>2015</year>;<volume>56</volume>:<fpage>66</fpage>–<lpage>80</lpage>. <pub-id pub-id-type="doi">10.1016/j.haut.2014.10.002</pub-id>
+<pub-id pub-id-type="pmid">25457307</pub-id><pub-id pub-id-type="pmcid">PMC4298360</pub-id></mixed-citation></ref><ref id="tca14626-bib-0043"><label>43</label><mixed-citation publication-type="journal" id="tca14626-cit-0043">
+<string-name name-style="western">
+<surname>Wang</surname>
+<given-names>L</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Tang</surname>
+<given-names>L</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Feng</surname>
+<given-names>Y</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Zhao</surname>
+<given-names>SY</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Han</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Zhang</surname>
+<given-names>C</given-names>
+</string-name>, et al. <article-title>A purified membrane protein from Akkermansia muciniphila or the pasteurised bacterium blunts colitis associated tumourgenesis by modulation of CD8<sup>+</sup> T cells in mice</article-title>. <source>Gut</source>. <year>2020</year>;<volume>69</volume>:<fpage>1988</fpage>–<lpage>97</lpage>.<pub-id pub-id-type="pmid">32169907</pub-id><pub-id pub-id-type="doi" assigning-authority="pmc">10.1136/gutjnl-2019-320105</pub-id><pub-id pub-id-type="pmcid">PMC7569398</pub-id></mixed-citation></ref><ref id="tca14626-bib-0044"><label>44</label><mixed-citation publication-type="journal" id="tca14626-cit-0044">
+<string-name name-style="western">
+<surname>Usami</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Kishimoto</surname>
+<given-names>K</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Ohata</surname>
+<given-names>A</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Miyoshi</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Aoyama</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Fueda</surname>
+<given-names>Y</given-names>
+</string-name>, et al. <article-title>Butyrate and trichostatin a attenuate nuclear factorκB activation and tumor necrosis factor α secretion and increase prostaglandin E2 secretion in human peripheral blood mononuclear cells</article-title>. <source>Nutr Res</source>. <year>2008</year>;<volume>28</volume>:<fpage>321</fpage>–<lpage>8</lpage>. <pub-id pub-id-type="doi">10.1016/j.nutres.2008.02.012</pub-id>
+<pub-id pub-id-type="pmid">19083427</pub-id></mixed-citation></ref><ref id="tca14626-bib-0045"><label>45</label><mixed-citation publication-type="journal" id="tca14626-cit-0045">
+<string-name name-style="western">
+<surname>Vinolo</surname>
+<given-names>MA</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Rodrigues</surname>
+<given-names>HG</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Hatanaka</surname>
+<given-names>E</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Sato</surname>
+<given-names>FT</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Sampaio</surname>
+<given-names>SC</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Curi</surname>
+<given-names>R</given-names>
+</string-name>. <article-title>Suppressive effect of short‐chain fatty acids on production of proinflammatory mediators by neutrophils</article-title>. <source>J Nutr Biochem</source>. <year>2011</year>;<volume>22</volume>:<fpage>849</fpage>–<lpage>55</lpage>. <pub-id pub-id-type="doi">10.1016/j.jnutbio.2010.07.009</pub-id>
+<pub-id pub-id-type="pmid">21167700</pub-id></mixed-citation></ref><ref id="tca14626-bib-0046"><label>46</label><mixed-citation publication-type="journal" id="tca14626-cit-0046">
+<string-name name-style="western">
+<surname>Tao</surname>
+<given-names>R</given-names>
+</string-name>, <string-name name-style="western">
+<surname>de Zoeten</surname>
+<given-names>EF</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Ozkaynak</surname>
+<given-names>E</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Chen</surname>
+<given-names>C</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Wang</surname>
+<given-names>L</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Porrett</surname>
+<given-names>PM</given-names>
+</string-name>, et al. <article-title>Deacetylase inhibition promotes the generation and function of regulatory T cells</article-title>. <source>Nat Med</source>. <year>2007</year>;<volume>13</volume>:<fpage>1299</fpage>–<lpage>307</lpage>. <pub-id pub-id-type="doi">10.1038/nm1652</pub-id>
+<pub-id pub-id-type="pmid">17922010</pub-id></mixed-citation></ref><ref id="tca14626-bib-0047"><label>47</label><mixed-citation publication-type="journal" id="tca14626-cit-0047">
+<string-name name-style="western">
+<surname>Wang</surname>
+<given-names>Q</given-names>
+</string-name>, <string-name name-style="western">
+<surname>McLoughlin</surname>
+<given-names>RM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Cobb</surname>
+<given-names>BA</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Charrel‐Dennis</surname>
+<given-names>M</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Zaleski</surname>
+<given-names>KJ</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Golenbock</surname>
+<given-names>D</given-names>
+</string-name>, et al. <article-title>A bacterial carbohydrate links innate and adaptive responses through Toll‐like receptor 2</article-title>. <source>J Exp Med</source>. <year>2006</year>;<volume>203</volume>:<fpage>2853</fpage>–<lpage>63</lpage>. <pub-id pub-id-type="doi">10.1084/jem.20062008</pub-id>
+<pub-id pub-id-type="pmid">17178920</pub-id><pub-id pub-id-type="pmcid">PMC2118167</pub-id></mixed-citation></ref><ref id="tca14626-bib-0048"><label>48</label><mixed-citation publication-type="journal" id="tca14626-cit-0048">
+<string-name name-style="western">
+<surname>Round</surname>
+<given-names>JL</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Lee</surname>
+<given-names>SM</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Li</surname>
+<given-names>J</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Tran</surname>
+<given-names>G</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Jabri</surname>
+<given-names>B</given-names>
+</string-name>, <string-name name-style="western">
+<surname>Chatila</surname>
+<given-names>TA</given-names>
+</string-name>, et al. <article-title>The Toll‐like receptor 2 pathway establishes colonization by a commensal of the human microbiota</article-title>. <source>Science</source>. <year>2011</year>;<volume>332</volume>:<fpage>974</fpage>–<lpage>7</lpage>. <pub-id pub-id-type="doi">10.1126/science.1206095</pub-id>
+<pub-id pub-id-type="pmid">21512004</pub-id><pub-id pub-id-type="pmcid">PMC3164325</pub-id></mixed-citation></ref></ref-list></back></article></pmc-articleset>

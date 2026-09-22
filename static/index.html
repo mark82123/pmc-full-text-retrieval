@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PMC Full-Text Retrieval Tool</title>
+<link rel="stylesheet" href="/static/style.css">
+  <script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('theme')||'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="logo">⌕</span>
+    <div>
+      <h1>PMC Full-Text Retrieval Tool</h1>
+      <p class="sub">Biomedical Information Retrieval · Project #1 · PubMed Central XML corpus</p>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" data-tab="search">Search</button>
+    <button class="tab" data-tab="corpus">Corpus &amp; Statistics</button>
+    <button class="tab" data-tab="upload">Add Documents</button>
+    <button class="tab" data-tab="algo">前處理與演算法</button>
+    <button class="tab" data-tab="help">說明 / Help</button>
+  </nav>
+  <button id="theme-toggle" class="theme-btn" title="切換深色 / 淺色模式">🌙 Dark</button>
+</header>
+
+<main>
+  <!-- ============ SEARCH ============ -->
+  <section id="tab-search" class="panel active">
+    <form id="search-form" class="searchbar" autocomplete="off">
+      <input id="q" type="search" placeholder='e.g.  cancer immunotherapy   |   "gut microbiome"   |   covid AND vaccine NOT pregnancy   |   immun*   |   title:crispr' required>
+      <button type="submit" class="primary">Search</button>
+    </form>
+    <div class="options">
+      <label>Scoring
+        <select id="method">
+          <option value="bm25">BM25</option>
+          <option value="tfidf">TF-IDF</option>
+          <option value="count">Match count (boolean)</option>
+        </select>
+      </label>
+      <label>Rank by
+        <select id="scope">
+          <option value="all">Whole document</option>
+          <option value="abstract">Abstract only</option>
+          <option value="body">Body only</option>
+          <option value="title">Title only</option>
+        </select>
+      </label>
+      <label>Default operator
+        <select id="op">
+          <option value="AND">AND (all terms)</option>
+          <option value="OR">OR (any term)</option>
+        </select>
+      </label>
+      <label>Max results
+        <select id="limit">
+          <option>10</option><option selected>25</option><option>50</option><option>100</option>
+        </select>
+      </label>
+      <span class="examples">Try:
+        <a href="#" data-q="cancer immunotherapy">cancer immunotherapy</a>
+        <a href="#" data-q='"gut microbiome"'>"gut microbiome"</a>
+        <a href="#" data-q="covid AND vaccine NOT pregnancy">covid AND vaccine NOT pregnancy</a>
+        <a href="#" data-q="alzheimer OR crispr">alzheimer OR crispr</a>
+        <a href="#" data-q="immun*">immun*</a>
+        <a href="#" data-q="title:diabetes">title:diabetes</a>
+      </span>
+    </div>
+
+    <div id="analysis" class="analysis hidden"></div>
+    <div id="summary" class="summary"></div>
+    <div id="term-chart" class="chart-box hidden"></div>
+    <div id="results"></div>
+  </section>
+
+  <!-- ============ DOCUMENT VIEW ============ -->
+  <section id="tab-doc" class="panel">
+    <div class="doc-toolbar">
+      <button id="back" class="ghost">← Back to results</button>
+      <label class="check"><input type="checkbox" id="show-eos" checked> Show sentence boundaries</label>
+      <label class="check"><input type="checkbox" id="show-hl" checked> Highlight query terms</label>
+      <label class="check"><input type="checkbox" id="only-hits"> Only sentences with matches</label>
+    </div>
+    <div id="doc"></div>
+  </section>
+
+  <!-- ============ CORPUS ============ -->
+  <section id="tab-corpus" class="panel">
+    <div id="corpus"></div>
+  </section>
+
+  <!-- ============ UPLOAD ============ -->
+  <section id="tab-upload" class="panel">
+    <div class="card">
+      <h2>Fetch from PubMed / PMC by ID</h2>
+      <p>Paste <b>PMIDs</b> or <b>PMC IDs</b>, one per line (commas, <code>PMID:</code> prefixes and PubMed / PMC URLs are fine too).
+        PMIDs are converted with the NCBI ID Converter, the JATS XML is downloaded with E-utilities <code>efetch</code>,
+        parsed, indexed immediately and saved to <code>data/</code>. Only open-access articles have full text in PMC;
+        for the others the PubMed record (<b>title + abstract</b>) is fetched and indexed instead, so abstract retrieval always works.</p>
+      <textarea id="fetch-ids" rows="7" spellcheck="false" placeholder="32895440&#10;PMC7536103&#10;PMID: 33301246"></textarea>
+      <div class="row">
+        <button id="fetch-btn" class="primary">Fetch &amp; index</button>
+        <label class="check"><input type="checkbox" id="fetch-replace"> Re-download if already indexed</label>
+        <span id="fetch-msg" class="muted"></span>
+      </div>
+      <table id="fetch-results" class="fetch hidden"></table>
+    </div>
+    <div class="card">
+      <h2>Add PMC XML documents to the index</h2>
+      <p>Select one or more PubMed Central XML files (<code>.xml</code> / <code>.nxml</code>, JATS format, e.g. downloaded from
+        <a href="https://pmc.ncbi.nlm.nih.gov/" target="_blank" rel="noopener">pmc.ncbi.nlm.nih.gov</a> or via E-utilities
+        <code>efetch.fcgi?db=pmc&amp;id=PMC7536103&amp;retmode=xml</code>). They are parsed, tokenised, stemmed and added
+        to the inverted index immediately; a copy is stored in the <code>data/</code> directory.</p>
+      <input type="file" id="files" accept=".xml,.nxml,text/xml,application/xml" multiple>
+      <button id="upload-btn" class="primary">Upload &amp; index</button>
+      <pre id="upload-log" class="log"></pre>
+    </div>
+    <div class="card">
+      <h2>Remove a document</h2>
+      <p>Removes the article from the index <b>and deletes its file in <code>data/</code></b>, so it stays removed after a restart.</p>
+      <input id="remove-id" placeholder="PMC id, e.g. PMC7536103">
+      <button id="remove-btn">Remove from index</button>
+      <span id="remove-msg"></span>
+    </div>
+    <div class="card">
+      <h2>Documents in the index <button id="indexed-refresh" class="small">Refresh</button></h2>
+      <table id="indexed-list" class="fetch"></table>
+    </div>
+  </section>
+
+  <!-- ============ ALGORITHMS ============ -->
+  <section id="tab-algo" class="panel">
+    <div class="card help">
+      <h2>1. 斷詞 Tokenization 與小寫化 Case folding</h2>
+      <p>規則只有一條：<b>連續的字母或數字</b>是一個 token，其餘字元（連字號、撇號、括號、標點）都是分隔符，接著全部轉小寫。
+        這讓 <code>T-cell</code>、<code>T cell</code> 都能互相匹配，但也有代價——下面的反例都是這個系統真實的行為：</p>
+      <table class="kv">
+        <tr><td><code>US</code>、<code>WHO</code>、<code>IT</code></td><td>小寫後變成 <code>us</code>、<code>who</code>、<code>it</code>，正好是停用詞而被<b>整個丟掉</b>。查 "WHO guidelines" 只剩 guidelines。</td></tr>
+        <tr><td><code>AIDS</code> / <code>aids</code></td><td>都變成詞幹 <code>aid</code>，疾病名和「幫助」混在一起（同形異義）。</td></tr>
+        <tr><td><code>SARS</code> → <code>sars</code> → <code>sar</code></td><td>Porter 步驟 1a 把結尾的 s 當複數去掉。查 <code>sars</code> 沒問題（查詢詞也走同一條路），但萬用字元 <code>sars*</code> 比對的是索引裡的詞幹 <code>sar</code>，會失敗。</td></tr>
+        <tr><td><code>1,024</code>、<code>p&lt;0.05</code></td><td>逗號與小數點切開數字：<code>1</code>、<code>024</code>、<code>0</code>、<code>05</code>。</td></tr>
+        <tr><td><code>IL-6</code> / <code>IL6</code></td><td>前者切成 <code>il</code>、<code>6</code>，後者是單一 token <code>il6</code>，兩種寫法對不上（除非用片語 <code>"IL 6"</code>）。</td></tr>
+      </table>
+      <div class="try">
+        <input id="analyze-text" placeholder='輸入一段文字試試，例如：WHO reported that SARS-CoV-2 infected T-cells (n=1,024).' value="WHO reported that SARS-CoV-2 infected T-cells in 1,024 patients. Immunotherapies were generalized by Dr. Smith et al.">
+        <button id="analyze-btn" class="primary">分析</button>
+      </div>
+      <div id="analyze-out"></div>
+    </div>
+
+    <div class="card help">
+      <h2>2. 停用詞 Stop words：Snowball 經典清單 + 生醫補充</h2>
+      <p>經典清單有兩個常見來源：<b>SMART</b> 系統（Salton, 1971）的 571 字清單，以及 <b>Snowball</b> 詞幹器專案附帶的 174 字英文清單（NLTK 內建的就是這份）。
+        本系統採用較保守的 Snowball 清單，再加上 17 個生醫論文高頻、但沒有鑑別力的詞（候選字以語料的 document frequency 掃描，只保留沒有主題意義的語氣詞與連接詞）。停用詞被移除後<b>位置編號仍保留</b>，所以片語 <code>"role of the gut"</code> 仍能以 role 與 gut 相距 3 個位置來比對。</p>
+      <div class="try"><input id="sw-filter" placeholder="篩選（輸入字母，三份清單同時篩選）"></div>
+      <div class="two">
+        <div><h4 id="sw-snowball-h">Snowball 英文停用詞 <span class="badge used">本系統使用</span></h4><div id="sw-snowball" class="chips"></div></div>
+        <div><h4 id="sw-bio-h">生醫論文補充 <span class="badge used">本系統使用</span></h4><div id="sw-bio" class="chips"></div>
+          <p class="hint" style="margin-top:8px">為什麼加這些：<code>et</code>、<code>al</code> 來自 <i>et al.</i>，每篇論文出現數十次；<code>may</code>、<code>might</code>、<code>however</code>、<code>therefore</code>、<code>thus</code>、<code>furthermore</code> 是學術寫作的語氣詞與連接詞，幾乎每篇都出現。曾列入的 <code>us</code> 與 <code>shall</code> 因語料中幾乎不出現、且 us 會誤傷 U.S. 而移除。</p></div>
+      </div>
+      <h4 id="sw-smart-h">SMART 系統停用詞（Salton, 1971） <span class="badge ref">僅供比較，本系統未使用</span> <button id="sw-smart-toggle" class="small">展開</button></h4>
+      <p class="hint" id="sw-smart-note"></p>
+      <div id="sw-smart" class="chips hidden"></div>
+    </div>
+
+    <div class="card help">
+      <h2>3. Porter 詞幹演算法（1980）：五個步驟</h2>
+      <p>核心概念是 <b>measure m</b>：把字寫成 [C](VC)<sup>m</sup>[V] 的形式，m 是「母音串接子音串」的次數，例如 m(tr)=0、m(trouble)=1、m(troubles)=2。每條規則都要求去掉字尾後剩餘部分的 m 夠大，避免把短字砍壞（<code>rate</code> 不會變 <code>rat</code>）。</p>
+      <table class="kv steps">
+        <tr><th>步驟</th><th>規則</th><th>例子</th></tr>
+        <tr><td>1a</td><td>複數：sses→ss、ies→i、s→(去掉)；ss 不動</td><td>patients→patient、therapies→therapi、class→class</td></tr>
+        <tr><td>1b</td><td>去 -ed / -ing（剩餘部分須含母音），再修補結尾：at/bl/iz 補 e、雙子音變單、cvc 補 e</td><td>generalized→generalize、hopping→hop、filing→file</td></tr>
+        <tr><td>1c</td><td>結尾 y→i（剩餘部分含母音）</td><td>therapy→therapi、happy→happi</td></tr>
+        <tr><td>2</td><td>m&gt;0 時長字尾對應：ational→ate、ization→ize、iveness→ive、biliti→ble …</td><td>organization→organize、sensitiviti→sensitive</td></tr>
+        <tr><td>3</td><td>m&gt;0 時：icate→ic、ative→(去)、alize→al、ical→ic、ful / ness→(去)</td><td>generalize→general、analytical→analytic</td></tr>
+        <tr><td>4</td><td>m&gt;1 時直接砍字尾：ement、ance、ence、able、ment、ant、ent、ism、ate、iti、ous、ive、ize、ion(前面須為 s/t)、al、er、ic、ou</td><td>general→gener、organize→organ、adjustment→adjust</td></tr>
+        <tr><td>5a / 5b</td><td>去掉結尾 e（m&gt;1，或 m=1 且非 cvc）；ll→l（m&gt;1）</td><td>activate→activ、controll→control</td></tr>
+      </table>
+      <div class="try">
+        <input id="stem-word" placeholder="輸入一個或多個字，以空白或逗號分隔" value="immunotherapies, generalized, organization, analyses, sars">
+        <button id="stem-btn" class="primary">逐步詞幹化</button>
+      </div>
+      <div id="stem-out"></div>
+
+      <h4>它做得好的地方（同一概念的變形合併）</h4>
+      <div id="stem-good" class="stem-groups"></div>
+      <h4>反例：演算法無法處理的情況</h4>
+      <p class="hint">Porter 是純規則、不查字典，所以會有兩種錯誤：<b>over-stemming</b>（不同意思的字被併成同一詞幹）與 <b>under-stemming</b>（同一個字的變形沒被併在一起）。以下全部是本系統即時計算的真實結果。</p>
+      <div id="stem-bad" class="stem-groups"></div>
+    </div>
+
+    <div class="card help">
+      <h2>4. 實作來源：現成函式庫 vs 從零實作</h2>
+      <table class="kv">
+        <tr><td>本專案</td><td><code>ir/porter.py</code> 依 Porter 1980 論文的五步驟描述自行實作，<code>ir/stopwords.py</code> 為手動整理的清單，<code>ir/tokenizer.py</code> 為正規表達式斷詞。整個專案<b>只用 Python 標準庫</b>，沒有 import 任何第三方套件；單元測試以 Porter 論文附的範例驗證輸出。</td></tr>
+        <tr><td>NLTK</td><td><code>nltk.stem.PorterStemmer</code>（含 Porter 原版與 NLTK 修訂版）、<code>nltk.stem.SnowballStemmer("english")</code>（Porter2，較新的改良版）、<code>nltk.corpus.stopwords</code>（即 Snowball 174 字清單）。</td></tr>
+        <tr><td>snowballstemmer / PyStemmer</td><td>Snowball 官方的 C 實作與 Python 綁定，支援 20 多種語言，速度最快。</td></tr>
+        <tr><td>scikit-learn</td><td><code>sklearn.feature_extraction.text.ENGLISH_STOP_WORDS</code>（318 字，源自 Glasgow IR 清單）；<code>TfidfVectorizer</code> 可直接做 TF-IDF，但不含詞幹化。</td></tr>
+        <tr><td>spaCy / Stanza</td><td>不做詞幹化而做 <b>lemmatization</b>（查字典還原原形：mice→mouse、analyses→analysis），需要詞性標注模型，能修正上面大部分反例，但無法用純標準庫實作。</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ HELP ============ -->
+  <section id="tab-help" class="panel">
+    <div class="card help">
+      <p class="hint">滑鼠移到 <i class="info" data-tip="像這樣：專有名詞旁的圓圈圖示會顯示中文解釋。">ⓘ</i> 圖示上可看到專有名詞的解釋。</p>
+
+      <h2>查詢語法</h2>
+      <table class="kv">
+        <tr><td><code>cancer immunotherapy</code></td><td>一般關鍵字，以「預設運算子」組合：<b>AND</b> 表示每個詞都要出現，<b>OR</b> 表示任一個詞出現即可</td></tr>
+        <tr><td><code>covid AND vaccine NOT pregnancy</code></td><td>Boolean 運算子<i class="info" data-tip="布林檢索模型：把每個詞對應到「包含該詞的文件集合」，再用交集 (AND)、聯集 (OR)、差集 (NOT) 做集合運算。">ⓘ</i>（<code>AND</code>、<code>OR</code>、<code>NOT</code>、<code>-term</code>），可加括號；優先順序<i class="info" data-tip="運算子優先順序 (precedence)：NOT 最先結合，其次 AND，最後 OR。例如 a OR b AND c 會被解讀成 a OR (b AND c)。">ⓘ</i> 為 NOT &gt; AND &gt; OR</td></tr>
+        <tr><td><code>"gut microbiome"</code></td><td>Phrase query<i class="info" data-tip="片語查詢：詞必須「相鄰且順序相同」。系統利用倒排索引中記錄的詞位置 (position) 來檢查相鄰關係。">ⓘ</i>，使用 positional index<i class="info" data-tip="位置索引：倒排索引除了記錄「哪些文件含有此詞」，也記錄「該詞出現在文件的第幾個位置」，因此能支援片語與鄰近查詢。">ⓘ</i> 比對；片語中的 stop word<i class="info" data-tip="停用詞：the、of、is 等出現頻率極高但沒有辨識力的詞。索引時移除以縮小索引並提高效率。">ⓘ</i> 會被跳過但保留位置間距，例如 <code>"role of the gut"</code> 會比對 role 與 gut 相距 3 個位置</td></tr>
+        <tr><td><code>immun*</code></td><td>Prefix wildcard<i class="info" data-tip="前綴萬用字元：展開成索引中所有以 immun 開頭的詞 (immun, immunotherapi, immunosuppress…)，再以 OR 合併其結果。">ⓘ</i>，比對所有以 <em>immun</em> 開頭的索引詞</td></tr>
+        <tr><td><code>title:crispr</code>、<code>abstract:vaccine</code>、<code>body:…</code></td><td>Field 限制<i class="info" data-tip="欄位檢索：索引時記錄每篇文件的標題、摘要、內文在位置流中的區間，查詢時只保留落在該區間的命中位置。">ⓘ</i>，只在指定欄位中比對</td></tr>
+      </table>
+
+      <h2>新增文章</h2>
+      <p>在 <b>Add Documents</b> 分頁貼上 PMID 或 PMC ID（每行一個），按 <b>Fetch &amp; index</b>：系統先用 NCBI ID Converter 把 PMID 轉成 PMCID，再用 E-utilities <code>efetch</code> 下載 JATS XML，解析後立即建入索引並存到 <code>data/</code>。只有 open access 文章在 PMC 有全文；沒有全文的 PMID 會改從 PubMed 抓<b>標題與摘要</b>建索引（文件 ID 以 <code>PMID</code> 開頭，狀態表標示 abstract only）。</p>
+
+      <h2>處理流程 (pipeline)</h2>
+      <ol>
+        <li><b>Parsing 解析</b> – 讀取 JATS XML<i class="info" data-tip="JATS (Journal Article Tag Suite)：PubMed Central 全文文章使用的 XML 標準格式，內含 <front>(書目資料)、<body>(內文)、<back>(參考文獻) 三大區塊。">ⓘ</i>，取出標題、摘要、章節標題、內文段落與 metadata（作者、期刊、年份、關鍵字）。引用標記、表格與參考文獻清單會被移除，避免大量無意義的數字與人名進入索引。</li>
+        <li><b>Tokenization 斷詞</b><i class="info" data-tip="斷詞：把連續文字切成一個個 token (詞)。本系統以「連續的字母或數字」為一個 token，連字號會切開：COVID-19 → covid、19。">ⓘ</i> – 以連續的字母/數字為單位；連字號會切開（<code>COVID-19</code> → <code>covid</code>、<code>19</code>）。</li>
+        <li><b>Normalization 正規化</b> – 轉小寫、移除 191 個 stop word、以 Porter stemming<i class="info" data-tip="Porter 詞幹演算法 (1980)：用五個步驟依序去除英文字尾 (-s, -ed, -ing, -ation, -ness…)，把 immunotherapy / immunotherapies 都化為同一詞幹 immunotherapi，使不同詞形能互相匹配。本系統為自行實作。">ⓘ</i> 取詞幹（自行實作 1980 年的演算法）。</li>
+        <li><b>Indexing 建立索引</b> – Inverted index<i class="info" data-tip="倒排索引：以「詞」為 key，value 是含有此詞的文件清單 (posting list)。查詢時直接查表，不必掃描全部文件。本系統的 posting 還記錄每個出現位置。">ⓘ</i>：<code>term → {doc → [positions]}</code>，並記錄文件長度與各欄位的位置區間。</li>
+        <li><b>Matching 比對</b> – 對 posting list 做集合運算 (AND/OR/NOT)、以位置差比對片語、展開前綴萬用字元。</li>
+        <li><b>Field scoring 分欄評分</b> – 每篇命中文件同時計算四個分數：整篇 (all)、title、abstract、body。欄位分數只使用落在該欄位的命中位置，長度正規化也改用該欄位自己的長度與語料中該欄位的平均長度（摘要跟摘要比、內文跟內文比）。<b>Rank by</b> 選單決定用哪個分數排序；選 abstract 時只在摘要有命中的文件才會出現。結果卡右側會並列顯示三個欄位分數。</li>
+        <li><b>Ranking 排序</b> – Okapi BM25<i class="info" data-tip="BM25：目前最常用的機率式排序函數。分數 = Σ IDF(t) × tf×(k1+1) / (tf + k1×(1−b+b×dl/avgdl))。tf 越高分數越高但會飽和 (k1=1.5 控制)，長文件會被正規化 (b=0.75 控制)，稀有詞 (IDF 高) 權重較大。">ⓘ</i>（k1 = 1.5、b = 0.75），或 TF-IDF<i class="info" data-tip="TF-IDF：詞頻 (term frequency，詞在文件中出現次數) × 逆文件頻率 (inverse document frequency，log(N/df)，出現在越少文件的詞越重要)。本系統使用 (1+log tf) × log(N/df) 再除以 √文件長度做正規化。">ⓘ</i>，或單純命中次數；標題中的命中乘以 1.25 倍加權。</li>
+        <li><b>Presentation 呈現</b> – 以最相關的句子作為 snippet<i class="info" data-tip="摘要片段：從文件中挑出「含最多不同查詢詞」的句子顯示，並將命中的詞反白。">ⓘ</i>、關鍵字反白、命中位置分布圖 (match map)、詞頻圖表與文件統計。</li>
+      </ol>
+
+      <h2>句子偵測 (EOS<i class="info" data-tip="End Of Sentence：句子結尾。單純以句號切分在生醫文獻中會嚴重高估句數 (Fig. 2、et al.、0.05、E. coli 都含句號)，因此需要規則判斷。">ⓘ</i>) – 規則式方法</h2>
+      <p>候選的句子邊界為 <code>. ! ?</code>（或刪節號）加上可有可無的右引號/右括號，之後接空白。符合以下任一情況時<em>不會</em>切句：</p>
+      <ul>
+        <li>下一個字元是小寫字母（句子應以大寫、數字、括號或符號開頭）；</li>
+        <li>句號前的詞是已知縮寫<i class="info" data-tip="縮寫表 (abbreviation list)：e.g., i.e., et al., Fig., Dr., vs., approx., No., Ref., Eq., Vol., Jan. 等約 90 個，定義在 ir/sentence.py。">ⓘ</i>（<em>e.g., i.e., et al., Fig., Dr., vs., approx., No., Ref., Eq., Vol., Jan.…</em>）；</li>
+        <li>句號前的詞只有一個字母（人名縮寫 <em>J. R. Smith</em>、屬名 <em>E. coli</em>）或是帶點的縮寫（<em>a.m.</em>、<em>U.S.</em>）；</li>
+        <li>句號夾在數字之間（<em>0.05</em>）— 後面沒有空白，根本不會成為候選。</li>
+      </ul>
+      <p>段落結尾與標題一定視為句子結束。介面同時顯示 naive 方法<i class="info" data-tip="樸素方法：遇到每一個 . ! ? 就切一句，作為比較基準 (baseline)。在本語料庫中 naive 約 9,000 句，規則式約 6,800 句。">ⓘ</i>（見到 <code>. ! ?</code> 就切）的句數以供比較。</p>
+
+      <h2>統計指標說明</h2>
+      <table class="kv">
+        <tr><td>Characters</td><td>字元數（含空白）；另有不含空白的版本</td></tr>
+        <tr><td>Tokens / Words</td><td>token 為字母或數字的連續片段；word 只計純字母的 token（不含 2020、19 這類數字）</td></tr>
+        <tr><td>Unique words</td><td>轉小寫後不重複的 word 數量</td></tr>
+        <tr><td>Index terms / Unique terms</td><td>經 stop word 移除與 stemming 後留下的索引詞數量／不重複詞幹數量</td></tr>
+        <tr><td>Sentences</td><td>規則式 EOS 偵測得到的句數；naive 為基準值</td></tr>
+        <tr><td>Lexical diversity</td><td>詞彙多樣性<i class="info" data-tip="= 不重複詞幹數 ÷ 索引詞總數 (type-token ratio)。越接近 1 表示用詞越多樣。">ⓘ</i> = unique terms ÷ index terms</td></tr>
+        <tr><td>df / cf</td><td>df<i class="info" data-tip="document frequency：含有此詞的文件數，用於計算 IDF。">ⓘ</i> = 含此詞的文件數；cf<i class="info" data-tip="collection frequency：此詞在整個語料庫中出現的總次數。">ⓘ</i> = 此詞在全語料庫的總出現次數</td></tr>
+      </table>
+      <p class="author"><b>作者</b> 胡元楨 · 學號 P77141105 · 生物醫學資訊檢索 專案一</p>
+    </div>
+  </section>
+</main>
+<footer>Standard-library Python back-end · vanilla JS front-end · no external dependencies</footer>
+<script src="/static/app.js"></script>
+</body>
+</html>

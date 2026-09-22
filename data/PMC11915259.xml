@@ -1,0 +1,1092 @@
+<?xml version="1.0"  ?><!DOCTYPE pmc-articleset PUBLIC "-//NLM//DTD ARTICLE SET 2.0//EN" "https://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd"><pmc-articleset><article xml:lang="en" article-type="review-article" dtd-version="1.4"><processing-meta base-tagset="archiving" mathml-version="3.0" table-model="xhtml" tagset-family="jats"><restricted-by>pmc</restricted-by></processing-meta><front><journal-meta><journal-id journal-id-type="nlm-ta">Ther Adv Gastroenterol</journal-id><journal-id journal-id-type="iso-abbrev">Ther Adv Gastroenterol</journal-id><journal-id journal-id-type="pmc-domain-id">1352</journal-id><journal-id journal-id-type="pmc-domain">tag</journal-id><journal-id journal-id-type="nlm-id">101478893</journal-id><journal-id journal-id-type="publisher-id">TAG</journal-id><journal-title-group><journal-title>Therapeutic Advances in Gastroenterology</journal-title></journal-title-group><issn pub-type="ppub">1756-283X</issn><issn pub-type="epub">1756-2848</issn><publisher><publisher-name>SAGE Publications</publisher-name></publisher></journal-meta><article-meta><article-id pub-id-type="pmcid">PMC11915259</article-id><article-id pub-id-type="pmcid-ver">PMC11915259.1</article-id><article-id pub-id-type="pmcaid">11915259</article-id><article-id pub-id-type="pmcaiid">11915259</article-id><article-id pub-id-type="pmid">40104324</article-id><article-id pub-id-type="doi">10.1177/17562848251327167</article-id><article-id pub-id-type="publisher-id">10.1177_17562848251327167</article-id><article-version article-version-type="pmc-version">1</article-version><article-categories><subj-group subj-group-type="heading"><subject>Review</subject></subj-group></article-categories><title-group><article-title>Therapeutic potential of fecal microbiota transplantation in colorectal cancer based on gut microbiota regulation: from pathogenesis to efficacy</article-title></title-group><contrib-group><contrib contrib-type="author"><contrib-id contrib-id-type="orcid" authenticated="false">https://orcid.org/0009-0000-8204-512X</contrib-id><name name-style="western"><surname>Gu</surname><given-names initials="C">Chen</given-names></name><xref rid="fn1-17562848251327167" ref-type="author-notes">*</xref><aff id="aff1-17562848251327167">Clinical Medical College, Yangzhou University, Yangzhou, Jiangsu, China</aff><role content-type="https://credit.niso.org/contributor-roles/conceptualization/">Conceptualization</role><role content-type="https://credit.niso.org/contributor-roles/data-curation/">Data curation</role><role content-type="https://credit.niso.org/contributor-roles/formal-analysis/">Formal analysis</role><role content-type="https://credit.niso.org/contributor-roles/investigation/">Investigation</role><role content-type="https://credit.niso.org/contributor-roles/methodology/">Methodology</role><role content-type="https://credit.niso.org/contributor-roles/project-administration/">Project administration</role><role content-type="https://credit.niso.org/contributor-roles/writing-original-draft/">Writing – original draft</role><role content-type="https://credit.niso.org/contributor-roles/writing-review-editing/">Writing – review &amp; editing</role></contrib><contrib contrib-type="author"><name name-style="western"><surname>Sha</surname><given-names initials="G">Gengyu</given-names></name><xref rid="fn1-17562848251327167" ref-type="author-notes">*</xref><aff id="aff2-17562848251327167">Clinical Medical College, Yangzhou University, Yangzhou, Jiangsu, China</aff><role content-type="https://credit.niso.org/contributor-roles/data-curation/">Data curation</role><role content-type="https://credit.niso.org/contributor-roles/methodology/">Methodology</role><role content-type="https://credit.niso.org/contributor-roles/writing-original-draft/">Writing – original draft</role></contrib><contrib contrib-type="author"><name name-style="western"><surname>Zeng</surname><given-names initials="B">Binbin</given-names></name><xref rid="fn1-17562848251327167" ref-type="author-notes">*</xref><aff id="aff3-17562848251327167">Clinical Medical College, Yangzhou University, Yangzhou, Jiangsu, China</aff><role content-type="https://credit.niso.org/contributor-roles/methodology/">Methodology</role><role content-type="https://credit.niso.org/contributor-roles/writing-original-draft/">Writing – original draft</role></contrib><contrib contrib-type="author"><name name-style="western"><surname>Cao</surname><given-names initials="H">Herong</given-names></name><aff id="aff4-17562848251327167">Clinical Medical College, Yangzhou University, Yangzhou, Jiangsu, China</aff><role content-type="https://credit.niso.org/contributor-roles/investigation/">Investigation</role><role content-type="https://credit.niso.org/contributor-roles/writing-review-editing/">Writing – review &amp; editing</role></contrib><contrib contrib-type="author"><name name-style="western"><surname>Cao</surname><given-names initials="Y">Yibo</given-names></name><aff id="aff5-17562848251327167">The Second School of Clinical Medicine, Nanjing Medical University, Nanjing, Jiangsu, China</aff><role content-type="https://credit.niso.org/contributor-roles/formal-analysis/">Formal analysis</role><role content-type="https://credit.niso.org/contributor-roles/writing-review-editing/">Writing – review &amp; editing</role></contrib><contrib contrib-type="author"><contrib-id contrib-id-type="orcid" authenticated="false">https://orcid.org/0000-0002-2057-2968</contrib-id><name name-style="western"><surname>Tang</surname><given-names initials="D">Dong</given-names></name><xref rid="corresp1-17562848251327167" ref-type="corresp"/><aff id="aff6-17562848251327167">Northern Jiangsu People’s Hospital Affiliated to Yangzhou University, Yangzhou University, Yangzhou 225000, China</aff><aff id="aff7-17562848251327167">The Yangzhou Clinical College of Xuzhou Medical University, Xuzhou Medical University, Xuzhou, 221000, China</aff><aff id="aff8-17562848251327167">Department of General Surgery, Institute of General Surgery, Northern Jiangsu People’s Hospital, Yangzhou University, Yangzhou, 225000, China</aff><aff id="aff9-17562848251327167">Northern Jiangsu People’s Hospital, Clinical Teaching Hospital of Medical School, Nanjing University, Nanjing, 210000, China</aff><role content-type="https://credit.niso.org/contributor-roles/funding-acquisition/">Funding acquisition</role><role content-type="https://credit.niso.org/contributor-roles/writing-review-editing/">Writing – review &amp; editing</role></contrib></contrib-group><author-notes><corresp id="corresp1-17562848251327167">
+<email>83392785@qq.com</email>
+</corresp><fn fn-type="other" id="fn1-17562848251327167"><label>*</label><p>These authors contributed equally to this work. Author order was determined on the basis of seniority.</p></fn></author-notes><pub-date pub-type="epub"><day>18</day><month>3</month><year>2025</year></pub-date><pub-date pub-type="collection"><year>2025</year></pub-date><volume>18</volume><issue-id pub-id-type="pmc-issue-id">478147</issue-id><elocation-id>17562848251327167</elocation-id><history><date date-type="received"><day>25</day><month>11</month><year>2024</year></date><date date-type="accepted"><day>24</day><month>2</month><year>2025</year></date></history><pub-history><event event-type="pmc-release"><date><day>18</day><month>03</month><year>2025</year></date></event><event event-type="pmc-live"><date><day>18</day><month>03</month><year>2025</year></date></event><event event-type="pmc-last-change"><date iso-8601-date="2026-03-21 00:25:13.740"><day>21</day><month>03</month><year>2026</year></date></event></pub-history><permissions><copyright-statement>© The Author(s), 2025</copyright-statement><copyright-year>2025</copyright-year><copyright-holder content-type="sage">SAGE Publications Ltd unless otherwise noted. Manuscript content on this site is licensed under Creative Commons Licenses</copyright-holder><license><ali:license_ref xmlns:ali="http://www.niso.org/schemas/ali/1.0/" specific-use="textmining" content-type="ccbynclicense">https://creativecommons.org/licenses/by-nc/4.0/</ali:license_ref><license-p>This article is distributed under the terms of the Creative Commons Attribution-NonCommercial 4.0 License (<ext-link xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="uri" xlink:href="https://creativecommons.org/licenses/by-nc/4.0/">https://creativecommons.org/licenses/by-nc/4.0/</ext-link>) which permits non-commercial use, reproduction and distribution of the work without further permission provided the original work is attributed as specified on the SAGE and Open Access pages (<ext-link xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="uri" xlink:href="https://us.sagepub.com/en-us/nam/open-access-at-sage">https://us.sagepub.com/en-us/nam/open-access-at-sage</ext-link>).</license-p></license></permissions><self-uri xmlns:xlink="http://www.w3.org/1999/xlink" content-type="pmc-pdf" xlink:href="10.1177_17562848251327167.pdf"/><abstract><p>Colorectal cancer (CRC) remains a leading cause of cancer-related deaths worldwide, with its progression intricately linked to gut microbiota dysbiosis. Disruptions in microbial homeostasis contribute to tumor initiation, immune suppression, and inflammation, establishing the microbiota as a key therapeutic target. Fecal microbiota transplantation (FMT) has emerged as a transformative approach to restore microbial balance, enhance immune responses, and reshape the tumor microenvironment. This review explores the mechanisms underlying FMT’s therapeutic potential, evaluates its advantages over other microbiota-based interventions, and addresses challenges such as donor selection, safety concerns, and treatment standardization. Looking forward, the integration of FMT into personalized CRC therapies requires robust clinical trials and the identification of predictive biomarkers to optimize its efficacy and safety.</p></abstract><abstract abstract-type="plain-language-summary"><title>Plain language summary</title><p>
+FMT in CRC: microbiota regulation to therapy
+</p><p>Colorectal cancer (CRC) progression is tied to gut microbiota dysbiosis. Fecal microbiota transplantation (FMT) restores balance and boosts immunity, offering promise for personalized CRC therapies with further clinical validation.</p></abstract><kwd-group><kwd>colorectal cancer</kwd><kwd>fecal microbiota transplantation</kwd><kwd>gut microbiome</kwd><kwd>microbiota–gut–brain</kwd></kwd-group><custom-meta-group><custom-meta><meta-name>pmc-status-qastatus</meta-name><meta-value>0</meta-value></custom-meta><custom-meta><meta-name>pmc-status-live</meta-name><meta-value>yes</meta-value></custom-meta><custom-meta><meta-name>pmc-status-embargo</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-status-released</meta-name><meta-value>yes</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-open-access</meta-name><meta-value>yes</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-olf</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-manuscript</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-legally-suppressed</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-has-pdf</meta-name><meta-value>yes</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-has-supplement</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-pdf-only</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-suppress-copyright</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-is-real-version</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-is-scanned-article</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-preprint</meta-name><meta-value>no</meta-value></custom-meta><custom-meta><meta-name>pmc-prop-in-epmc</meta-name><meta-value>yes</meta-value></custom-meta><custom-meta><meta-name>pmc-license-ref</meta-name><meta-value>CC BY-NC</meta-value></custom-meta><custom-meta><meta-name>cover-date</meta-name><meta-value>January-December 2025</meta-value></custom-meta><custom-meta><meta-name>typesetter</meta-name><meta-value>ts1</meta-value></custom-meta></custom-meta-group></article-meta></front><body><sec sec-type="intro" id="section1-17562848251327167"><title>Introduction</title><p>Fecal microbiota transplantation (FMT) has recently emerged as a promising strategy for restoring gut microbial balance, with the potential to bolster immune function and improve colorectal cancer (CRC) treatment outcomes.<sup>
+<xref rid="bibr1-17562848251327167" ref-type="bibr">1</xref>
+</sup> CRC remains one of the leading causes of cancer mortality worldwide, with incidence rates expected to rise significantly by 2040.<sup>
+<xref rid="bibr2-17562848251327167" ref-type="bibr">2</xref>
+</sup> Standard CRC treatments, including surgery, radiotherapy, and chemotherapy, are widely used for tumor management but often induce acute or chronic intestinal injuries. Chemotherapy, while initially effective in slowing tumor growth, presents serious side effects and resistance risks. Over time, tumor cells can develop resistance to chemotherapy, reducing efficacy, increasing DNA repair activity, and leading to treatment failure, which may require long-term immunosuppressive therapy and frequent hospitalization.<sup>
+<xref rid="bibr3-17562848251327167" ref-type="bibr">3</xref>
+</sup> Radiotherapy, although beneficial, disrupts gut microbiota and impairs the gut’s ability to repair radiation-induced damage, causing adverse effects and limiting efficacy.<sup>
+<xref rid="bibr4-17562848251327167" ref-type="bibr">4</xref>
+</sup> Despite these treatments, many CRC patients exhibit limited responsiveness. FMT offers a potential alternative to address these issues by restoring gut microbiota balance; however, its efficacy, safety, and optimal application in CRC treatment remain inadequately understood.</p><p>Alongside lifestyle factors like smoking and diet, gut microbiota imbalance is now recognized as a significant contributor to CRC risk, influencing immune response and inflammation.<sup>
+<xref rid="bibr5-17562848251327167" ref-type="bibr">5</xref>
+</sup> The gut microbiota, comprising bacteria, fungi, and viruses, plays a crucial role in intestinal health. Disruptions in this microbiota balance can promote CRC by allowing pathogenic organisms to breach the mucosal barrier and trigger chronic inflammation.<sup>
+<xref rid="bibr6-17562848251327167" ref-type="bibr">6</xref>
+</sup> Once the intestinal barrier is compromised, the relationship between the microbiota and the host is broken, leading to an increase or decrease, or even the disappearance, of specific portions of the flora. The imbalance of the microbiota allows pathogenic bacteria to become dominant in the intestinal tract, penetrate the barrier, and enter the lamina propria, inducing an abnormal immune response and leading to the development of CRC.<sup>
+<xref rid="bibr7-17562848251327167" ref-type="bibr">7</xref>
+</sup> FMT has currently been applied to reduce radio- and immunotherapy-related toxicity and enhance their efficacies by restoring the gut microbiome after irradiation for long-term persistence.<sup>
+<xref rid="bibr8-17562848251327167" ref-type="bibr">8</xref>
+</sup> Even if this approach was less acceptable to patients in earlier years, the number of publications on FMT treatment studies in patients with inflammatory bowel disease (IBD), immunocompromised patients, or cancer has nearly doubled in the past decade,<sup>
+<xref rid="bibr9-17562848251327167" ref-type="bibr">9</xref>
+</sup> while its safety and efficacy have been examined.</p><p>This review explores the therapeutic potential of FMT in CRC treatment, examining its mechanisms, advantages over other interventions, and the challenges and future directions. A particular focus is placed on understanding how FMT restores gut microbiota balance in CRC patients, the factors that shape its efficacy, and the strategies needed to address safety concerns in clinical practice.</p></sec><sec id="section2-17562848251327167"><title>Influence of microbiota on CRC pathogenesis</title><sec id="section3-17562848251327167"><title>Intestinal barrier dysfunction and microbiota dysbiosis</title><p>The outermost mucus layer functions as a selective barrier against potential pathogens in the intestinal lumen while fostering a nutrient-rich microenvironment that supports the resident microbiota. Beneath the mucus layer lies a tightly sealed epithelial cell barrier, essential for nutrient absorption, metabolite exchange, water transport, and defense against antigens and pathogens.<sup>
+<xref rid="bibr10-17562848251327167" ref-type="bibr">10</xref>
+</sup> Immune cells reside within and beneath the epithelial layer, engaging in intricate interactions with epithelial cells to strengthen barrier integrity and immune defense. Interactions among these three layers—the microbiome, epithelial cells, and immune system—are pivotal in maintaining intestinal permeability.<sup>
+<xref rid="bibr11-17562848251327167" ref-type="bibr">11</xref>
+</sup> These three barriers are intricately linked. The mucus layer protects epithelial cells from pathogens and sustains a microbiota that, in turn, supports its integrity. The epithelial barrier relies on the mucus for pathogen filtration and on immune cells for secondary defense. Immune cells, in turn, depend on epithelial cells to detect pathogens and are activated when either barrier is compromised.<sup>
+<xref rid="bibr12-17562848251327167" ref-type="bibr">12</xref>
+</sup> This coordinated interplay is essential for intestinal homeostasis, with disruptions potentially initiating CRC-related changes. Disruption of this complex barrier system can lead to disease pathogenesis by facilitating microbial translocation and promoting chronic inflammation.</p><sec id="section4-17562848251327167"><title>Mucosal barrier integrity and microbial defense</title><p>The mammalian gut hosts a diverse microbial ecosystem—collectively termed the gut microbiota—that is integral to colonic health. Commensal bacteria within the gut contribute essential nutrients and signaling molecules, which are crucial for host tissue development and function (<xref rid="fig1-17562848251327167" ref-type="fig">Figure 1</xref>). The microbiota’s beneficial effects also extend to the other two barriers. Nutrients and signaling molecules from commensal bacteria enhance epithelial cell function, fortifying the epithelial barrier, while also modulating immune cell activity to optimize the immune barrier’s response.<sup>
+<xref rid="bibr13-17562848251327167" ref-type="bibr">13</xref>
+</sup> Alghetaa et al. reported an increase in <italic toggle="yes">Tenericutes</italic> and <italic toggle="yes">Actinobacteria</italic>, with <italic toggle="yes">Tenericutes</italic> degrading dietary carbon sources and defending against viruses, thereby preserving mucosal integrity. <italic toggle="yes">Actinobacteria</italic> produce antibiotics, strengthening microbial defense and protecting the mucosal barrier.<sup>
+<xref rid="bibr14-17562848251327167" ref-type="bibr">14</xref>
+</sup> Weisburger et al.<sup>
+<xref rid="bibr15-17562848251327167" ref-type="bibr">15</xref>
+</sup> observed that germ-free rats exposed to N-methyl-N'-nitro-N-nitrosoguanidine developed more colon adenomas than conventional rats, suggesting a potential role of the gut microbiota in early tumorigenesis. This finding indicates that the absence of a normal microbiota disrupts the balance between the mucosal, epithelial, and immune barriers. Without protection, the mucosal barrier becomes more vulnerable, compromising epithelial integrity.<sup>
+<xref rid="bibr16-17562848251327167" ref-type="bibr">16</xref>
+</sup> This, in turn, can trigger abnormal immune responses, creating a microenvironment that promotes tumorigenesis. However, no significant difference in adenocarcinoma incidence was observed, implying that factors beyond immune status, such as carcinogen metabolism, may be pivotal in CRC progression. These findings highlighted a potential association between gut microbiota and colon cancer, sparking decades of research into microbial contributions to CRC. Within the healthy human gut, beneficial bacteria colonize the intestinal surface, forming a physical barrier that impedes pathogen adherence and proliferation.<sup>
+<xref rid="bibr17-17562848251327167" ref-type="bibr">17</xref>
+</sup> Although the underlying mechanisms remain incompletely understood, these effects may involve competition for adhesion sites, stabilization of the mucosal barrier, nutrient competition, and antimicrobial production.<sup>
+<xref rid="bibr18-17562848251327167" ref-type="bibr">18</xref>
+</sup> The abundant presence of <italic toggle="yes">Helicobacter pylori, Haemophilus hepaticus, Escherichia coli, Streptococcus gallolyticus, Streptococcus fragilis, Streptococcus anaerobius, Enterococcus faecalis</italic>, and <italic toggle="yes">Pseudomonas nucleicola</italic> in the intestinal tract is often predictive of a high incidence of CRC.<sup>
+<xref rid="bibr19-17562848251327167" ref-type="bibr">19</xref>
+</sup> In addition, specific microbial metabolites, including free fatty acids, tryptophan derivatives, vitamins, and choline, have been shown to influence intestinal barrier permeability.<sup>
+<xref rid="bibr20-17562848251327167" ref-type="bibr">20</xref>
+</sup> Recent studies indicate that tryptamine, via 5-HT4 receptor activation, modulates gastrointestinal (GI) motility and acts as a key signaling molecule in host–microbe interactions.<sup>
+<xref rid="bibr21-17562848251327167" ref-type="bibr">21</xref>
+</sup> Tryptophan metabolism to kynurenine can induce neuroinflammation and impair brain health, whereas microbial conversion of tryptophan to indole supports gut and brain protection.<sup>
+<xref rid="bibr22-17562848251327167" ref-type="bibr">22</xref>
+</sup> Extensive studies indicate that dysregulated gut microbiota can compromise intestinal mucosa and cellular integrity through metabolite secretion, immune modulation, and toxin production, thereby influencing tumor initiation, progression, and prognosis.<sup><xref rid="bibr23-17562848251327167" ref-type="bibr">23</xref><xref rid="bibr24-17562848251327167" ref-type="bibr"/>–<xref rid="bibr25-17562848251327167" ref-type="bibr">25</xref></sup></p><fig position="float" id="fig1-17562848251327167" orientation="portrait"><label>Figure 1.</label><caption><p>A schematic representation of the intestinal barrier. The intestinal barrier includes a microbial barrier, a mechanical barrier, and an immune barrier, and plays a significant role in regulating the gut microbiota. The microbial barrier exists in a mucous layer acting as a scaffold, including <italic toggle="yes">Escherichia coli, Helicobacter pylori</italic>, and <italic toggle="yes">Fusobacterium nucleatum</italic>, to name a few. The mechanical barrier is made up of a single layer of intestinal epithelial cells that is sealed by tight junctions, the cells of which include stem cells (ISCs), progenitor cells (TA cells), and specialized cells (enterocytes, M cells, goblet cells, Paneth cells, enteroendocrine cells, and tuft cells). Immune cells in the lamina propria constitute the immune barrier and support the gut barrier by helping to maintain the host–microbiota interface.</p><p>Source: Created with <ext-link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://figdraw.com" ext-link-type="uri">figdraw.com</ext-link>.</p></caption><graphic xmlns:xlink="http://www.w3.org/1999/xlink" position="float" orientation="portrait" xlink:href="10.1177_17562848251327167-fig1.jpg"/></fig></sec><sec id="section5-17562848251327167"><title>Epithelial barrier and junctional complex integrity</title><p>The intestinal epithelium functions as a critical physical barrier against pathogens, stressors, and microbial invasion; its disruption may promote CRC initiation and accelerate tumor invasion and metastasis.<sup><xref rid="bibr26-17562848251327167" ref-type="bibr">26</xref>,<xref rid="bibr27-17562848251327167" ref-type="bibr">27</xref></sup> The intestinal epithelium comprises six distinct mature cell types, broadly categorized as absorptive and secretory cells (<xref rid="fig1-17562848251327167" ref-type="fig">Figure 1</xref>). The integrity of the epithelial barrier is closely interconnected with the other two barriers. The mucus layer protects epithelial cells from harmful substances in the intestinal lumen, while immune cells help monitor and defend the barrier.<sup>
+<xref rid="bibr28-17562848251327167" ref-type="bibr">28</xref>
+</sup> Dysbiosis can lead to the secretion of toxins or metabolites that damage epithelial cells, compromising the mucus layer and triggering abnormal immune responses. Absorptive cells, including enterocytes and microfold cells, and secretory cells such as goblet cells, Paneth cells, enteroendocrine cells, and tuft cells, are crucial for barrier function.<sup>
+<xref rid="bibr29-17562848251327167" ref-type="bibr">29</xref>
+</sup> In CRC patients, alterations in the proportion and function of these cells occur. For example, reduced mucus production by goblet cells weakens the mucus layer, increasing the epithelial barrier’s vulnerability to pathogenic bacteria, which can interact with underlying tissues and promote CRC development.<sup>
+<xref rid="bibr30-17562848251327167" ref-type="bibr">30</xref>
+</sup> Collectively, these cells establish a dynamic barrier that isolates luminal contents from underlying host tissue. The epithelial layer’s filtering capacity relies on both the surface mucus layer and the intermicrovillar bridging structures, which enhance mechanical integrity and resistance to luminal stress.<sup>
+<xref rid="bibr31-17562848251327167" ref-type="bibr">31</xref>
+</sup></p><p>Intercellular junctions include desmosomes, adherens junctions, and tight junctions.<sup>
+<xref rid="bibr32-17562848251327167" ref-type="bibr">32</xref>
+</sup> Positioned at the apical region of the junctional complex, tight junctions primarily function as both a barrier and a fence.<sup>
+<xref rid="bibr33-17562848251327167" ref-type="bibr">33</xref>
+</sup> Tight junctions are essential for regulating the paracellular transport pathway, with a size-selective leak pathway that restricts large solutes (e.g., proteins, bacterial lipopolysaccharides (LPS)) and a charge-selective pathway mediated by claudin-based pores.<sup>
+<xref rid="bibr34-17562848251327167" ref-type="bibr">34</xref>
+</sup> Tight junction function can be compromised by the microbiota and other barriers. In CRC, toxins like colibactin from <italic toggle="yes">E. coli</italic> disrupt tight junctions, while microbiota-induced alterations in the mucus layer allow pathogens to damage epithelial cells.<sup>
+<xref rid="bibr35-17562848251327167" ref-type="bibr">35</xref>
+</sup> This increases intestinal permeability, enabling harmful substances to reach underlying tissues, triggering inflammation, activating tumorigenic pathways such as NF-κB, and promoting CRC progression.</p></sec><sec id="section6-17562848251327167"><title>Immune barrier and intestinal immunity</title><p>The immune response is critical at every stage of CRC progression, influencing both tumor control and immune escape.<sup>
+<xref rid="bibr36-17562848251327167" ref-type="bibr">36</xref>
+</sup> Dysbiosis disrupts immune cell activation, impairing normal immune surveillance and defense against tumor cells. Antigen-presenting cells (APCs), such as macrophages, dendritic cells (DCs), and B cells, play key roles in antigen presentation and immune activation (<xref rid="fig1-17562848251327167" ref-type="fig">Figure 1</xref>). In CRC, APCs operate within an immunosuppressive tumor microenvironment (TME), facilitating immune evasion, a situation exacerbated by the dysfunction of the mucosal and epithelial barriers, and in CRC patients, the dysbiotic microbiota further impairs APC function.<sup>
+<xref rid="bibr37-17562848251327167" ref-type="bibr">37</xref>
+</sup> Pathogenic bacteria can skew macrophage polarization to a pro-inflammatory M1-like phenotype, which, while initially protective, promotes chronic inflammation—a known CRC risk factor that drives tumor proliferation and immune escape. Disruption of the mucosal and epithelial barriers further hampers immune activation, weakening defenses and promoting CRC progression. (1) Intestinal macrophages normally protect against inflammation, but disrupted polarization can lead to chronic inflammation, creating a tumor-promoting microenvironment. Cytokines like TNF-α and IL-6, released by activated macrophages, activate pathways in tumor cells that enhance survival, proliferation, and invasion, while further driving DNA damage and genomic instability.<sup>
+<xref rid="bibr38-17562848251327167" ref-type="bibr">38</xref>
+</sup> (2) Plasmacytoid dendritic cells (pDCs) produce high levels of IFN-I during viral infections, but this function is impaired in the TME, allowing tumor cells to evade immune detection and promoting unchecked growth. Dysbiosis can exacerbate this effect by releasing metabolites that inhibit pDC function, enhancing the immunosuppressive microenvironment.<sup>
+<xref rid="bibr39-17562848251327167" ref-type="bibr">39</xref>
+</sup> (3) B cells contribute to antitumor immunity by secreting IgA and IgG1 antibodies and presenting tumor antigens. In CRC, dysbiosis impairs B-cell functions, hindering antibody production and antigen presentation, weakening the immune response, and allowing tumor cells to evade destruction. In addition, disrupted B-cell interactions with other immune cells further impair immune defense.<sup>
+<xref rid="bibr40-17562848251327167" ref-type="bibr">40</xref>
+</sup></p><p>Collectively, microbiota dysbiosis disrupts the intestinal barrier system, triggering a cascade of events that foster CRC development. As outlined in the following section, specific bacterial species and signaling pathways further drive CRC progression, exploiting the compromised barrier and the ensuing pro-inflammatory and immunosuppressive microenvironment.</p></sec></sec><sec id="section7-17562848251327167"><title>Mechanisms of microbiota-driven CRC progression</title><p>A 2014 study using 16S rRNA sequencing of fecal and digestive tissue samples identified consistent decreases in <italic toggle="yes">Lactobacillus, Faecalibacterium</italic> spp., and <italic toggle="yes">Bifidobacterium</italic> in CRC, while <italic toggle="yes">Staphylococcaceae, Alistipes, Porphyromonadaceae</italic>, and <italic toggle="yes">Fusobacteria</italic> increased.<sup>
+<xref rid="bibr41-17562848251327167" ref-type="bibr">41</xref>
+</sup> This alteration in microbial composition deepens the dysbiotic state, amplifying its impact on CRC progression via specific bacterial species and signaling pathways. Eleven microorganisms are classified as human carcinogens primarily based on epidemiological links to cancer, with only <italic toggle="yes">H. pylori</italic> showing directly in vivo carcinogenic potential.<sup>
+<xref rid="bibr42-17562848251327167" ref-type="bibr">42</xref>
+</sup> The gut commensal microbiota resists pathogen colonization mainly through inter-microbial competition for nutrients and space.<sup>
+<xref rid="bibr43-17562848251327167" ref-type="bibr">43</xref>
+</sup> In CRC, dysbiosis alters the microbial composition, enabling pathogen colonization and worsening microbial imbalance. Immune and inflammatory responses in the CRC microenvironment may favor the growth of potentially oncogenic bacteria.<sup>
+<xref rid="bibr43-17562848251327167" ref-type="bibr">43</xref>
+</sup> Thus, whether dysbiosis is a cause or consequence of CRC remains unclear; however, microbiota promote tumor growth through three main mechanisms: pathogenic bacteria/toxins, a pro-inflammatory environment, and immune modulation.<sup>
+<xref rid="bibr44-17562848251327167" ref-type="bibr">44</xref>
+</sup></p><sec id="section8-17562848251327167"><title>Pathogen-induced DNA damage and genomic instability</title><sec id="section9-17562848251327167"><title>Campylobacter jejuni</title><p>The gram-negative bacterium <italic toggle="yes">Campylobacter jejuni</italic> promotes tumor growth in a mouse CRC model. Cytolethal distending toxin (CDT), a genotoxin from <italic toggle="yes">C. jejuni</italic>, comprises subunits CdtA, CdtB, and CdtC.<sup>
+<xref rid="bibr45-17562848251327167" ref-type="bibr">45</xref>
+</sup> CDT and colibactin are unique genotoxins that directly damage DNA and induce genomic instability.<sup><xref rid="bibr46-17562848251327167" ref-type="bibr">46</xref>,<xref rid="bibr47-17562848251327167" ref-type="bibr">47</xref></sup> CDT, a major virulence factor, has DNase activity that induces DNA double-strand breaks. CDT activates DNA repair mechanisms by inducing cell cycle arrest at the G2/M phase.<sup><xref rid="bibr48-17562848251327167" ref-type="bibr">48</xref>,<xref rid="bibr49-17562848251327167" ref-type="bibr">49</xref></sup> He et al.<sup>
+<xref rid="bibr50-17562848251327167" ref-type="bibr">50</xref>
+</sup> observed that <italic toggle="yes">E. coli</italic>-induced DNA damage in vitro is likely linked to the CDT subunit CdtB. In addition to upregulating oncogenes, CDT suppresses humoral and cellular immunity by inducing immune cell apoptosis and intestinal epithelial cell necrosis.<sup>
+<xref rid="bibr51-17562848251327167" ref-type="bibr">51</xref>
+</sup> Immune cell apoptosis disrupts gut immune surveillance, while the resulting cellular debris and inflammation drive metabolic alterations. This can upregulate glycolysis in neighboring cells, meeting the energy demands of damaged tissue and creating a more favorable environment for tumor growth (<xref rid="fig2-17562848251327167" ref-type="fig">Figure 2</xref>).<sup>
+<xref rid="bibr52-17562848251327167" ref-type="bibr">52</xref>
+</sup></p><fig position="float" id="fig2-17562848251327167" orientation="portrait"><label>Figure 2.</label><caption><p>Several groups of intestinal bacteria with carcinogenic effects. (a) <italic toggle="yes">Escherichia coli. Escherichia coli</italic> is a genotoxic substance produced by strains of <italic toggle="yes">E. coli</italic> carrying the pathogenicity island polyketide synthase (pks+). Its pathogenic mechanism is to cross-link DNA and induce DNA ds breaks, leading to DNA damage in colonic epithelial cells and tumor induction. (b) <italic toggle="yes">Campylobacter jejuni. Campylobacter jejuni</italic> produces CDT, genotoxins that also cause DNA ds breaks. (c) <italic toggle="yes">Bacteroides fragilis</italic>. ETBF treatment of colorectal cancer cells promoted Th17 cell differentiation by down-regulating miR-149-3p in exosomes in vitro and in vivo, which was dependent on METTL14-mediated m6A methylation. ETBF down-regulation of miR-149-3p and further promotion of PHF5A-mediated RNA variable shearing of KAT2A ultimately induced colorectal carcinogenesis.</p><p>Source: Created with <ext-link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://figdraw.com" ext-link-type="uri">figdraw.com</ext-link>.</p><p>ds, double-strand; ETBF, enterotoxigenic <italic toggle="yes">Bacteroides fragilis</italic>; METTL14, RNA methyltransferase 14.</p></caption><graphic xmlns:xlink="http://www.w3.org/1999/xlink" position="float" orientation="portrait" xlink:href="10.1177_17562848251327167-fig2.jpg"/></fig></sec><sec id="section10-17562848251327167"><title>Escherichia coli</title><p><italic toggle="yes">Escherichia coli</italic>, a Gram-negative symbiotic bacterium, is clearly linked to CRC when attached to mucosal surfaces. Studies show elevated mucosal <italic toggle="yes">E. coli</italic> colonization in CRC patients compared to healthy controls.<sup>
+<xref rid="bibr53-17562848251327167" ref-type="bibr">53</xref>
+</sup> Swidsinski et al. detected <italic toggle="yes">E. coli</italic> in only 3% of healthy biopsies, but in 62% of adenoma and 77% of CRC patients using 16S PCR. Colibactin-producing <italic toggle="yes">E. coli</italic> (pEPEC), which synthesizes the genotoxin colibactin, exhibits carcinogenic effects.<sup>
+<xref rid="bibr54-17562848251327167" ref-type="bibr">54</xref>
+</sup> The carcinogenic mechanisms involve DNA double-strand breaks and nucleotide modification, causing genomic instability and mutation, which drive carcinogenesis.<sup><xref rid="bibr53-17562848251327167" ref-type="bibr">53</xref>,<xref rid="bibr55-17562848251327167" ref-type="bibr">55</xref></sup> pEPEC attracts immune cells, but its toxins impair their function, hindering immune response.<sup>
+<xref rid="bibr56-17562848251327167" ref-type="bibr">56</xref>
+</sup> DNA damage activates the pentose phosphate pathway, supplying nucleotides for repair and promoting tumor cell proliferation. Nouri et al.<sup>
+<xref rid="bibr57-17562848251327167" ref-type="bibr">57</xref>
+</sup> reported a higher prevalence of virulence factor genes in <italic toggle="yes">E. coli</italic> strains from CRC patients (<xref rid="fig2-17562848251327167" ref-type="fig">Figure 2</xref>).</p></sec><sec id="section11-17562848251327167"><title>Bacteroides fragilis</title><p><italic toggle="yes">Bacteroides fragilis</italic> is an anaerobic, gram-negative, opportunistic pathogen. <italic toggle="yes">Bacteroides fragilis</italic> in the gut microbiome is suggested as an early biomarker for CRC.<sup>
+<xref rid="bibr58-17562848251327167" ref-type="bibr">58</xref>
+</sup>
+<italic toggle="yes">Bacteroides fragilis</italic> has two subtypes: non-toxigenic and enterotoxigenic (ETBF). ETBF produces BFT toxins that disrupt mucosa, potentially leading to acute diarrhea, IBD, and CRC. ETBF promotes CRC cell proliferation by downregulating miR-149-3p in vitro and in vivo,<sup>
+<xref rid="bibr59-17562848251327167" ref-type="bibr">59</xref>
+</sup> with miR-149-3p dysregulation linked to cancer and other diseases, including cancer,<sup>
+<xref rid="bibr60-17562848251327167" ref-type="bibr">60</xref>
+</sup> autoimmune disorders,<sup>
+<xref rid="bibr61-17562848251327167" ref-type="bibr">61</xref>
+</sup> and inflammatory diseases.<sup>
+<xref rid="bibr62-17562848251327167" ref-type="bibr">62</xref>
+</sup> This downregulation impairs CRC growth and alters the immune microenvironment, reducing antitumor immune cell recruitment and promoting immunosuppressive cell infiltration. Meanwhile, metabolic changes in surrounding tissue increase metabolites like lactate, supporting tumor survival and invasion.<sup>
+<xref rid="bibr63-17562848251327167" ref-type="bibr">63</xref>
+</sup> The <italic toggle="yes">bft</italic> gene in ETBF encodes BFT, a metalloproteinase toxin that disrupts the gut barrier by binding to intestinal epithelial receptors.<sup><xref rid="bibr64-17562848251327167" ref-type="bibr">64</xref>,<xref rid="bibr65-17562848251327167" ref-type="bibr">65</xref></sup> Zakharzhevskaya et al.<sup>
+<xref rid="bibr66-17562848251327167" ref-type="bibr">66</xref>
+</sup> observed higher levels of enterotoxin-producing <italic toggle="yes">B. fragilis</italic> in CRC patients, especially those with recurrence. A study found that <italic toggle="yes">Anaplasma fragilis</italic> and <italic toggle="yes">Pseudomonas aeruginosa</italic> were more prevalent in CRC cases compared to other strains studied.<sup>
+<xref rid="bibr67-17562848251327167" ref-type="bibr">67</xref>
+</sup> This was also confirmed by Hwang et al.<sup>
+<xref rid="bibr68-17562848251327167" ref-type="bibr">68</xref>
+</sup> who showed that in the AOM/DSS mouse model, <italic toggle="yes">Mimicronium fragilis</italic> induced the formation of polyps and colitis and exacerbated the development of colorectal tumors. These findings implicate <italic toggle="yes">B. fragilis</italic> as an enterotoxigenic, tumor-promoting bacterium in CRC (<xref rid="fig2-17562848251327167" ref-type="fig">Figure 2</xref>).</p></sec></sec><sec id="section12-17562848251327167"><title>Inflammatory signaling pathways and tumorigenic inflammatory microenvironment</title><p>Activation of the innate and adaptive immune systems, coupled with increased mucosal permeability and bacterial translocation, triggers chronic inflammation, while microbiota imbalances and opportunistic infections further exacerbate this process.<sup>
+<xref rid="bibr69-17562848251327167" ref-type="bibr">69</xref>
+</sup> Dysbiosis activates signaling pathways such as MAPK, NF-κB, and PI3K/AKT (<xref rid="fig3-17562848251327167" ref-type="fig">Figure 3</xref>), increasing reactive oxygen species (ROS) and pro-inflammatory cytokines, including nitric oxide and IL-8, which promote cancer development.<sup><xref rid="bibr1-17562848251327167" ref-type="bibr">1</xref>,<xref rid="bibr70-17562848251327167" ref-type="bibr">70</xref></sup> Short-chain fatty acids (SCFAs), key microbiota-derived metabolites, interact with G-protein-coupled receptors on immune and epithelial cells.<sup>
+<xref rid="bibr71-17562848251327167" ref-type="bibr">71</xref>
+</sup> At low concentrations, SCFAs exert anti-inflammatory effects, but in dysbiosis, elevated levels can excessively activate the NF-κB pathway, driving pro-inflammatory cytokine production and attracting immune cells to the tumor site.<sup>
+<xref rid="bibr72-17562848251327167" ref-type="bibr">72</xref>
+</sup> Chronic inflammation disrupts immune cell metabolism, shifting them from antitumor to tumor-promoting phenotypes. In addition, microbial toxins like LPS from Gram-negative bacteria activate the MAPK pathway via toll-like receptors, increasing ROS production. Elevated ROS not only induces DNA damage but also disrupts normal cellular metabolism, fostering tumorigenesis.<sup>
+<xref rid="bibr73-17562848251327167" ref-type="bibr">73</xref>
+</sup> Elevated levels of specific bacterial populations in advanced CRC patients induce inflammatory mediators (e.g., ROS, IL-6, IL-8, IL-1ß, TNF-α) and recruit CD11b+TLR4+ cells.<sup><xref rid="bibr19-17562848251327167" ref-type="bibr">19</xref>,<xref rid="bibr74-17562848251327167" ref-type="bibr">74</xref>,<xref rid="bibr75-17562848251327167" ref-type="bibr">75</xref></sup> Chronic inflammation drives carcinogenesis by inducing oxidative DNA damage, activating oncogenes, and inactivating tumor suppressor genes.<sup>
+<xref rid="bibr76-17562848251327167" ref-type="bibr">76</xref>
+</sup> However, in addition to these pro-inflammatory responses, the role of anti-inflammatory pathways, such as IL-10 and TGF-β, is crucial in maintaining immune homeostasis.<sup>
+<xref rid="bibr77-17562848251327167" ref-type="bibr">77</xref>
+</sup> Dysbiosis can impair the function of these regulatory pathways, leading to a breakdown of immune tolerance and promoting tumor progression. For instance, the reduced production of IL-10 in the context of microbiota dysbiosis impairs immune suppression, allowing persistent inflammation to fuel cancer development.<sup>
+<xref rid="bibr78-17562848251327167" ref-type="bibr">78</xref>
+</sup> In CRC mouse models, <italic toggle="yes">pks+ E. coli</italic> promotes DNA damage and tumorigenesis in the context of active mucosal inflammation, but not post-inflammation.<sup>
+<xref rid="bibr79-17562848251327167" ref-type="bibr">79</xref>
+</sup></p><fig position="float" id="fig3-17562848251327167" orientation="portrait"><label>Figure 3.</label><caption><p>Mechanisms of microbiota disruption leading to an inflammatory environment. (1) The NF-κB heterodimer is usually composed of the p50 and p65 subunits. It is present in the cytoplasm and is inactivated by the inhibitory molecule IkBα. The IkB protein is activated when a specific IKK acts on the IkB protein. This causes NF-κB to translocate to the nucleus and initiate transcription of the target gene. (2) JAK/STAT signaling pathway. Cytokine binding induces receptor dimerization. Upon ligand binding, JAKs are activated and phosphorylate each other, then recruit, bind, and phosphorylate STATs in the cytoplasm, which are then dimerized and transported to the nucleus. The dimerized STATs bind directly to DNA, altering chromatin structure and inducing gene expression of inflammatory mediators. (3) MAPK signaling pathway. The pathway of MAPK consists of MAPK kinase (MKKK), MAPK kinase (MKK), and MAPK, that is, the MAP3K-MAP2K-MAPK chain. These three kinases can be activated sequentially to transmit signals from upstream to downstream. Of the four MAPK signaling pathways, those associated with inflammation, apoptosis, and growth are JNK and p38. (4) PIK3CA/AKT/mTOR signaling pathway. AKT is activated by phosphorylation of PDK1 and also by the RAS/MAPK pathway. On the cell surface, members of the tyrosine kinase receptor activate intracellular cofactors that regulate the PIK3 pathway. MAPK interacts with transcription factors in the nucleus, thereby affecting gene expression.</p><p>Source: Created with <ext-link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://figdraw.com" ext-link-type="uri">figdraw.com</ext-link>.</p><p>IKK, IkB kinase.</p></caption><graphic xmlns:xlink="http://www.w3.org/1999/xlink" position="float" orientation="portrait" xlink:href="10.1177_17562848251327167-fig3.jpg"/></fig></sec><sec id="section13-17562848251327167"><title>Microbiota-mediated immune modulation and tumor immune evasion</title><p>Mouse models with altered immune and inflammatory responses provide robust evidence that dysbiosis alone can induce cancer.<sup><xref rid="bibr80-17562848251327167" ref-type="bibr">80</xref>,<xref rid="bibr81-17562848251327167" ref-type="bibr">81</xref></sup> These findings indicate that the immune system plays a central role in mediating gut microbiota–CRC interactions.<sup>
+<xref rid="bibr19-17562848251327167" ref-type="bibr">19</xref>
+</sup> Barrier disruption and increased permeability activate immune cells in the lamina propria.<sup><xref rid="bibr82-17562848251327167" ref-type="bibr">82</xref>,<xref rid="bibr83-17562848251327167" ref-type="bibr">83</xref></sup> Activated immune cells interact with microbiota-derived metabolites, such as tryptophan metabolites like indole-3-acetic acid, which influence immune cell function. In CRC, these metabolites can shift the balance between regulatory T cells and effector T cells, with an elevated regulatory T-cell ratio promoting immune suppression and aiding tumor immune evasion. Concurrently, tumor cells may enhance the expression of transporters to uptake these metabolites, utilizing them to support growth and invasion.<sup>
+<xref rid="bibr84-17562848251327167" ref-type="bibr">84</xref>
+</sup> In mice, adenomas induce colonic barrier defects that allow microbial products to drive IL-23/IL-17-mediated tumor growth.<sup>
+<xref rid="bibr82-17562848251327167" ref-type="bibr">82</xref>
+</sup> Brennan et al.<sup>
+<xref rid="bibr83-17562848251327167" ref-type="bibr">83</xref>
+</sup> found that in the colonic lamina propria, <italic toggle="yes">F. nucleatum</italic> strain Fn7-1 modulates Th17 cell frequency and IL-17A/F expression, impacting intestinal immunity. Elevated ROS and microbial metabolites in the TME induce DNA damage and suppress CD8+ T-cell function.<sup>
+<xref rid="bibr85-17562848251327167" ref-type="bibr">85</xref>
+</sup> Microbial metabolites, like secondary bile acids, accumulate in the TME due to microbiota dysbiosis. These acids interact directly with CD8+ T cells, disrupting their signaling and reducing cytotoxic activity.<sup>
+<xref rid="bibr84-17562848251327167" ref-type="bibr">84</xref>
+</sup> In addition, they modulate the metabolic reprogramming of tumor cells, enhancing the Warburg effect, where tumor cells preferentially rely on glycolysis for energy production, even in the presence of oxygen.<sup>
+<xref rid="bibr86-17562848251327167" ref-type="bibr">86</xref>
+</sup></p></sec></sec></sec><sec id="section14-17562848251327167"><title>The role of FMT in CRC treatment</title><p>FMT has emerged as an innovative therapeutic strategy to mitigate gut dysbiosis, a condition frequently worsened by standard CRC treatments such as chemotherapy, radiotherapy, and surgical resection.<sup><xref rid="bibr87-17562848251327167" ref-type="bibr">87</xref>,<xref rid="bibr88-17562848251327167" ref-type="bibr">88</xref></sup> In non-cancer GI diseases, FMT is an effective treatment for recurrent <italic toggle="yes">Clostridium difficile</italic> infection, which led to its approval by the FDA for this disease.<sup>
+<xref rid="bibr89-17562848251327167" ref-type="bibr">89</xref>
+</sup> Currently, this is the only indication to use FMT in patients. Although FMT has not yet been directly used to treat CRC, radiation-induced dysbiosis and GI side effects during CRC chemoradiotherapy might be reverted by FMT.<sup>
+<xref rid="bibr8-17562848251327167" ref-type="bibr">8</xref>
+</sup> However, its application in other GI disorders remains limited, and the long-term stability of the restored microbiota post-treatment requires further investigation (<xref rid="table1-17562848251327167" ref-type="table">Table 1</xref>).</p><table-wrap position="float" id="table1-17562848251327167" orientation="portrait"><label>Table 1.</label><caption><p>Summary of FMT in clinical trials.</p></caption><alternatives><graphic xmlns:xlink="http://www.w3.org/1999/xlink" position="float" orientation="portrait" xlink:href="10.1177_17562848251327167-table1.jpg"/><table frame="hsides" rules="groups"><colgroup span="1"><col align="left" span="1"/><col align="char" char="." span="1"/><col align="char" char="." span="1"/><col align="char" char="." span="1"/><col align="char" char="." span="1"/><col align="char" char="." span="1"/><col align="char" char="." span="1"/></colgroup><thead><tr><th align="left" rowspan="1" colspan="1">NCT number</th><th align="left" rowspan="1" colspan="1">Title</th><th align="left" rowspan="1" colspan="1">Study type</th><th align="left" rowspan="1" colspan="1">Study status</th><th align="left" rowspan="1" colspan="1">Conditions</th><th align="left" rowspan="1" colspan="1">Study characteristics: <italic toggle="yes">n</italic>, sex, years (range)</th><th align="left" rowspan="1" colspan="1">Outcomes: primary</th></tr></thead><tbody><tr><td rowspan="1" colspan="1"><ext-link xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="pmc:clinical-trial" xlink:href="NCT03104036">NCT03104036</ext-link></td><td rowspan="1" colspan="1">Fecal bacteriotherapy for UC</td><td rowspan="1" colspan="1">Interventional</td><td rowspan="1" colspan="1">Completed</td><td rowspan="1" colspan="1">UC</td><td rowspan="1" colspan="1"><italic toggle="yes">n</italic> = 61<break/>Sex: all<break/>Age: &gt;18</td><td rowspan="1" colspan="1">Clinical remission, Mayo score ⩽2 with no subscore\&gt;1, Week 12</td></tr><tr><td rowspan="1" colspan="1"><ext-link xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="pmc:clinical-trial" xlink:href="NCT04749030">NCT04749030</ext-link></td><td rowspan="1" colspan="1">FMT for patients with diabetes mellitus type 1 and severe gastrointestinal neuropathy</td><td rowspan="1" colspan="1">Interventional</td><td rowspan="1" colspan="1">Completed</td><td rowspan="1" colspan="1">Diabetes mellitus, type 1 gastrointestinal neuropathy</td><td rowspan="1" colspan="1"><italic toggle="yes">n</italic> = 20<break/>Sex: all<break/>Age: &gt;18</td><td rowspan="1" colspan="1">–</td></tr><tr><td rowspan="1" colspan="1"><ext-link xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="pmc:clinical-trial" xlink:href="NCT05035784">NCT05035784</ext-link></td><td rowspan="1" colspan="1">Retrograde Colonic Enema with FMT in the treatment of childhood constipation</td><td rowspan="1" colspan="1">Interventional</td><td rowspan="1" colspan="1">Completed</td><td rowspan="1" colspan="1">Constipation—functional</td><td rowspan="1" colspan="1"><italic toggle="yes">n</italic> = 110<break/>Sex: all<break/>Age: 4–14</td><td rowspan="1" colspan="1">Improvement of SBMs per week, Baseline|improvement of SBMs per week, at the end of 4-weeks FMT treatment|improvement of SBMs per week</td></tr><tr><td rowspan="1" colspan="1"><ext-link xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="pmc:clinical-trial" xlink:href="NCT05703477">NCT05703477</ext-link></td><td rowspan="1" colspan="1">The dynamic fluctuation of donor microbiota affects the prognosis of FMT for <italic toggle="yes">Clostridium difficile</italic> infection</td><td rowspan="1" colspan="1">Interventional</td><td rowspan="1" colspan="1">Completed</td><td rowspan="1" colspan="1"><italic toggle="yes">C. difficile</italic> infection</td><td rowspan="1" colspan="1"><italic toggle="yes">n</italic> =60<break/>Sex: all<break/>Age: &gt;18</td><td rowspan="1" colspan="1">Changes of microbiota before and after FMT treatment, 7 days, 1 month</td></tr><tr><td rowspan="1" colspan="1"><ext-link xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="pmc:clinical-trial" xlink:href="NCT04294615">NCT04294615</ext-link></td><td rowspan="1" colspan="1">Clinical response and safety following FMT for UC</td><td rowspan="1" colspan="1">Interventional</td><td rowspan="1" colspan="1">Completed</td><td rowspan="1" colspan="1">Inflammatory bowel diseases</td><td rowspan="1" colspan="1"><italic toggle="yes">n</italic> = 9<break/>Sex: all<break/>Age: &gt;18</td><td rowspan="1" colspan="1">Clinical response, reduction in the Mayo score of ⩾3 points and ⩾30% from baseline, with a decrease in the rectal bleeding subscore of ⩾1 point or a subscore of ⩽1, 2 weeks after FMT</td></tr></tbody></table></alternatives><table-wrap-foot><fn id="table-fn1-17562848251327167"><p>FMT, fecal microbiota transplantation; SBM, spontaneous bowel movements; UC, ulcerative colitis.</p></fn></table-wrap-foot></table-wrap><p>In CRC treatment, evidence supporting the use of FMT during radiotherapy, chemotherapy, or immunotherapy is sparse. Although FMT has shown promise in enhancing immune checkpoint inhibitor (ICI) efficacy in melanoma patients, its therapeutic potential in CRC remains unproven.<sup>
+<xref rid="bibr90-17562848251327167" ref-type="bibr">90</xref>
+</sup> Furthermore, research exploring FMT’s role during radiotherapy and chemotherapy is even more limited.<sup>
+<xref rid="bibr91-17562848251327167" ref-type="bibr">91</xref>
+</sup> FMT can be utilized both as a standalone therapy and as an adjunct in CRC treatment. As a primary approach, it restores gut microbiota balance and modulates the immune response to directly impact tumor progression. When combined with conventional treatments like chemotherapy, radiotherapy, and immunotherapy, FMT enhances efficacy by strengthening the gut barrier, mitigating side effects, and amplifying immune responses.<sup>
+<xref rid="bibr8-17562848251327167" ref-type="bibr">8</xref>
+</sup></p><sec id="section15-17562848251327167"><title>Mechanisms of FMT in CRC treatment</title><sec id="section16-17562848251327167"><title>The microbiota–gut–brain axis in CRC therapy</title><p>The microbiota–gut–brain (MGB) axis represents a dynamic communication network between the gut microbiota and the central nervous system (CNS), mediating systemic and local effects critical for CRC treatment.<sup>
+<xref rid="bibr92-17562848251327167" ref-type="bibr">92</xref>
+</sup> A pivotal component of this axis is the vagus nerve (VN), which exerts anti-inflammatory effects by activating the hypothalamic–pituitary–adrenal axis and suppressing pro-inflammatory cytokines, such as TNF, via the cholinergic anti-inflammatory pathway. Acetylcholine released from VN terminals interacts with α7 nicotinic receptors on intestinal macrophages to mediate this process.<sup>
+<xref rid="bibr93-17562848251327167" ref-type="bibr">93</xref>
+</sup> In addition, vagal afferents within the GI tract detect immune and endocrine signals, enabling bidirectional interaction between the gut microbiota and the CNS.<sup>
+<xref rid="bibr94-17562848251327167" ref-type="bibr">94</xref>
+</sup></p><p>FMT restores microbial diversity, which enhances VN-mediated signaling and contributes to a reduction in intestinal permeability, facilitating gut barrier repair.<sup>
+<xref rid="bibr95-17562848251327167" ref-type="bibr">95</xref>
+</sup> Specific microbial metabolites, such as SCFAs like butyrate, play a critical role in strengthening tight junctions and promoting immune cell function. Butyrate also activates vagal afferents, further stimulating the cholinergic anti-inflammatory pathway via α7 nicotinic receptors on intestinal macrophages. This modulation of immune cells helps to counteract inflammation in the TME.<sup>
+<xref rid="bibr96-17562848251327167" ref-type="bibr">96</xref>
+</sup> Moreover, by re-establishing microbial homeostasis, FMT can regulate the inflammasome, a key player in linking gut microbial changes to systemic immune responses and alleviating CRC-associated inflammation.<sup>
+<xref rid="bibr97-17562848251327167" ref-type="bibr">97</xref>
+</sup> Experimental studies underscore FMT’s potential in reversing dysbiosis-induced inflammation, highlighting its therapeutic value through the MGB axis (<xref rid="fig4-17562848251327167" ref-type="fig">Figure 4</xref>).<sup>
+<xref rid="bibr98-17562848251327167" ref-type="bibr">98</xref>
+</sup></p><fig position="float" id="fig4-17562848251327167" orientation="portrait"><label>Figure 4.</label><caption><p>Bidirectional lines of communication between the microbiota, gut, and brain primarily involve neural, endocrine, and immune pathways. When gut microbes are out of balance, a wide range of microbial products including metabolites, neurotransmitters, and cytokines, including 5-HT, SCAF, and GABA, enter the brain through the bloodstream. The unidirectional and bidirectional movement of metabolites in the gut and brain or distal organs in direct press constitutes a co-metabolic interaction.</p><p>Source: Created with <ext-link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://figdraw.com" ext-link-type="uri">figdraw.com</ext-link>.</p></caption><graphic xmlns:xlink="http://www.w3.org/1999/xlink" position="float" orientation="portrait" xlink:href="10.1177_17562848251327167-fig4.jpg"/></fig></sec><sec id="section17-17562848251327167"><title>Microbial restoration and immune modulation by FMT</title><p>FMT emerges as a critical intervention to counteract microbiota dysbiosis caused by standard CRC therapies, such as chemotherapy and radiotherapy, which often disrupt the gut microbiome and cause significant intestinal injury.<sup>
+<xref rid="bibr87-17562848251327167" ref-type="bibr">87</xref>
+</sup> By introducing fecal matter from healthy donors, FMT replenishes beneficial microbial populations, enhancing gut barrier integrity and mitigating treatment-associated toxicities.<sup>
+<xref rid="bibr1-17562848251327167" ref-type="bibr">1</xref>
+</sup></p><p>FMT modulates the TME by reshaping microbial composition and promoting immune cell infiltration. Donor-derived bacteria could colonize the TME, increasing the abundance of antitumor immune cells, such as CD8+ T cells and DCs. The presence of <italic toggle="yes">Akkermansia muciniphila</italic> and <italic toggle="yes">Bifidobacterium longum</italic> has been linked to improved antigen presentation and heightened effector T-cell activity.<sup>
+<xref rid="bibr99-17562848251327167" ref-type="bibr">99</xref>
+</sup> Clinically, a trial investigated the combination of FMT and anti-PD-1 (<ext-link xmlns:xlink="http://www.w3.org/1999/xlink" ext-link-type="pmc:clinical-trial" xlink:href="NCT04130763">NCT04130763</ext-link>), revealing that FMT enhances anti-PD-1 efficacy by increasing microbial diversity and promoting CD8+ T-cell infiltration, thereby boosting antitumor immunity.<sup>
+<xref rid="bibr8-17562848251327167" ref-type="bibr">8</xref>
+</sup> Such changes promote immune cell infiltration, strengthening antitumor immunity. In addition, the restoration of microbial metabolites, such as SCFAs, contributes to improved gut barrier function, reduced inflammation, and enhanced immune responses, further highlighting FMT’s systemic benefits.<sup>
+<xref rid="bibr100-17562848251327167" ref-type="bibr">100</xref>
+</sup></p><p>In summary, by integrating MGB axis mechanisms with immune modulation, FMT provides a multifaceted therapeutic approach for CRC, addressing both local dysbiosis and systemic immune regulation. Future strategies optimizing FMT protocols could further enhance its efficacy as a cornerstone therapy in CRC management.</p></sec></sec><sec id="section18-17562848251327167"><title>FMT-enhanced microbiota modulation for improved ICI efficacy in CRC</title><sec id="section19-17562848251327167"><title>Enhancing the efficacy of ICIs with FMT</title><p>ICIs, targeting pathways such as the PD-1/PD-L1 axis, have revolutionized cancer treatment by restoring T-cell cytotoxicity and boosting immune responses.<sup><xref rid="bibr101-17562848251327167" ref-type="bibr">101</xref>,<xref rid="bibr102-17562848251327167" ref-type="bibr">102</xref></sup> However, their efficacy remains limited in CRC, benefiting only approximately 15% of patients.<sup>
+<xref rid="bibr103-17562848251327167" ref-type="bibr">103</xref>
+</sup> This underscores the need for adjunctive strategies, where the gut microbiota plays a critical role in modulating ICI effectiveness.</p><p>FMT enhances the efficacy of ICIs by modulating the gut microbiota and amplifying effector T-cell responses. Specific bacteria, such as <italic toggle="yes">B. longum, A. muciniphila</italic>, and <italic toggle="yes">B. fragilis</italic>, improve CD8+ T-cell function and antigen presentation in the TME, enhancing the response to PD-1 blockade therapy. Moreover, microbial metabolites like butyrate boost CD8+ T-cell cytotoxicity while reducing Treg-mediated suppression, further reinforcing the antitumor immune response.<sup><xref rid="bibr104-17562848251327167" ref-type="bibr">104</xref>,<xref rid="bibr105-17562848251327167" ref-type="bibr">105</xref></sup> In addition, <italic toggle="yes">B. fragilis</italic> and <italic toggle="yes">Bifidobacterium</italic> spp. activate DCs, promoting IL-12 production and stimulating type I interferon signaling, which collectively enhances antitumor immunity.<sup>
+<xref rid="bibr104-17562848251327167" ref-type="bibr">104</xref>
+</sup> Microbial metabolites, such as butyrate, also contribute to this process by directly enhancing CD8+ T-cell cytotoxicity in an ID2-dependent manner through the IL-12 pathway.<sup>
+<xref rid="bibr106-17562848251327167" ref-type="bibr">106</xref>
+</sup></p><p>FMT has been shown to restore microbial diversity and enhance ICI efficacy.<sup>
+<xref rid="bibr107-17562848251327167" ref-type="bibr">107</xref>
+</sup> For instance, transferring microbiota from ICI responders into germ-free mice significantly improved PD-1 blockade effectiveness, underscoring the gut microbiota’s pivotal role in modulating immune responses. In addition, differences in glycerophospholipid metabolism between ICI responders and non-responders suggest that FMT may promote immune responses through IFN-γ and IL-2 signaling pathways.<sup>
+<xref rid="bibr108-17562848251327167" ref-type="bibr">108</xref>
+</sup> For example, a study demonstrated that FMT from ICI responders enhanced IFN-γ production and T-cell activation in the TME, improving the efficacy of PD-1 blockade in CRC.<sup>
+<xref rid="bibr8-17562848251327167" ref-type="bibr">8</xref>
+</sup></p></sec><sec id="section20-17562848251327167"><title>Comparison with probiotics, prebiotics, and postbiotics</title><p>FMT demonstrates significant advantages over other microbiota-modulating strategies, such as probiotics, prebiotics, and postbiotics. Although probiotics like <italic toggle="yes">B. lactis</italic> Bl-04 and <italic toggle="yes">L. acidophilus</italic> NCFM have shown a potential to enrich butyrate-producing species in some CRC patient studies, their capacity to consistently enhance anti-tumor immunity remains uncertain.<sup>
+<xref rid="bibr109-17562848251327167" ref-type="bibr">109</xref>
+</sup> Key challenges include the difficulty in identifying strains with reliable immunomodulatory properties and the risk of adverse events, such as bacteremia, particularly in immunocompromised individuals.<sup>
+<xref rid="bibr110-17562848251327167" ref-type="bibr">110</xref>
+</sup> Prebiotics, while capable of increasing the abundance of immunogenic gut bacteria, lack robust evidence of efficacy in CRC-specific contexts. Similarly, neither prebiotics nor postbiotics can fully restore microbial diversity or address the complex dysbiosis associated with CRC.<sup><xref rid="bibr1-17562848251327167" ref-type="bibr">1</xref>,<xref rid="bibr110-17562848251327167" ref-type="bibr">110</xref></sup></p><p>By contrast, FMT transplants a complete and diverse microbial community, re-establishing intricate microbiota–host interactions essential for immune modulation. A recent clinical trial (ChiCTR2100046768) in patients with microsatellite stable metastatic colorectal cancer (MSS-mCRC) implemented a novel triple therapy combining FMT with PD-1 inhibitors and VEGFR inhibitors.<sup>
+<xref rid="bibr111-17562848251327167" ref-type="bibr">111</xref>
+</sup> Preliminary findings indicated that this approach effectively slowed tumor progression, reduced serum tumor marker levels, enhanced immune function, and facilitated gut microbiota homeostasis. Microbiome analysis further revealed that treatment responders exhibited an increased abundance of <italic toggle="yes">Proteobacteria</italic> and <italic toggle="yes">Lachnospiraceae</italic>, alongside a comparatively lower presence of <italic toggle="yes">Actinobacteria</italic> and <italic toggle="yes">Bifidobacterium</italic>. These findings underscore the therapeutic potential of FMT in reshaping the gut microbiome to improve immunotherapy outcomes.</p><p>Moreover, FMT has been shown to mitigate the adverse effects of antibiotics, which can deplete beneficial bacteria necessary for ICI efficacy and may foster resistance in pathogenic microbes.<sup><xref rid="bibr104-17562848251327167" ref-type="bibr">104</xref>,<xref rid="bibr112-17562848251327167" ref-type="bibr">112</xref>,<xref rid="bibr113-17562848251327167" ref-type="bibr">113</xref></sup> By restoring microbial metabolites such as SCFAs, FMT enhances gut barrier integrity, reduces inflammation, and promotes systemic immune responses, addressing both local and systemic challenges in CRC treatment.<sup>
+<xref rid="bibr1-17562848251327167" ref-type="bibr">1</xref>
+</sup></p></sec></sec></sec><sec id="section21-17562848251327167"><title>Overcoming challenges and addressing limitations of FMT in advancing CRC therapy</title><sec id="section22-17562848251327167"><title>Risks and safety concerns in FMT</title><sec id="section23-17562848251327167"><title>Pathogen transmission and donor screening</title><p>The therapeutic potential of FMT in CRC is accompanied by critical risks and safety considerations, particularly related to pathogen transmission, adverse effects, and long-term consequences. FMT involves transplanting live microbiota from donors, which raises the risk of transmitting multidrug-resistant organisms (MDROs) or unknown pathogens. DeFilipp et al. reported two cases of bacteremia caused by extended-spectrum beta-lactamase-producing <italic toggle="yes">E. coli</italic>, one of which was fatal. Genome sequencing confirmed that both infections were linked to the same fecal donor, highlighting the importance of stringent donor screening protocols.<sup><xref rid="bibr114-17562848251327167" ref-type="bibr">114</xref>,<xref rid="bibr115-17562848251327167" ref-type="bibr">115</xref></sup> Donors must be free from infections, chronic illnesses, or metabolic conditions, as studies suggest that traits such as obesity or diabetes may also be transferred to recipients.<sup>
+<xref rid="bibr116-17562848251327167" ref-type="bibr">116</xref>
+</sup></p><p>Proper processing and handling of donor feces are essential to minimize risks. Homogenizing and diluting stool samples under sterile conditions ensures consistency and safety.<sup><xref rid="bibr117-17562848251327167" ref-type="bibr">117</xref>,<xref rid="bibr118-17562848251327167" ref-type="bibr">118</xref></sup> Techniques that maximize the transfer of viable aerobic and anaerobic strains are crucial for comprehensive microbiota remodeling.<sup>
+<xref rid="bibr118-17562848251327167" ref-type="bibr">118</xref>
+</sup> Delivery methods such as nasogastric or nasojejunal routes, as well as transendoscopic approaches, are commonly used to improve safety and efficacy.<sup><xref rid="bibr113-17562848251327167" ref-type="bibr">113</xref>,<xref rid="bibr119-17562848251327167" ref-type="bibr">119</xref></sup></p></sec><sec id="section24-17562848251327167"><title>Adverse effects and long-term safety</title><p>Most adverse effects of FMT are mild and self-limiting, including abdominal pain, diarrhea, constipation, and fever.<sup>
+<xref rid="bibr120-17562848251327167" ref-type="bibr">120</xref>
+</sup> Adverse reactions occur in approximately 10%–20% of patients, with severe complications, like bacteremia, being rare but serious. In the National FMT Registry of the United States, 1% of patients developed potentially drug-resistant bacterial infections 1 month after FMT, with the incidence of infection events within 6 months at about 4%.<sup>
+<xref rid="bibr121-17562848251327167" ref-type="bibr">121</xref>
+</sup> In addition, some patients may not benefit from FMT and may experience worsened symptoms, particularly in cases of refractory GI diseases like <italic toggle="yes">C. difficile</italic> infection. The exacerbation rate of IBD in adults is 26.8%, and 10.8% in children.<sup>
+<xref rid="bibr122-17562848251327167" ref-type="bibr">122</xref>
+</sup> Effective management strategies include pre-screening for infections, close monitoring during the procedure, and the use of post-FMT antibiotics in cases of confirmed infections. Prompt recognition and intervention can help mitigate severe outcomes. However, pre-treatment regimens, such as administering oral antibiotics to recipients for enhanced decolonization, may inadvertently increase susceptibility to MDROs.<sup>
+<xref rid="bibr123-17562848251327167" ref-type="bibr">123</xref>
+</sup> Optimizing pre-treatment strategies is essential to minimize these risks while maintaining microbiota balance.</p><p>The long-term safety of FMT remains uncertain, particularly regarding the potential for transferring unknown pathogenic genes or traits linked to donor microbiota. These risks emphasize the need for robust monitoring and follow-up in clinical settings.</p></sec></sec><sec id="section25-17562848251327167"><title>Factors influencing the efficacy of FMT</title><p>The efficacy of FMT can differ based on patient characteristics. In early-stage CRC, FMT may help address microbiota imbalances that contribute to tumorigenesis. However, in late-stage CRC, it primarily serves to support other treatments, such as immunotherapy, by enhancing immune response.<sup><xref rid="bibr1-17562848251327167" ref-type="bibr">1</xref>,<xref rid="bibr124-17562848251327167" ref-type="bibr">124</xref></sup> Moreover, CRC patients with immune dysregulation or comorbidities may experience varying outcomes, as the altered immune environment may influence how microbiota impacts treatment.</p><p>FMT relies heavily on factors such as donor selection, preparation of donor material, and the delivery techniques employed. The characteristics of both donors and recipients, including gender, age, geographic background, immune function, and nutritional health, play a pivotal role in determining treatment outcomes.<sup>
+<xref rid="bibr125-17562848251327167" ref-type="bibr">125</xref>
+</sup> Healthy stool donors, free from infections or chronic diseases, are essential for safe and standardized procedures. Ideal donors should be willing to provide stool regularly as needed, ensuring a consistent supply of high-quality microbiota for transplantation.<sup><xref rid="bibr126-17562848251327167" ref-type="bibr">126</xref><xref rid="bibr127-17562848251327167" ref-type="bibr"/>–<xref rid="bibr128-17562848251327167" ref-type="bibr">128</xref></sup> Equally important is the preparation and handling of donor material. Donor stool must be thoroughly diluted and homogenized to ensure consistency and safety during administration.<sup><xref rid="bibr117-17562848251327167" ref-type="bibr">117</xref>,<xref rid="bibr129-17562848251327167" ref-type="bibr">129</xref></sup> Advanced preparation techniques focus on maximizing the transfer of viable aerobic and anaerobic strains, enabling comprehensive remodeling of both small and large intestinal microbiomes.<sup>
+<xref rid="bibr118-17562848251327167" ref-type="bibr">118</xref>
+</sup></p><p>FMT delivery methods influence its effectiveness. These methods include oral-fecal capsules and transdigestive injections of fecal suspensions, with the latter being more commonly used for its direct targeting of the GI tract. For targeting the upper and middle GI tract, delivery is achieved through gastroscopy, nasogastric, or nasojejunal tubes, whereas the lower GI tract is treated via retention enemas or transendoscopic techniques.<sup>
+<xref rid="bibr119-17562848251327167" ref-type="bibr">119</xref>
+</sup> Stool suspensions are typically prepared using sterile saline solutions, with naso-duodenal or nasogastric routes often preferred for their reliability and safety in clinical settings (<xref rid="fig5-17562848251327167" ref-type="fig">Figure 5</xref>).<sup>
+<xref rid="bibr113-17562848251327167" ref-type="bibr">113</xref>
+</sup> These interconnected factors collectively determine the safety, standardization, and therapeutic success of FMT in clinical applications. Oral capsules are noninvasive and convenient but may result in reduced microbiota viability due to gastric acid exposure. By contrast, enema and transendoscopic methods offer higher local efficacy for targeting the lower GI tract but are more invasive. Each method’s choice depends on the treatment goals and the patient’s clinical condition.<sup>
+<xref rid="bibr130-17562848251327167" ref-type="bibr">130</xref>
+</sup></p><fig position="float" id="fig5-17562848251327167" orientation="portrait"><label>Figure 5.</label><caption><p>The main path of the operation of fecal bacteria transplantation is (1) through the introduction of enteroscopy to the end of the small intestine where the immune tissues and cells are particularly high, put the bacteria liquid; (2) through the upper digestive tract, to reach the jejunum nutrient tube or nasojejunostomy tubes; and (3) an enema, but the enema can only be enrolled in a small section. Currently, many companies are also trying to do fecal bacteria capsules.</p><p>Source: Created with <ext-link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://figdraw.com" ext-link-type="uri">figdraw.com</ext-link>.</p></caption><graphic xmlns:xlink="http://www.w3.org/1999/xlink" position="float" orientation="portrait" xlink:href="10.1177_17562848251327167-fig5.jpg"/></fig></sec></sec><sec sec-type="conclusions" id="section26-17562848251327167"><title>Conclusion</title><p>FMT holds transformative potential in CRC therapy by reshaping the gut microbiota to restore microbial balance, mitigate dysbiosis-driven inflammation, and reprogram the TME. These effects not only suppress tumor-promoting signals but also enhance antitumor immune responses, positioning FMT as a powerful tool for improving CRC treatment outcomes. However, the real clinical significance of FMT lies in its potential to personalize CRC therapy by addressing dysbiosis as a modifiable risk factor and improving the efficacy of standard treatments such as chemotherapy, radiotherapy, and immunotherapy. Its success hinges on overcoming key challenges, including identifying robust biomarkers to predict treatment response, standardizing donor selection criteria, and leveraging advanced tools like artificial intelligence to optimize microbiota composition and donor matching. Establishing standardized protocols for FMT preparation, administration, quality control, and follow-up monitoring is essential to ensure safety, efficacy, and reproducibility across diverse clinical settings.</p><p>Future efforts should focus on large-scale, well-designed clinical trials to validate FMT’s therapeutic efficacy, elucidate its long-term impact, and assess its suitability for distinct CRC stages, including early-stage patients where microbiota modulation may reduce progression risk and late-stage patients requiring adjunctive support for immune-based therapies. Integrating FMT into personalized CRC treatment strategies, supported by innovations such as precision microbiome editing, computational modeling, and advanced bioinformatics, offers a transformative approach to improving patient outcomes. By addressing core gaps in clinical translation—such as standardizing protocols, defining patient selection criteria, and conducting longitudinal safety studies—FMT could evolve from an experimental therapy to a cornerstone of microbiota-based CRC treatments.</p></sec></body><back><ack><p>We would like to thank Dong Tang for their valuable feedback and suggestions on the manuscript. This work was supported by the Graduate Research Innovation Project in Jiangsu province (No. SJCX21_1644), if applicable.</p></ack><fn-group><fn fn-type="other"><p><bold>ORCID iDs:</bold> Chen Gu <inline-graphic xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="10.1177_17562848251327167-img1.jpg"/>
+<ext-link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://orcid.org/0009-0000-8204-512X" ext-link-type="uri">https://orcid.org/0009-0000-8204-512X</ext-link></p><p>Dong Tang <inline-graphic xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="10.1177_17562848251327167-img1.jpg"/>
+<ext-link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://orcid.org/0000-0002-2057-2968" ext-link-type="uri">https://orcid.org/0000-0002-2057-2968</ext-link></p></fn></fn-group><sec id="section27-17562848251327167"><title>Declarations</title><fn-group><fn fn-type="other"><p><bold>Ethics approval and consent to participate:</bold> Not applicable.</p></fn><fn fn-type="other"><p><bold>Consent for publication:</bold> Not applicable.</p></fn><fn fn-type="con"><p><bold>Author contributions:</bold>
+<bold>Chen Gu:</bold> Conceptualization; Data curation; Formal analysis; Investigation; Methodology; Project administration; Writing – original draft; Writing – review &amp; editing.</p><p><bold>Gengyu Sha:</bold> Data curation; Methodology; Writing – original draft.</p><p><bold>Binbin Zeng:</bold> Methodology; Writing – original draft.</p><p><bold>Herong Cao:</bold> Investigation; Writing – review &amp; editing.</p><p><bold>Yibo Cao:</bold> Formal analysis; Writing – review &amp; editing.</p><p><bold>Dong Tang:</bold> Funding acquisition; Writing – review &amp; editing.</p></fn><fn fn-type="financial-disclosure"><p><bold>Funding:</bold> The authors disclosed receipt of the following financial support for the research, authorship, and/or publication of this article: This work was supported by the Graduate Research Innovation Project in Jiangsu province (No. SJCX21_1644), the Academic Science and Technology Innovation Fund for College Students (No. 202011117056Y), the Social Development-Health Care Project of Yangzhou, Jiangsu Province (No. YZ2021075), and High-level talent “six one projects” top talent scientific research project of Jiangsu Province (No. LGY2019034), the Graduate Research-Innovation Project in Jiangsu province (SJCX22_1816). Social development project of key R&amp;D plan of Jiangsu Provincial Department of Science and Technology (BE2022773). The funding bodies had no role in the design of the study; in the collection, analysis, and interpretation of the data; and in the writing of the manuscript.</p></fn><fn fn-type="COI-statement"><p>The authors declare that there is no conflict of interest.</p></fn><fn fn-type="other"><p><bold>Availability of data and materials:</bold> Not applicable.</p></fn></fn-group></sec><ref-list><title>References</title><ref id="bibr1-17562848251327167"><label>1</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Wang</surname><given-names>Y</given-names></name>
+<name name-style="western"><surname>Li</surname><given-names>H</given-names></name>
+</person-group>. <article-title>Gut microbiota modulation: a tool for the management of colorectal cancer</article-title>. <source>J Transl Med</source>
+<year>2022</year>; <volume>20</volume>(<issue>1</issue>): <fpage>178</fpage>.<pub-id pub-id-type="pmid">35449107</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1186/s12967-022-03378-8</pub-id><pub-id pub-id-type="pmcid">PMC9022293</pub-id></mixed-citation></ref><ref id="bibr2-17562848251327167"><label>2</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Al-Nakhle</surname><given-names>HH</given-names></name>
+</person-group>. <article-title>Unraveling the multifaceted role of the miR-17-92 cluster in colorectal cancer: from mechanisms to biomarker potential</article-title>. <source>Curr Issues Mol Biol</source>
+<year>2024</year>; <volume>46</volume>(<issue>3</issue>): <fpage>1832</fpage>–<lpage>1850</lpage>.<pub-id pub-id-type="pmid">38534736</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3390/cimb46030120</pub-id><pub-id pub-id-type="pmcid">PMC10969598</pub-id></mixed-citation></ref><ref id="bibr3-17562848251327167"><label>3</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Yamamura</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Imai-Sumida</surname><given-names>M</given-names></name>
+<name name-style="western"><surname>Tanaka</surname><given-names>Y</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Interaction and cross-talk between non-coding RNAs</article-title>. <source>Cell Mol Life Sci</source>
+<year>2018</year>; <volume>75</volume>(<issue>3</issue>): <fpage>467</fpage>–<lpage>484</lpage>.<pub-id pub-id-type="pmid">28840253</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1007/s00018-017-2626-6</pub-id><pub-id pub-id-type="pmcid">PMC5765200</pub-id></mixed-citation></ref><ref id="bibr4-17562848251327167"><label>4</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Liu</surname><given-names>J</given-names></name>
+<name name-style="western"><surname>Liu</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>Yue</surname><given-names>J</given-names></name>
+</person-group>. <article-title>Radiotherapy and the gut microbiome: facts and fiction</article-title>. <source>Radiat Oncol</source>
+<year>2021</year>; <volume>16</volume>(<issue>1</issue>): <fpage>9</fpage>.<pub-id pub-id-type="pmid">33436010</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1186/s13014-020-01735-9</pub-id><pub-id pub-id-type="pmcid">PMC7805150</pub-id></mixed-citation></ref><ref id="bibr5-17562848251327167"><label>5</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Siegel</surname><given-names>RL</given-names></name>
+<name name-style="western"><surname>Wagle</surname><given-names>NS</given-names></name>
+<name name-style="western"><surname>Cercek</surname><given-names>A</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Colorectal cancer statistics, 2023</article-title>. <source>CA Cancer J Clin</source>
+<year>2023</year>; <volume>73</volume>(<issue>3</issue>): <fpage>233</fpage>–<lpage>254</lpage>.<pub-id pub-id-type="pmid">36856579</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3322/caac.21772</pub-id></mixed-citation></ref><ref id="bibr6-17562848251327167"><label>6</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Fulbright</surname><given-names>LE</given-names></name>
+<name name-style="western"><surname>Ellermann</surname><given-names>M</given-names></name>
+<name name-style="western"><surname>Arthur</surname><given-names>JC</given-names></name>
+</person-group>. <article-title>The microbiome and the hallmarks of cancer</article-title>. <source>PLoS Pathog</source>
+<year>2017</year>; <volume>13</volume>(<issue>9</issue>): e1006480.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1371/journal.ppat.1006480</pub-id><pub-id pub-id-type="pmcid">PMC5608396</pub-id><pub-id pub-id-type="pmid">28934351</pub-id></mixed-citation></ref><ref id="bibr7-17562848251327167"><label>7</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Espinoza</surname><given-names>KS</given-names></name>
+<name name-style="western"><surname>Snider</surname><given-names>AJ</given-names></name>
+</person-group>. <article-title>Therapeutic potential for sphingolipids in inflammatory bowel disease and colorectal cancer</article-title>. <source>Cancers</source>
+<year>2024</year>; <volume>16</volume>(<issue>4</issue>): <fpage>789</fpage>.<pub-id pub-id-type="pmid">38398179</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3390/cancers16040789</pub-id><pub-id pub-id-type="pmcid">PMC10887199</pub-id></mixed-citation></ref><ref id="bibr8-17562848251327167"><label>8</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Van Dingenen</surname><given-names>L</given-names></name>
+<name name-style="western"><surname>Segers</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>Wouters</surname><given-names>S</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Dissecting the role of the gut microbiome and fecal microbiota transplantation in radio- and immunotherapy treatment of colorectal cancer</article-title>. <source>Front Cell Infect Microbiol</source>
+<year>2023</year>; <volume>13</volume>: <fpage>1298264</fpage>.<pub-id pub-id-type="pmid">38035338</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3389/fcimb.2023.1298264</pub-id><pub-id pub-id-type="pmcid">PMC10687483</pub-id></mixed-citation></ref><ref id="bibr9-17562848251327167"><label>9</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Ghazanfar</surname><given-names>H</given-names></name>
+<name name-style="western"><surname>Kandhi</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Acherjee</surname><given-names>T</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Role of fecal microbiota transplantation in managing <italic toggle="yes">Clostridium difficile</italic> infection and inflammatory bowel disease: a narrative review</article-title>. <source>Cureus</source>
+<year>2023</year>; <volume>15</volume>(<issue>12</issue>): e51004.<pub-id pub-id-type="doi" assigning-authority="pmc">10.7759/cureus.51004</pub-id><pub-id pub-id-type="pmcid">PMC10802990</pub-id><pub-id pub-id-type="pmid">38259389</pub-id></mixed-citation></ref><ref id="bibr10-17562848251327167"><label>10</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Brandtzaeg</surname><given-names>P</given-names></name>
+</person-group>. <article-title>The gut as communicator between environment and host: immunological consequences</article-title>. <source>Eur J Pharmacol</source>
+<year>2011</year>; <volume>668</volume>: <fpage>S16</fpage>–<lpage>S32</lpage>.<pub-id pub-id-type="pmid">21816150</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.ejphar.2011.07.006</pub-id></mixed-citation></ref><ref id="bibr11-17562848251327167"><label>11</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Bischoff</surname><given-names>SC</given-names></name>
+<name name-style="western"><surname>Barbara</surname><given-names>G</given-names></name>
+<name name-style="western"><surname>Buurman</surname><given-names>W</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Intestinal permeability—a new target for disease prevention and therapy</article-title>. <source>BMC Gastroenterol</source>
+<year>2014</year>; <volume>14</volume>(<issue>1</issue>): <fpage>189</fpage>.<pub-id pub-id-type="pmid">25407511</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1186/s12876-014-0189-7</pub-id><pub-id pub-id-type="pmcid">PMC4253991</pub-id></mixed-citation></ref><ref id="bibr12-17562848251327167"><label>12</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Qin</surname><given-names>L</given-names></name>
+<name name-style="western"><surname>Lv</surname><given-names>W</given-names></name>
+</person-group>. <article-title>Dietary content and eating behavior in ulcerative colitis: a narrative review and future perspective</article-title>. <source>Nutr J</source>
+<year>2025</year>; <volume>24</volume>(<issue>1</issue>): <fpage>12</fpage>.<pub-id pub-id-type="pmid">39849464</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1186/s12937-025-01075-y</pub-id><pub-id pub-id-type="pmcid">PMC11755847</pub-id></mixed-citation></ref><ref id="bibr13-17562848251327167"><label>13</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Zhao</surname><given-names>X</given-names></name>
+<name name-style="western"><surname>Qiu</surname><given-names>Y</given-names></name>
+<name name-style="western"><surname>Liang</surname><given-names>L</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Interkingdom signaling between gastrointestinal hormones and the gut microbiome</article-title>. <source>Gut Microbes</source>
+<year>2025</year>; <volume>17</volume>(<issue>1</issue>): <fpage>2456592</fpage>.<pub-id pub-id-type="pmid">39851261</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1080/19490976.2025.2456592</pub-id><pub-id pub-id-type="pmcid">PMC11776477</pub-id></mixed-citation></ref><ref id="bibr14-17562848251327167"><label>14</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Alghetaa</surname><given-names>H</given-names></name>
+<name name-style="western"><surname>Mohammed</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Zhou</surname><given-names>J</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Resveratrol-mediated attenuation of superantigen-driven acute respiratory distress syndrome is mediated by microbiota in the lungs and gut</article-title>. <source>Pharmacol Res</source>
+<year>2021</year>; <volume>167</volume>: <fpage>105548</fpage>.<pub-id pub-id-type="pmid">33722710</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.phrs.2021.105548</pub-id><pub-id pub-id-type="pmcid">PMC10116750</pub-id></mixed-citation></ref><ref id="bibr15-17562848251327167"><label>15</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Weisburger</surname><given-names>JH</given-names></name>
+<name name-style="western"><surname>Reddy</surname><given-names>BS</given-names></name>
+<name name-style="western"><surname>Narisawa</surname><given-names>T</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Germ-free status and colon tumor induction by N-methyl-N'-nitro-N-nitrosoguanidine</article-title>. <source>Proc Soc Exp Biol Med (New York, NY)</source>
+<year>1975</year>; <volume>148</volume>(<issue>4</issue>): <fpage>1119</fpage>–<lpage>1121</lpage>.<pub-id pub-id-type="doi" assigning-authority="pmc">10.3181/00379727-148-38700</pub-id><pub-id pub-id-type="pmid">1129327</pub-id></mixed-citation></ref><ref id="bibr16-17562848251327167"><label>16</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Zhao</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>Lin</surname><given-names>S</given-names></name>
+</person-group>. <article-title>PANoptosis in intestinal epithelium: its significance in inflammatory bowel disease and a potential novel therapeutic target for natural products</article-title>. <source>Front Immunol</source>
+<year>2024</year>; <volume>15</volume>: <fpage>1507065</fpage>.<pub-id pub-id-type="pmid">39840043</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3389/fimmu.2024.1507065</pub-id><pub-id pub-id-type="pmcid">PMC11747037</pub-id></mixed-citation></ref><ref id="bibr17-17562848251327167"><label>17</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Lee</surname><given-names>Y</given-names></name>
+<name name-style="western"><surname>Kamada</surname><given-names>N</given-names></name>
+<name name-style="western"><surname>Moon</surname><given-names>JJ</given-names></name>
+</person-group>. <article-title>Oral nanomedicine for modulating immunity, intestinal barrier functions, and gut microbiome</article-title>. <source>Adv Drug Deliv Rev</source>
+<year>2021</year>; <volume>179</volume>: <fpage>114021</fpage>.<pub-id pub-id-type="pmid">34710529</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.addr.2021.114021</pub-id><pub-id pub-id-type="pmcid">PMC8665886</pub-id></mixed-citation></ref><ref id="bibr18-17562848251327167"><label>18</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Boleij</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Tjalsma</surname><given-names>H</given-names></name>
+</person-group>. <article-title>Gut bacteria in health and disease: a survey on the interface between intestinal microbiology and colorectal cancer</article-title>. <source>Biol Rev Camb Philos Soc</source>
+<year>2012</year>; <volume>87</volume>(<issue>3</issue>): <fpage>701</fpage>–<lpage>730</lpage>.<pub-id pub-id-type="pmid">22296522</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1111/j.1469-185X.2012.00218.x</pub-id></mixed-citation></ref><ref id="bibr19-17562848251327167"><label>19</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Gagnière</surname><given-names>J</given-names></name>
+<name name-style="western"><surname>Raisch</surname><given-names>J</given-names></name>
+<name name-style="western"><surname>Veziant</surname><given-names>J</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Gut microbiota imbalance and colorectal cancer</article-title>. <source>World J Gastroenterol</source>
+<year>2016</year>; <volume>22</volume>(<issue>2</issue>): <fpage>501</fpage>–<lpage>518</lpage>.<pub-id pub-id-type="pmid">26811603</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3748/wjg.v22.i2.501</pub-id><pub-id pub-id-type="pmcid">PMC4716055</pub-id></mixed-citation></ref><ref id="bibr20-17562848251327167"><label>20</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Krautkramer</surname><given-names>KA</given-names></name>
+<name name-style="western"><surname>Fan</surname><given-names>J</given-names></name>
+<name name-style="western"><surname>Bäckhed</surname><given-names>F</given-names></name>
+</person-group>. <article-title>Gut microbial metabolites as multi-kingdom intermediates</article-title>. <source>Nat Rev Microbiol</source>
+<year>2021</year>; <volume>19</volume>(<issue>2</issue>): <fpage>77</fpage>–<lpage>94</lpage>.<pub-id pub-id-type="pmid">32968241</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/s41579-020-0438-4</pub-id></mixed-citation></ref><ref id="bibr21-17562848251327167"><label>21</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Bhattarai</surname><given-names>Y</given-names></name>
+<name name-style="western"><surname>Williams</surname><given-names>BB</given-names></name>
+<name name-style="western"><surname>Battaglioli</surname><given-names>EJ</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Gut microbiota-produced tryptamine activates an epithelial G-protein-coupled receptor to increase colonic secretion</article-title>. <source>Cell Host Microbe</source>
+<year>2018</year>; <volume>23</volume>(<issue>6</issue>): 775–785.e5.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.chom.2018.05.004</pub-id><pub-id pub-id-type="pmcid">PMC6055526</pub-id><pub-id pub-id-type="pmid">29902441</pub-id></mixed-citation></ref><ref id="bibr22-17562848251327167"><label>22</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Gheorghe</surname><given-names>CE</given-names></name>
+<name name-style="western"><surname>Martin</surname><given-names>JA</given-names></name>
+<name name-style="western"><surname>Manriquez</surname><given-names>FV</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Focus on the essentials: tryptophan metabolism and the microbiome-gut-brain axis</article-title>. <source>Curr Opin Pharmacol</source>
+<year>2019</year>; <volume>48</volume>: <fpage>137</fpage>–<lpage>145</lpage>.<pub-id pub-id-type="pmid">31610413</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.coph.2019.08.004</pub-id></mixed-citation></ref><ref id="bibr23-17562848251327167"><label>23</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Fiorentini</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>Carlini</surname><given-names>F</given-names></name>
+<name name-style="western"><surname>Germinario</surname><given-names>EA</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Gut microbiota and colon cancer: a role for bacterial protein toxins?</article-title>
+<source>Int J Mol Sci</source>
+<year>2020</year>; <volume>21</volume>(<issue>17</issue>): <fpage>6201</fpage>.<pub-id pub-id-type="pmid">32867331</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3390/ijms21176201</pub-id><pub-id pub-id-type="pmcid">PMC7504354</pub-id></mixed-citation></ref><ref id="bibr24-17562848251327167"><label>24</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Liu</surname><given-names>T</given-names></name>
+<name name-style="western"><surname>Song</surname><given-names>X</given-names></name>
+<name name-style="western"><surname>Khan</surname><given-names>S</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>The gut microbiota at the intersection of bile acids and intestinal carcinogenesis: an old story, yet mesmerizing</article-title>. <source>Int J Cancer</source>
+<year>2020</year>; <volume>146</volume>(<issue>7</issue>): <fpage>1780</fpage>–<lpage>1790</lpage>.<pub-id pub-id-type="pmid">31291465</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1002/ijc.32563</pub-id></mixed-citation></ref><ref id="bibr25-17562848251327167"><label>25</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Buchta Rosean</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>Bostic</surname><given-names>RR</given-names></name>
+<name name-style="western"><surname>Ferey</surname><given-names>JCM</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Preexisting commensal dysbiosis is a host-intrinsic regulator of tissue inflammation and tumor cell dissemination in hormone receptor-positive breast cancer</article-title>. <source>Cancer Res</source>
+<year>2019</year>; <volume>79</volume>(<issue>14</issue>): <fpage>3662</fpage>–<lpage>3675</lpage>.<pub-id pub-id-type="pmid">31064848</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1158/0008-5472.CAN-18-3464</pub-id><pub-id pub-id-type="pmcid">PMC6983951</pub-id></mixed-citation></ref><ref id="bibr26-17562848251327167"><label>26</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Landy</surname><given-names>J</given-names></name>
+<name name-style="western"><surname>Ronde</surname><given-names>E</given-names></name>
+<name name-style="western"><surname>English</surname><given-names>N</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Tight junctions in inflammatory bowel diseases and inflammatory bowel disease associated colorectal cancer</article-title>. <source>World J Gastroenterol</source>
+<year>2016</year>; <volume>22</volume>(<issue>11</issue>): <fpage>3117</fpage>–<lpage>3126</lpage>.<pub-id pub-id-type="pmid">27003989</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3748/wjg.v22.i11.3117</pub-id><pub-id pub-id-type="pmcid">PMC4789987</pub-id></mixed-citation></ref><ref id="bibr27-17562848251327167"><label>27</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Martin</surname><given-names>TA</given-names></name>
+<name name-style="western"><surname>Jiang</surname><given-names>WG</given-names></name>
+</person-group>. <article-title>Loss of tight junction barrier function and its role in cancer metastasis</article-title>. <source>Biochim Biophys Acta</source>
+<year>2009</year>; <volume>1788</volume>(<issue>4</issue>): <fpage>872</fpage>–<lpage>891</lpage>.<pub-id pub-id-type="pmid">19059202</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.bbamem.2008.11.005</pub-id></mixed-citation></ref><ref id="bibr28-17562848251327167"><label>28</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Nakamura</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Matsumoto</surname><given-names>M</given-names></name>
+</person-group>. <article-title>Role of polyamines in intestinal mucosal barrier function</article-title>. <source>Semin Immunopathol</source>
+<year>2025</year>; <volume>47</volume>(<issue>1</issue>): <fpage>9</fpage>.<pub-id pub-id-type="pmid">39836273</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1007/s00281-024-01035-4</pub-id><pub-id pub-id-type="pmcid">PMC11750915</pub-id></mixed-citation></ref><ref id="bibr29-17562848251327167"><label>29</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Beumer</surname><given-names>J</given-names></name>
+<name name-style="western"><surname>Clevers</surname><given-names>H</given-names></name>
+</person-group>. <article-title>Cell fate specification and differentiation in the adult mammalian intestine</article-title>. <source>Nat Rev Mol Cell Biol</source>
+<year>2021</year>; <volume>22</volume>(<issue>1</issue>): <fpage>39</fpage>–<lpage>53</lpage>.<pub-id pub-id-type="pmid">32958874</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/s41580-020-0278-0</pub-id></mixed-citation></ref><ref id="bibr30-17562848251327167"><label>30</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Olga</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Boicean</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Fleacă</surname><given-names>SR</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Importance of fecal microbiota transplantation and molecular regulation as therapeutic strategies in inflammatory bowel diseases</article-title>. <source>Nutrients</source>
+<year>2024</year>; <volume>16</volume>(<issue>24</issue>): <fpage>4411</fpage>.<pub-id pub-id-type="pmid">39771031</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3390/nu16244411</pub-id><pub-id pub-id-type="pmcid">PMC11676862</pub-id></mixed-citation></ref><ref id="bibr31-17562848251327167"><label>31</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Mödl</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Schmidt</surname><given-names>K</given-names></name>
+<name name-style="western"><surname>Moser</surname><given-names>D</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>The intermicrovillar adhesion complex in gut barrier function and inflammation</article-title>. <source>Explor Dig Dis</source>
+<year>2022</year>; <volume>1</volume>(<issue>2</issue>): <fpage>72</fpage>–<lpage>79</lpage>.<pub-id pub-id-type="pmid">39092422</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.37349/edd.2022.00006</pub-id><pub-id pub-id-type="pmcid">PMC7616328</pub-id></mixed-citation></ref><ref id="bibr32-17562848251327167"><label>32</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Groschwitz</surname><given-names>KR</given-names></name>
+<name name-style="western"><surname>Hogan</surname><given-names>SP</given-names></name>
+</person-group>. <article-title>Intestinal barrier function: molecular regulation and disease pathogenesis</article-title>. <source>J Allergy Clin Immunol</source>
+<year>2009</year>; <volume>124</volume>(<issue>1</issue>): <fpage>3</fpage>–<lpage>20</lpage>; quiz 1–2.<pub-id pub-id-type="pmid">19560575</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.jaci.2009.05.038</pub-id><pub-id pub-id-type="pmcid">PMC4266989</pub-id></mixed-citation></ref><ref id="bibr33-17562848251327167"><label>33</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Vermette</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Hu</surname><given-names>P</given-names></name>
+<name name-style="western"><surname>Canarie</surname><given-names>MF</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Tight junction structure, function, and assessment in the critically ill: a systematic review</article-title>. <source>Intensive Care Med Exp</source>
+<year>2018</year>; <volume>6</volume>(<issue>1</issue>): <fpage>37</fpage>.<pub-id pub-id-type="pmid">30259344</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1186/s40635-018-0203-4</pub-id><pub-id pub-id-type="pmcid">PMC6158145</pub-id></mixed-citation></ref><ref id="bibr34-17562848251327167"><label>34</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Turner</surname><given-names>JR</given-names></name>
+</person-group>. <article-title>Intestinal mucosal barrier function in health and disease</article-title>. <source>Nat Rev Immunol</source>
+<year>2009</year>; <volume>9</volume>(<issue>11</issue>): <fpage>799</fpage>–<lpage>809</lpage>.<pub-id pub-id-type="pmid">19855405</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/nri2653</pub-id></mixed-citation></ref><ref id="bibr35-17562848251327167"><label>35</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Madison</surname><given-names>AA</given-names></name>
+<name name-style="western"><surname>Bailey</surname><given-names>MT</given-names></name>
+</person-group>. <article-title>Link stress-related gut microbiota shifts to mental health outcomes</article-title>. <source>Biol Psychiatry</source>
+<year>2024</year>; <volume>95</volume>(<issue>4</issue>): <fpage>339</fpage>–<lpage>347</lpage>.<pub-id pub-id-type="pmid">38353184</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.biopsych.2023.10.014</pub-id><pub-id pub-id-type="pmcid">PMC10867428</pub-id></mixed-citation></ref><ref id="bibr36-17562848251327167"><label>36</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Schmitt</surname><given-names>M</given-names></name>
+<name name-style="western"><surname>Greten</surname><given-names>FR</given-names></name>
+</person-group>. <article-title>The inflammatory pathogenesis of colorectal cancer</article-title>. <source>Nat Rev Immunol</source>
+<year>2021</year>; <volume>21</volume>(<issue>10</issue>): <fpage>653</fpage>–<lpage>667</lpage>.<pub-id pub-id-type="pmid">33911231</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/s41577-021-00534-x</pub-id></mixed-citation></ref><ref id="bibr37-17562848251327167"><label>37</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Farhadi Rad</surname><given-names>H</given-names></name>
+<name name-style="western"><surname>Tahmasebi</surname><given-names>H</given-names></name>
+<name name-style="western"><surname>Javani</surname><given-names>S</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Microbiota and cytokine modulation: innovations in enhancing anticancer immunity and personalized cancer therapies</article-title>. <source>Biomedicines</source>
+<year>2024</year>; <volume>12</volume>(<issue>12</issue>): <fpage>2776</fpage>.<pub-id pub-id-type="pmid">39767682</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3390/biomedicines12122776</pub-id><pub-id pub-id-type="pmcid">PMC11673251</pub-id></mixed-citation></ref><ref id="bibr38-17562848251327167"><label>38</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Ke</surname><given-names>JY</given-names></name>
+<name name-style="western"><surname>Song</surname><given-names>JB</given-names></name>
+<name name-style="western"><surname>Li</surname><given-names>L</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Advancements of macrophages involvement in pathological progression of colitis-associated colorectal cancer and associated pharmacological interventions</article-title>. <source>Chin J Integr Med</source>
+<year>2024</year>; <volume>30</volume>(<issue>6</issue>): <fpage>565</fpage>–<lpage>576</lpage>.<pub-id pub-id-type="pmid">38565799</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1007/s11655-024-4101-1</pub-id></mixed-citation></ref><ref id="bibr39-17562848251327167"><label>39</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Fu</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>Peng</surname><given-names>P</given-names></name>
+<name name-style="western"><surname>Loschko</surname><given-names>J</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Plasmacytoid dendritic cells cross-prime naive CD8 T cells by transferring antigen to conventional dendritic cells through exosomes</article-title>. <source>Proc Natl Acad Sci U S A</source>
+<year>2020</year>; <volume>117</volume>(<issue>38</issue>): <fpage>23730</fpage>–<lpage>23741</lpage>.<pub-id pub-id-type="pmid">32879009</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1073/pnas.2002345117</pub-id><pub-id pub-id-type="pmcid">PMC7519282</pub-id></mixed-citation></ref><ref id="bibr40-17562848251327167"><label>40</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Kinker</surname><given-names>GS</given-names></name>
+<name name-style="western"><surname>Vitiello</surname><given-names>GAF</given-names></name>
+<name name-style="western"><surname>Ferreira</surname><given-names>WAS</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>B cell orchestration of anti-tumor immune responses: a matter of cell localization and communication</article-title>. <source>Front Cell Dev Biol</source>
+<year>2021</year>; <volume>9</volume>: <fpage>678127</fpage>.<pub-id pub-id-type="pmid">34164398</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3389/fcell.2021.678127</pub-id><pub-id pub-id-type="pmcid">PMC8215448</pub-id></mixed-citation></ref><ref id="bibr41-17562848251327167"><label>41</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Borges-Canha</surname><given-names>M</given-names></name>
+<name name-style="western"><surname>Portela-Cidade</surname><given-names>JP</given-names></name>
+<name name-style="western"><surname>Dinis-Ribeiro</surname><given-names>M</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Role of colonic microbiota in colorectal carcinogenesis: a systematic review</article-title>. <source>Rev Esp Enferm Dig</source>
+<year>2015</year>; <volume>107</volume>(<issue>11</issue>): <fpage>659</fpage>–<lpage>671</lpage>.<pub-id pub-id-type="pmid">26541655</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.17235/reed.2015.3830/2015</pub-id></mixed-citation></ref><ref id="bibr42-17562848251327167"><label>42</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Garrett</surname><given-names>WS</given-names></name>
+</person-group>. <article-title>Cancer and the microbiota</article-title>. <source>Science (New York, NY)</source>
+<year>2015</year>; <volume>348</volume>(<issue>6230</issue>): <fpage>80</fpage>–<lpage>86</lpage>.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1126/science.aaa4972</pub-id><pub-id pub-id-type="pmcid">PMC5535753</pub-id><pub-id pub-id-type="pmid">25838377</pub-id></mixed-citation></ref><ref id="bibr43-17562848251327167"><label>43</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Sorbara</surname><given-names>MT</given-names></name>
+<name name-style="western"><surname>Pamer</surname><given-names>EG</given-names></name>
+</person-group>. <article-title>Interbacterial mechanisms of colonization resistance and the strategies pathogens use to overcome them</article-title>. <source>Mucosal Immunol</source>
+<year>2019</year>; <volume>12</volume>(<issue>1</issue>): <fpage>1</fpage>–<lpage>9</lpage>.<pub-id pub-id-type="pmid">29988120</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/s41385-018-0053-0</pub-id><pub-id pub-id-type="pmcid">PMC6312114</pub-id></mixed-citation></ref><ref id="bibr44-17562848251327167"><label>44</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Sun</surname><given-names>J</given-names></name>
+<name name-style="western"><surname>Kato</surname><given-names>I</given-names></name>
+</person-group>. <article-title>Gut microbiota, inflammation and colorectal cancer</article-title>. <source>Genes Dis</source>
+<year>2016</year>; <volume>3</volume>(<issue>2</issue>): <fpage>130</fpage>–<lpage>143</lpage>.<pub-id pub-id-type="pmid">28078319</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.gendis.2016.03.004</pub-id><pub-id pub-id-type="pmcid">PMC5221561</pub-id></mixed-citation></ref><ref id="bibr45-17562848251327167"><label>45</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Montanari</surname><given-names>M</given-names></name>
+<name name-style="western"><surname>Guescini</surname><given-names>M</given-names></name>
+<name name-style="western"><surname>Gundogdu</surname><given-names>O</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Extracellular vesicles from <italic toggle="yes">Campylobacter jejuni</italic> CDT-treated Caco-2 cells inhibit proliferation of tumour intestinal Caco-2 cells and myeloid U937 cells: detailing the global cell response for potential application in anti-tumour strategies</article-title>. <source>Int J Mol Sci</source>
+<year>2022</year>; <volume>24</volume>(<issue>1</issue>): <fpage>487</fpage>.<pub-id pub-id-type="pmid">36613943</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3390/ijms24010487</pub-id><pub-id pub-id-type="pmcid">PMC9820799</pub-id></mixed-citation></ref><ref id="bibr46-17562848251327167"><label>46</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Nesić</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Hsu</surname><given-names>Y</given-names></name>
+<name name-style="western"><surname>Stebbins</surname><given-names>CE</given-names></name>
+</person-group>. <article-title>Assembly and function of a bacterial genotoxin</article-title>. <source>Nature</source>
+<year>2004</year>; <volume>429</volume>(<issue>6990</issue>): <fpage>429</fpage>–<lpage>433</lpage>.<pub-id pub-id-type="pmid">15164065</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/nature02532</pub-id></mixed-citation></ref><ref id="bibr47-17562848251327167"><label>47</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Cuevas-Ramos</surname><given-names>G</given-names></name>
+<name name-style="western"><surname>Petit</surname><given-names>CR</given-names></name>
+<name name-style="western"><surname>Marcq</surname><given-names>I</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title><italic toggle="yes">Escherichia coli</italic> induces DNA damage in vivo and triggers genomic instability in mammalian cells</article-title>. <source>Proc Natl Acad Sci U S A</source>
+<year>2010</year>; <volume>107</volume>(<issue>25</issue>): <fpage>11537</fpage>–<lpage>11542</lpage>.<pub-id pub-id-type="pmid">20534522</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1073/pnas.1001261107</pub-id><pub-id pub-id-type="pmcid">PMC2895108</pub-id></mixed-citation></ref><ref id="bibr48-17562848251327167"><label>48</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Canonico</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Campana</surname><given-names>R</given-names></name>
+<name name-style="western"><surname>Luchetti</surname><given-names>F</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title><italic toggle="yes">Campylobacter jejuni</italic> cell lysates differently target mitochondria and lysosomes on HeLa cells</article-title>. <source>Apoptosis</source>
+<year>2014</year>; <volume>19</volume>(<issue>8</issue>): <fpage>1225</fpage>–<lpage>1242</lpage>.<pub-id pub-id-type="pmid">24880782</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1007/s10495-014-1005-0</pub-id></mixed-citation></ref><ref id="bibr49-17562848251327167"><label>49</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Pons</surname><given-names>BJ</given-names></name>
+<name name-style="western"><surname>Loiseau</surname><given-names>N</given-names></name>
+<name name-style="western"><surname>Hashim</surname><given-names>S</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Functional study of <italic toggle="yes">Haemophilus ducreyi</italic> cytolethal distending toxin subunit B</article-title>. <source>Toxins</source>
+<year>2020</year>; <volume>12</volume>(<issue>9</issue>): <fpage>530</fpage>.<pub-id pub-id-type="pmid">32825080</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3390/toxins12090530</pub-id><pub-id pub-id-type="pmcid">PMC7551728</pub-id></mixed-citation></ref><ref id="bibr50-17562848251327167"><label>50</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>He</surname><given-names>Z</given-names></name>
+<name name-style="western"><surname>Gharaibeh</surname><given-names>RZ</given-names></name>
+<name name-style="western"><surname>Newsome</surname><given-names>RC</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title><italic toggle="yes">Campylobacter jejuni</italic> promotes colorectal tumorigenesis through the action of cytolethal distending toxin</article-title>. <source>Gut</source>
+<year>2019</year>; <volume>68</volume>(<issue>2</issue>): <fpage>289</fpage>–<lpage>300</lpage>.<pub-id pub-id-type="pmid">30377189</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1136/gutjnl-2018-317200</pub-id><pub-id pub-id-type="pmcid">PMC6352414</pub-id></mixed-citation></ref><ref id="bibr51-17562848251327167"><label>51</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Pickett</surname><given-names>CL</given-names></name>
+<name name-style="western"><surname>Whitehouse</surname><given-names>CA</given-names></name>
+</person-group>. <article-title>The cytolethal distending toxin family</article-title>. <source>Trends Microbiol</source>
+<year>1999</year>; <volume>7</volume>(<issue>7</issue>): <fpage>292</fpage>–<lpage>297</lpage>.<pub-id pub-id-type="pmid">10390639</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/s0966-842x(99)01537-1</pub-id></mixed-citation></ref><ref id="bibr52-17562848251327167"><label>52</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Luu</surname><given-names>M</given-names></name>
+<name name-style="western"><surname>Schütz</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Lauth</surname><given-names>M</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>The impact of gut microbiota-derived metabolites on the tumor immune microenvironment</article-title>. <source>Cancers</source>
+<year>2023</year>; <volume>15</volume>(<issue>5</issue>): <fpage>1588</fpage>.<pub-id pub-id-type="pmid">36900377</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3390/cancers15051588</pub-id><pub-id pub-id-type="pmcid">PMC10001145</pub-id></mixed-citation></ref><ref id="bibr53-17562848251327167"><label>53</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Martin</surname><given-names>HM</given-names></name>
+<name name-style="western"><surname>Campbell</surname><given-names>BJ</given-names></name>
+<name name-style="western"><surname>Hart</surname><given-names>CA</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Enhanced <italic toggle="yes">Escherichia coli</italic> adherence and invasion in Crohn’s disease and colon cancer</article-title>. <source>Gastroenterology</source>
+<year>2004</year>; <volume>127</volume>(<issue>1</issue>): <fpage>80</fpage>–<lpage>93</lpage>.<pub-id pub-id-type="pmid">15236175</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1053/j.gastro.2004.03.054</pub-id></mixed-citation></ref><ref id="bibr54-17562848251327167"><label>54</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Swidsinski</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Khilkin</surname><given-names>M</given-names></name>
+<name name-style="western"><surname>Kerjaschki</surname><given-names>D</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Association between intraepithelial Escherichia coli and colorectal cancer</article-title>. <source>Gastroenterol</source>
+<year>1998</year>; <volume>115</volume>(<issue>2</issue>): <fpage>281</fpage>–<lpage>286</lpage>.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/s0016-5085(98)70194-5</pub-id><pub-id pub-id-type="pmid">9679033</pub-id></mixed-citation></ref><ref id="bibr55-17562848251327167"><label>55</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Tang</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Men</surname><given-names>P</given-names></name>
+<name name-style="western"><surname>Zhang</surname><given-names>W</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Identification of a polyketide biosynthesis gene cluster by transcriptional regulator activation in <italic toggle="yes">Aspergillus terreus</italic></article-title>. <source>Fungal Genet Biol</source>
+<year>2022</year>; <volume>160</volume>: <fpage>103690</fpage>.<pub-id pub-id-type="pmid">35351612</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.fgb.2022.103690</pub-id></mixed-citation></ref><ref id="bibr56-17562848251327167"><label>56</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Zhang</surname><given-names>G</given-names></name>
+<name name-style="western"><surname>Sun</surname><given-names>D</given-names></name>
+</person-group>. <article-title>The synthesis of the novel <italic toggle="yes">Escherichia coli</italic> toxin-colibactin and its mechanisms of tumorigenesis of colorectal cancer</article-title>. <source>Front Microbiol</source>
+<year>2024</year>; <volume>15</volume>: <fpage>1501973</fpage>.<pub-id pub-id-type="pmid">39744397</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3389/fmicb.2024.1501973</pub-id><pub-id pub-id-type="pmcid">PMC11688353</pub-id></mixed-citation></ref><ref id="bibr57-17562848251327167"><label>57</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Nouri</surname><given-names>R</given-names></name>
+<name name-style="western"><surname>Hasani</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Shirazi</surname><given-names>KM</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Colonization of the gut mucosa of colorectal cancer patients by pathogenic mucosa-associated <italic toggle="yes">Escherichia coli</italic> strains</article-title>. <source>Diagn Microbiol Infect Dis</source>
+<year>2024</year>; <volume>109</volume>(<issue>2</issue>): <fpage>116229</fpage>.<pub-id pub-id-type="pmid">38507962</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.diagmicrobio.2024.116229</pub-id></mixed-citation></ref><ref id="bibr58-17562848251327167"><label>58</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Zhou</surname><given-names>P</given-names></name>
+<name name-style="western"><surname>Yang</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Sun</surname><given-names>D</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Gut microbiome: new biomarkers in early screening of colorectal cancer</article-title>. <source>J Clin Lab Anal</source>
+<year>2022</year>; <volume>36</volume>(<issue>5</issue>): e24359.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1002/jcla.24359</pub-id><pub-id pub-id-type="pmcid">PMC9102648</pub-id><pub-id pub-id-type="pmid">35312122</pub-id></mixed-citation></ref><ref id="bibr59-17562848251327167"><label>59</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Cao</surname><given-names>Y</given-names></name>
+<name name-style="western"><surname>Wang</surname><given-names>Z</given-names></name>
+<name name-style="western"><surname>Yan</surname><given-names>Y</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Enterotoxigenic <italic toggle="yes">Bacteroides fragilis</italic> promotes intestinal inflammation and malignancy by inhibiting exosome-packaged miR-149-3p</article-title>. <source>Gastroenterology</source>
+<year>2021</year>; <volume>161</volume>(<issue>5</issue>): 1552–1566.e12.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1053/j.gastro.2021.08.003</pub-id><pub-id pub-id-type="pmid">34371001</pub-id></mixed-citation></ref><ref id="bibr60-17562848251327167"><label>60</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>He</surname><given-names>Y</given-names></name>
+<name name-style="western"><surname>Yu</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Zhu</surname><given-names>L</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>miR-149 in human cancer: a systemic review</article-title>. <source>J Cancer</source>
+<year>2018</year>; <volume>9</volume>(<issue>2</issue>): <fpage>375</fpage>–<lpage>388</lpage>.<pub-id pub-id-type="pmid">29344284</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.7150/jca.21044</pub-id><pub-id pub-id-type="pmcid">PMC5771345</pub-id></mixed-citation></ref><ref id="bibr61-17562848251327167"><label>61</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Tripathi</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Pandit</surname><given-names>I</given-names></name>
+<name name-style="western"><surname>Perles</surname><given-names>A</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Identifying miRNAs in multiple sclerosis gray matter lesions that correlate with atrophy measures</article-title>. <source>Ann Clin Transl Neurol</source>
+<year>2021</year>; <volume>8</volume>(<issue>6</issue>): <fpage>1279</fpage>–<lpage>1291</lpage>.<pub-id pub-id-type="pmid">33978322</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1002/acn3.51365</pub-id><pub-id pub-id-type="pmcid">PMC8164853</pub-id></mixed-citation></ref><ref id="bibr62-17562848251327167"><label>62</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Srivastava</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Luo</surname><given-names>L</given-names></name>
+<name name-style="western"><surname>Lohcharoenkal</surname><given-names>W</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Cross-talk between IFN-γ and TWEAK through miR-149 amplifies skin inflammation in psoriasis</article-title>. <source>J Allergy Clin Immunol</source>
+<year>2021</year>; <volume>147</volume>(<issue>6</issue>): <fpage>2225</fpage>–<lpage>2235</lpage>.<pub-id pub-id-type="pmid">33705829</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.jaci.2020.12.657</pub-id></mixed-citation></ref><ref id="bibr63-17562848251327167"><label>63</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Ghafouri-Fard</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Khoshbakht</surname><given-names>T</given-names></name>
+<name name-style="western"><surname>Hussen</surname><given-names>BM</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>A review on the role of miR-149-5p in the carcinogenesis</article-title>. <source>Int J Mol Sci</source>
+<year>2021</year>; <volume>23</volume>(<issue>1</issue>): <fpage>415</fpage>.<pub-id pub-id-type="pmid">35008841</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3390/ijms23010415</pub-id><pub-id pub-id-type="pmcid">PMC8745060</pub-id></mixed-citation></ref><ref id="bibr64-17562848251327167"><label>64</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Choi</surname><given-names>VM</given-names></name>
+<name name-style="western"><surname>Herrou</surname><given-names>J</given-names></name>
+<name name-style="western"><surname>Hecht</surname><given-names>AL</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Activation of <italic toggle="yes">Bacteroides fragilis</italic> toxin by a novel bacterial protease contributes to anaerobic sepsis in mice</article-title>. <source>Nat Med</source>
+<year>2016</year>; <volume>22</volume>(<issue>5</issue>): <fpage>563</fpage>–<lpage>567</lpage>.<pub-id pub-id-type="pmid">27089515</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/nm.4077</pub-id><pub-id pub-id-type="pmcid">PMC4860040</pub-id></mixed-citation></ref><ref id="bibr65-17562848251327167"><label>65</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Chambers</surname><given-names>FG</given-names></name>
+<name name-style="western"><surname>Koshy</surname><given-names>SS</given-names></name>
+<name name-style="western"><surname>Saidi</surname><given-names>RF</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title><italic toggle="yes">Bacteroides fragilis</italic> toxin exhibits polar activity on monolayers of human intestinal epithelial cells (T84 cells) in vitro</article-title>. <source>Infect Immun</source>
+<year>1997</year>; <volume>65</volume>(<issue>9</issue>): <fpage>3561</fpage>–<lpage>3570</lpage>.<pub-id pub-id-type="pmid">9284120</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1128/iai.65.9.3561-3570.1997</pub-id><pub-id pub-id-type="pmcid">PMC175507</pub-id></mixed-citation></ref><ref id="bibr66-17562848251327167"><label>66</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Zakharzhevskaya</surname><given-names>NB</given-names></name>
+<name name-style="western"><surname>Tsvetkov</surname><given-names>VB</given-names></name>
+<name name-style="western"><surname>Vanyushkina</surname><given-names>AA</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Corrigendum: interaction of <italic toggle="yes">Bacteroides fragilis</italic> toxin with outer membrane vesicles reveals new mechanism of its secretion and delivery</article-title>. <source>Front Cell Infect Microbiol</source>
+<year>2017</year>; <volume>7</volume>: <fpage>308</fpage>.<pub-id pub-id-type="pmid">28670574</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3389/fcimb.2017.00308</pub-id><pub-id pub-id-type="pmcid">PMC5492424</pub-id></mixed-citation></ref><ref id="bibr67-17562848251327167"><label>67</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Han</surname><given-names>N</given-names></name>
+<name name-style="western"><surname>Chang</surname><given-names>HJ</given-names></name>
+<name name-style="western"><surname>Yeo</surname><given-names>HY</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Association of gut microbiome with immune microenvironment in surgically treated colorectal cancer patients</article-title>. <source>Pathology</source>
+<year>2024</year>; <volume>56</volume>(<issue>4</issue>): <fpage>528</fpage>–<lpage>539</lpage>.<pub-id pub-id-type="pmid">38609782</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.pathol.2024.01.010</pub-id></mixed-citation></ref><ref id="bibr68-17562848251327167"><label>68</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Hwang</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Lee</surname><given-names>CG</given-names></name>
+<name name-style="western"><surname>Jo</surname><given-names>M</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Enterotoxigenic <italic toggle="yes">Bacteroides fragilis</italic> infection exacerbates tumorigenesis in AOM/DSS mouse model</article-title>. <source>Int J Med Sci</source>
+<year>2020</year>; <volume>17</volume>(<issue>2</issue>): <fpage>145</fpage>–<lpage>152</lpage>.<pub-id pub-id-type="pmid">32038097</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.7150/ijms.38371</pub-id><pub-id pub-id-type="pmcid">PMC6990882</pub-id></mixed-citation></ref><ref id="bibr69-17562848251327167"><label>69</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Arthur</surname><given-names>JC</given-names></name>
+<name name-style="western"><surname>Perez-Chanona</surname><given-names>E</given-names></name>
+<name name-style="western"><surname>Mühlbauer</surname><given-names>M</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Intestinal inflammation targets cancer-inducing activity of the microbiota</article-title>. <source>Science (New York, NY)</source>
+<year>2012</year>; <volume>338</volume>(<issue>6103</issue>): <fpage>120</fpage>–<lpage>123</lpage>.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1126/science.1224820</pub-id><pub-id pub-id-type="pmcid">PMC3645302</pub-id><pub-id pub-id-type="pmid">22903521</pub-id></mixed-citation></ref><ref id="bibr70-17562848251327167"><label>70</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Reuter</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Gupta</surname><given-names>SC</given-names></name>
+<name name-style="western"><surname>Chaturvedi</surname><given-names>MM</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Oxidative stress, inflammation, and cancer: how are they linked?</article-title>
+<source>Free Radic Biol Med</source>
+<year>2010</year>; <volume>49</volume>(<issue>11</issue>): <fpage>1603</fpage>–<lpage>1616</lpage>.<pub-id pub-id-type="pmid">20840865</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.freeradbiomed.2010.09.006</pub-id><pub-id pub-id-type="pmcid">PMC2990475</pub-id></mixed-citation></ref><ref id="bibr71-17562848251327167"><label>71</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Rowland</surname><given-names>SN</given-names></name>
+<name name-style="western"><surname>Green</surname><given-names>CG</given-names></name>
+<name name-style="western"><surname>Halliwill</surname><given-names>JR</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Gut feelings on short-chain fatty acids to regulate respiratory health</article-title>. <source>Trends Endocrinol Metab</source>. Epub ahead of print January 2025. DOI: <pub-id pub-id-type="doi">10.1016/j.tem.2024.12.007</pub-id>.<pub-id pub-id-type="pmid">39757060</pub-id></mixed-citation></ref><ref id="bibr72-17562848251327167"><label>72</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Abavisani</surname><given-names>M</given-names></name>
+<name name-style="western"><surname>Faraji</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Ebadpour</surname><given-names>N</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Beyond the Hayflick limit: how microbes influence cellular aging</article-title>. <source>Ageing Res Rev</source>
+<year>2025</year>; <volume>104</volume>: <fpage>102657</fpage>.<pub-id pub-id-type="pmid">39788433</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.arr.2025.102657</pub-id></mixed-citation></ref><ref id="bibr73-17562848251327167"><label>73</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Wang</surname><given-names>Z</given-names></name>
+<name name-style="western"><surname>Kaplan</surname><given-names>RC</given-names></name>
+<name name-style="western"><surname>Burk</surname><given-names>RD</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>The oral microbiota, microbial metabolites, and immuno-inflammatory mechanisms in cardiovascular disease</article-title>. <source>Int J Mol Sci</source>
+<year>2024</year>; <volume>25</volume>(<issue>22</issue>): <fpage>12337</fpage>.<pub-id pub-id-type="pmid">39596404</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3390/ijms252212337</pub-id><pub-id pub-id-type="pmcid">PMC11594421</pub-id></mixed-citation></ref><ref id="bibr74-17562848251327167"><label>74</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Huttner</surname><given-names>BD</given-names></name>
+<name name-style="western"><surname>de Lastours</surname><given-names>V</given-names></name>
+<name name-style="western"><surname>Wassenberg</surname><given-names>M</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>A 5-day course of oral antibiotics followed by faecal transplantation to eradicate carriage of multidrug-resistant Enterobacteriaceae: a randomized clinical trial</article-title>. <source>Clin Microbiol Infect</source>
+<year>2019</year>; <volume>25</volume>(<issue>7</issue>): <fpage>830</fpage>–<lpage>838</lpage>.<pub-id pub-id-type="pmid">30616014</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.cmi.2018.12.009</pub-id></mixed-citation></ref><ref id="bibr75-17562848251327167"><label>75</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Kwong</surname><given-names>TNY</given-names></name>
+<name name-style="western"><surname>Wang</surname><given-names>X</given-names></name>
+<name name-style="western"><surname>Nakatsu</surname><given-names>G</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Association between bacteremia from specific microbes and subsequent diagnosis of colorectal cancer</article-title>. <source>Gastroenterology</source>
+<year>2018</year>; <volume>155</volume>(<issue>2</issue>): 383–390.e8.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1053/j.gastro.2018.04.028</pub-id><pub-id pub-id-type="pmid">29729257</pub-id></mixed-citation></ref><ref id="bibr76-17562848251327167"><label>76</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Itzkowitz</surname><given-names>SH</given-names></name>
+<name name-style="western"><surname>Yio</surname><given-names>X</given-names></name>
+</person-group>. <article-title>Inflammation and cancer IV. Colorectal cancer in inflammatory bowel disease: the role of inflammation</article-title>. <source>Am J Physiol Gastrointest Liver Physiol</source>
+<year>2004</year>; <volume>287</volume>(<issue>1</issue>): G7–G17.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1152/ajpgi.00079.2004</pub-id><pub-id pub-id-type="pmid">15194558</pub-id></mixed-citation></ref><ref id="bibr77-17562848251327167"><label>77</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Scher</surname><given-names>JU</given-names></name>
+<name name-style="western"><surname>Nayak</surname><given-names>R</given-names></name>
+<name name-style="western"><surname>Clemente</surname><given-names>JC</given-names></name>
+</person-group>. <article-title>Microbiome research in autoimmune and immune-mediated inflammatory diseases: lessons, advances and unmet needs</article-title>. <source>Ann Rheum Dis</source>
+<year>2025</year>; <volume>84</volume>(<issue>1</issue>): <fpage>9</fpage>–<lpage>13</lpage>.<pub-id pub-id-type="pmid">39874238</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1136/ard-2024-225735</pub-id><pub-id pub-id-type="pmcid">PMC11822223</pub-id></mixed-citation></ref><ref id="bibr78-17562848251327167"><label>78</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>de Souza</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Rosario Claudio</surname><given-names>J</given-names></name>
+<name name-style="western"><surname>Sim</surname><given-names>J</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Interleukin-10 signaling in somatosensory neurons controls CCL2 release and inflammatory response</article-title>. <source>Brain Behav Immun</source>
+<year>2024</year>; <volume>116</volume>: <fpage>193</fpage>–<lpage>202</lpage>.<pub-id pub-id-type="pmid">38081433</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.bbi.2023.12.013</pub-id><pub-id pub-id-type="pmcid">PMC10843623</pub-id></mixed-citation></ref><ref id="bibr79-17562848251327167"><label>79</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Arthur</surname><given-names>JC</given-names></name>
+<name name-style="western"><surname>Gharaibeh</surname><given-names>RZ</given-names></name>
+<name name-style="western"><surname>Mühlbauer</surname><given-names>M</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Microbial genomic analysis reveals the essential role of inflammation in bacteria-induced colorectal cancer</article-title>. <source>Nat Commun</source>
+<year>2014</year>; <volume>5</volume>: <fpage>4724</fpage>.<pub-id pub-id-type="pmid">25182170</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/ncomms5724</pub-id><pub-id pub-id-type="pmcid">PMC4155410</pub-id></mixed-citation></ref><ref id="bibr80-17562848251327167"><label>80</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Couturier-Maillard</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Secher</surname><given-names>T</given-names></name>
+<name name-style="western"><surname>Rehman</surname><given-names>A</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>NOD2-mediated dysbiosis predisposes mice to transmissible colitis and colorectal cancer</article-title>. <source>J Clin Invest</source>
+<year>2013</year>; <volume>123</volume>(<issue>2</issue>): <fpage>700</fpage>–<lpage>711</lpage>.<pub-id pub-id-type="pmid">23281400</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1172/JCI62236</pub-id><pub-id pub-id-type="pmcid">PMC3561825</pub-id></mixed-citation></ref><ref id="bibr81-17562848251327167"><label>81</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Hu</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Elinav</surname><given-names>E</given-names></name>
+<name name-style="western"><surname>Huber</surname><given-names>S</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Microbiota-induced activation of epithelial IL-6 signaling links inflammasome-driven inflammation with transmissible cancer</article-title>. <source>Proc Natl Acad Sci U S A</source>
+<year>2013</year>; <volume>110</volume>(<issue>24</issue>): <fpage>9862</fpage>–<lpage>9867</lpage>.<pub-id pub-id-type="pmid">23696660</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1073/pnas.1307575110</pub-id><pub-id pub-id-type="pmcid">PMC3683709</pub-id></mixed-citation></ref><ref id="bibr82-17562848251327167"><label>82</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Grivennikov</surname><given-names>SI</given-names></name>
+<name name-style="western"><surname>Wang</surname><given-names>K</given-names></name>
+<name name-style="western"><surname>Mucida</surname><given-names>D</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Adenoma-linked barrier defects and microbial products drive IL-23/IL-17-mediated tumour growth</article-title>. <source>Nature</source>
+<year>2012</year>; <volume>491</volume>(<issue>7423</issue>): <fpage>254</fpage>–<lpage>258</lpage>.<pub-id pub-id-type="pmid">23034650</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/nature11465</pub-id><pub-id pub-id-type="pmcid">PMC3601659</pub-id></mixed-citation></ref><ref id="bibr83-17562848251327167"><label>83</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Brennan</surname><given-names>CA</given-names></name>
+<name name-style="western"><surname>Clay</surname><given-names>SL</given-names></name>
+<name name-style="western"><surname>Lavoie</surname><given-names>SL</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title><italic toggle="yes">Fusobacterium nucleatum</italic> drives a pro-inflammatory intestinal microenvironment through metabolite receptor-dependent modulation of IL-17 expression</article-title>. <source>Gut Microbes</source>
+<year>2021</year>; <volume>13</volume>(<issue>1</issue>): <fpage>1987780</fpage>.<pub-id pub-id-type="pmid">34781821</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1080/19490976.2021.1987780</pub-id><pub-id pub-id-type="pmcid">PMC8604392</pub-id></mixed-citation></ref><ref id="bibr84-17562848251327167"><label>84</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Shakhpazyan</surname><given-names>NK</given-names></name>
+<name name-style="western"><surname>Mikhaleva</surname><given-names>LM</given-names></name>
+<name name-style="western"><surname>Bedzhanyan</surname><given-names>AL</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Exploring the role of the gut microbiota in modulating colorectal cancer immunity</article-title>. <source>Cells</source>
+<year>2024</year>; <volume>13</volume>(<issue>17</issue>): <fpage>1437</fpage>.<pub-id pub-id-type="pmid">39273009</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3390/cells13171437</pub-id><pub-id pub-id-type="pmcid">PMC11394638</pub-id></mixed-citation></ref><ref id="bibr85-17562848251327167"><label>85</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Srinivas</surname><given-names>US</given-names></name>
+<name name-style="western"><surname>Tan</surname><given-names>BWQ</given-names></name>
+<name name-style="western"><surname>Vellayappan</surname><given-names>BA</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>ROS and the DNA damage response in cancer</article-title>. <source>Redox Biol</source>
+<year>2019</year>; <volume>25</volume>: <fpage>101084</fpage>.<pub-id pub-id-type="pmid">30612957</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.redox.2018.101084</pub-id><pub-id pub-id-type="pmcid">PMC6859528</pub-id></mixed-citation></ref><ref id="bibr86-17562848251327167"><label>86</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Zhong</surname><given-names>X</given-names></name>
+<name name-style="western"><surname>He</surname><given-names>X</given-names></name>
+<name name-style="western"><surname>Wang</surname><given-names>Y</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Warburg effect in colorectal cancer: the emerging roles in tumor microenvironment and therapeutic implications</article-title>. <source>J Hematol Oncol</source>
+<year>2022</year>; <volume>15</volume>(<issue>1</issue>): <fpage>160</fpage>.<pub-id pub-id-type="pmid">36319992</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1186/s13045-022-01358-5</pub-id><pub-id pub-id-type="pmcid">PMC9628128</pub-id></mixed-citation></ref><ref id="bibr87-17562848251327167"><label>87</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Kim</surname><given-names>J</given-names></name>
+<name name-style="western"><surname>Lee</surname><given-names>HK</given-names></name>
+</person-group>. <article-title>Potential role of the gut microbiome in colorectal cancer progression</article-title>. <source>Front Immunol</source>
+<year>2021</year>; <volume>12</volume>: <fpage>807648</fpage>.<pub-id pub-id-type="pmid">35069592</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3389/fimmu.2021.807648</pub-id><pub-id pub-id-type="pmcid">PMC8777015</pub-id></mixed-citation></ref><ref id="bibr88-17562848251327167"><label>88</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Eich</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>Vogt</surname><given-names>JF</given-names></name>
+<name name-style="western"><surname>Längst</surname><given-names>V</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Isolation and high-dimensional flow cytometric analysis of tumor-infiltrating leukocytes in a mouse model of colorectal cancer</article-title>. <source>Front Immunol</source>
+<year>2024</year>; <volume>15</volume>: <fpage>1295863</fpage>.<pub-id pub-id-type="pmid">38500875</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3389/fimmu.2024.1295863</pub-id><pub-id pub-id-type="pmcid">PMC10944955</pub-id></mixed-citation></ref><ref id="bibr89-17562848251327167"><label>89</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Khoruts</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Sadowsky</surname><given-names>MJ</given-names></name>
+</person-group>. <article-title>Understanding the mechanisms of faecal microbiota transplantation</article-title>. <source>Nat Rev Gastroenterol Hepatol</source>
+<year>2016</year>; <volume>13</volume>(<issue>9</issue>): <fpage>508</fpage>–<lpage>516</lpage>.<pub-id pub-id-type="pmid">27329806</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/nrgastro.2016.98</pub-id><pub-id pub-id-type="pmcid">PMC5909819</pub-id></mixed-citation></ref><ref id="bibr90-17562848251327167"><label>90</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Fortman</surname><given-names>DD</given-names></name>
+<name name-style="western"><surname>Hurd</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Davar</surname><given-names>D</given-names></name>
+</person-group>. <article-title>The microbiome in advanced melanoma: where are we now?</article-title>
+<source>Curr Oncol Rep</source>
+<year>2023</year>; <volume>25</volume>(<issue>9</issue>): <fpage>997</fpage>–<lpage>1016</lpage>.<pub-id pub-id-type="pmid">37269504</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1007/s11912-023-01431-3</pub-id><pub-id pub-id-type="pmcid">PMC11090495</pub-id></mixed-citation></ref><ref id="bibr91-17562848251327167"><label>91</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Routy</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Lenehan</surname><given-names>JG</given-names></name>
+<name name-style="western"><surname>Miller</surname><given-names>WH</given-names><suffix>Jr</suffix></name>
+</person-group>, <etal>et al</etal>. <article-title>Fecal microbiota transplantation plus anti-PD-1 immunotherapy in advanced melanoma: a phase I trial</article-title>. <source>Nat Med</source>
+<year>2023</year>; <volume>29</volume>(<issue>8</issue>): <fpage>2121</fpage>–<lpage>2132</lpage>.<pub-id pub-id-type="pmid">37414899</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/s41591-023-02453-x</pub-id></mixed-citation></ref><ref id="bibr92-17562848251327167"><label>92</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Caspani</surname><given-names>G</given-names></name>
+<name name-style="western"><surname>Swann</surname><given-names>J</given-names></name>
+</person-group>. <article-title>Small talk: microbial metabolites involved in the signaling from microbiota to brain</article-title>. <source>Curr Opin Pharmacol</source>
+<year>2019</year>; <volume>48</volume>: <fpage>99</fpage>–<lpage>106</lpage>.<pub-id pub-id-type="pmid">31525562</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.coph.2019.08.001</pub-id></mixed-citation></ref><ref id="bibr93-17562848251327167"><label>93</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Bonaz</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Sinniger</surname><given-names>V</given-names></name>
+<name name-style="western"><surname>Pellissier</surname><given-names>S</given-names></name>
+</person-group>. <article-title>Therapeutic potential of vagus nerve stimulation for inflammatory bowel diseases</article-title>. <source>Front Neurosci</source>
+<year>2021</year>; <volume>15</volume>: <fpage>650971</fpage>.<pub-id pub-id-type="pmid">33828455</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3389/fnins.2021.650971</pub-id><pub-id pub-id-type="pmcid">PMC8019822</pub-id></mixed-citation></ref><ref id="bibr94-17562848251327167"><label>94</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Siopi</surname><given-names>E</given-names></name>
+<name name-style="western"><surname>Galerne</surname><given-names>M</given-names></name>
+<name name-style="western"><surname>Rivagorda</surname><given-names>M</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Gut microbiota changes require vagus nerve integrity to promote depressive-like behaviors in mice</article-title>. <source>Mol Psychiatry</source>
+<year>2023</year>; <volume>28</volume>(<issue>7</issue>): <fpage>3002</fpage>–<lpage>3012</lpage>.<pub-id pub-id-type="pmid">37131071</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/s41380-023-02071-6</pub-id><pub-id pub-id-type="pmcid">PMC10615761</pub-id></mixed-citation></ref><ref id="bibr95-17562848251327167"><label>95</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Faraji</surname><given-names>N</given-names></name>
+<name name-style="western"><surname>Payami</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Ebadpour</surname><given-names>N</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Vagus nerve stimulation and gut microbiota interactions: a novel therapeutic avenue for neuropsychiatric disorders</article-title>. <source>Neurosci Biobehav Rev</source>
+<year>2024</year>; <volume>169</volume>: <fpage>105990</fpage>.<pub-id pub-id-type="pmid">39716559</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.neubiorev.2024.105990</pub-id></mixed-citation></ref><ref id="bibr96-17562848251327167"><label>96</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Li</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Duan</surname><given-names>Y</given-names></name>
+<name name-style="western"><surname>Luo</surname><given-names>S</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Short-chain fatty acids and cancer</article-title>. <source>Trends Cancer</source>
+<year>2025</year>; <volume>11</volume>(<issue>2</issue>): <fpage>154</fpage>–<lpage>168</lpage>.<pub-id pub-id-type="pmid">39638744</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.trecan.2024.11.003</pub-id></mixed-citation></ref><ref id="bibr97-17562848251327167"><label>97</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Bonaz</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Bazin</surname><given-names>T</given-names></name>
+<name name-style="western"><surname>Pellissier</surname><given-names>S</given-names></name>
+</person-group>. <article-title>The vagus nerve at the interface of the microbiota-gut-brain axis</article-title>. <source>Front Neurosci</source>
+<year>2018</year>; <volume>12</volume>: <fpage>49</fpage>.<pub-id pub-id-type="pmid">29467611</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3389/fnins.2018.00049</pub-id><pub-id pub-id-type="pmcid">PMC5808284</pub-id></mixed-citation></ref><ref id="bibr98-17562848251327167"><label>98</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Bravo</surname><given-names>JA</given-names></name>
+<name name-style="western"><surname>Forsythe</surname><given-names>P</given-names></name>
+<name name-style="western"><surname>Chew</surname><given-names>MV</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Ingestion of <italic toggle="yes">Lactobacillus</italic> strain regulates emotional behavior and central GABA receptor expression in a mouse via the vagus nerve</article-title>. <source>Proc Natl Acad Sci U S A</source>
+<year>2011</year>; <volume>108</volume>(<issue>38</issue>): <fpage>16050</fpage>–<lpage>16055</lpage>.<pub-id pub-id-type="pmid">21876150</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1073/pnas.1102999108</pub-id><pub-id pub-id-type="pmcid">PMC3179073</pub-id></mixed-citation></ref><ref id="bibr99-17562848251327167"><label>99</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Riquelme</surname><given-names>E</given-names></name>
+<name name-style="western"><surname>Zhang</surname><given-names>Y</given-names></name>
+<name name-style="western"><surname>Zhang</surname><given-names>L</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Tumor microbiome diversity and composition influence pancreatic cancer outcomes</article-title>. <source>Cell</source>
+<year>2019</year>; <volume>178</volume>(<issue>4</issue>): 795–806.e12.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.cell.2019.07.008</pub-id><pub-id pub-id-type="pmcid">PMC7288240</pub-id><pub-id pub-id-type="pmid">31398337</pub-id></mixed-citation></ref><ref id="bibr100-17562848251327167"><label>100</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Tang</surname><given-names>W</given-names></name>
+<name name-style="western"><surname>Zhu</surname><given-names>H</given-names></name>
+<name name-style="western"><surname>Feng</surname><given-names>Y</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>The impact of gut microbiota disorders on the blood-brain barrier</article-title>. <source>Infect Drug Resist</source>
+<year>2020</year>; <volume>13</volume>: <fpage>3351</fpage>–<lpage>3363</lpage>.<pub-id pub-id-type="pmid">33061482</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.2147/IDR.S254403</pub-id><pub-id pub-id-type="pmcid">PMC7532923</pub-id></mixed-citation></ref><ref id="bibr101-17562848251327167"><label>101</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Tan</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Li</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Zhu</surname><given-names>X</given-names></name>
+</person-group>. <article-title>Cancer immunotherapy: pros, cons and beyond</article-title>. <source>Biomed Pharmacother</source>
+<year>2020</year>; <volume>124</volume>: <fpage>109821</fpage>.<pub-id pub-id-type="pmid">31962285</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.biopha.2020.109821</pub-id></mixed-citation></ref><ref id="bibr102-17562848251327167"><label>102</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Mamalis</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Garcha</surname><given-names>M</given-names></name>
+<name name-style="western"><surname>Jagdeo</surname><given-names>J</given-names></name>
+</person-group>. <article-title>Targeting the PD-1 pathway: a promising future for the treatment of melanoma</article-title>. <source>Arch Dermatol Res</source>
+<year>2014</year>; <volume>306</volume>(<issue>6</issue>): <fpage>511</fpage>–<lpage>519</lpage>.<pub-id pub-id-type="pmid">24615548</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1007/s00403-014-1457-7</pub-id><pub-id pub-id-type="pmcid">PMC4110159</pub-id></mixed-citation></ref><ref id="bibr103-17562848251327167"><label>103</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Ganesh</surname><given-names>K</given-names></name>
+<name name-style="western"><surname>Stadler</surname><given-names>ZK</given-names></name>
+<name name-style="western"><surname>Cercek</surname><given-names>A</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Immunotherapy in colorectal cancer: rationale, challenges and potential</article-title>. <source>Nat Rev Gastroenterol Hepatol</source>
+<year>2019</year>; <volume>16</volume>(<issue>6</issue>): <fpage>361</fpage>–<lpage>375</lpage>.<pub-id pub-id-type="pmid">30886395</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/s41575-019-0126-x</pub-id><pub-id pub-id-type="pmcid">PMC7295073</pub-id></mixed-citation></ref><ref id="bibr104-17562848251327167"><label>104</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Routy</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Le Chatelier</surname><given-names>E</given-names></name>
+<name name-style="western"><surname>Derosa</surname><given-names>L</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Gut microbiome influences efficacy of PD-1-based immunotherapy against epithelial tumors</article-title>. <source>Science (New York, NY)</source>
+<year>2018</year>; <volume>359</volume>(<issue>6371</issue>): <fpage>91</fpage>–<lpage>97</lpage>.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1126/science.aan3706</pub-id><pub-id pub-id-type="pmid">29097494</pub-id></mixed-citation></ref><ref id="bibr105-17562848251327167"><label>105</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Roberti</surname><given-names>MP</given-names></name>
+<name name-style="western"><surname>Yonekura</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Duong</surname><given-names>CPM</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Chemotherapy-induced ileal crypt apoptosis and the ileal microbiome shape immunosurveillance and prognosis of proximal colon cancer</article-title>. <source>Nat Med</source>
+<year>2020</year>; <volume>26</volume>(<issue>6</issue>): <fpage>919</fpage>–<lpage>931</lpage>.<pub-id pub-id-type="pmid">32451498</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/s41591-020-0882-8</pub-id></mixed-citation></ref><ref id="bibr106-17562848251327167"><label>106</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>He</surname><given-names>Y</given-names></name>
+<name name-style="western"><surname>Fu</surname><given-names>L</given-names></name>
+<name name-style="western"><surname>Li</surname><given-names>Y</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Gut microbial metabolites facilitate anticancer therapy efficacy by modulating cytotoxic CD8+ T cell immunity</article-title>. <source>Cell Metab</source>
+<year>2021</year>; <volume>33</volume>(<issue>5</issue>): 988–1000.e7.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.cmet.2021.03.002</pub-id><pub-id pub-id-type="pmid">33761313</pub-id></mixed-citation></ref><ref id="bibr107-17562848251327167"><label>107</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Lin</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Jiang</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Huang</surname><given-names>L</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>From chaos to order: optimizing fecal microbiota transplantation for enhanced immune checkpoint inhibitors efficacy</article-title>. <source>Gut Microbes</source>
+<year>2025</year>; <volume>17</volume>(<issue>1</issue>): <fpage>2452277</fpage>.<pub-id pub-id-type="pmid">39826104</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1080/19490976.2025.2452277</pub-id><pub-id pub-id-type="pmcid">PMC12716052</pub-id></mixed-citation></ref><ref id="bibr108-17562848251327167"><label>108</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Routy</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Le Chatelier</surname><given-names>E</given-names></name>
+<name name-style="western"><surname>Derosa</surname><given-names>L</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Gut microbiome influences efficacy of PD-1-based immunotherapy against epithelial tumors</article-title>. <source>Science (New York, NY)</source>
+<year>2018</year>; <volume>359</volume>(<issue>6371</issue>): <fpage>91</fpage>–<lpage>97</lpage>.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1126/science.aan3706</pub-id><pub-id pub-id-type="pmid">29097494</pub-id></mixed-citation></ref><ref id="bibr109-17562848251327167"><label>109</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Zhang</surname><given-names>R</given-names></name>
+<name name-style="western"><surname>Zhang</surname><given-names>X</given-names></name>
+<name name-style="western"><surname>Lau</surname><given-names>HCH</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Gut microbiota in cancer initiation, development and therapy</article-title>. <source>Sci China Life Sci</source>. <month>December</month>
+<year>2024</year>. DOI: <pub-id pub-id-type="doi">10.1007/s11427-024-2831-x</pub-id>.<pub-id pub-id-type="pmid">39821827</pub-id></mixed-citation></ref><ref id="bibr110-17562848251327167"><label>110</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Ting</surname><given-names>NL-N</given-names></name>
+<name name-style="western"><surname>Lau</surname><given-names>HC-H</given-names></name>
+<name name-style="western"><surname>Yu</surname><given-names>J</given-names></name>
+</person-group>. <article-title>Cancer pharmacomicrobiomics: targeting microbiota to optimise cancer therapy outcomes</article-title>. <source>Gut</source>
+<year>2022</year>; <volume>71</volume>(<issue>7</issue>): <fpage>1412</fpage>–<lpage>1425</lpage>.<pub-id pub-id-type="pmid">35277453</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1136/gutjnl-2021-326264</pub-id><pub-id pub-id-type="pmcid">PMC9185832</pub-id></mixed-citation></ref><ref id="bibr111-17562848251327167"><label>111</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Zhao</surname><given-names>W</given-names></name>
+<name name-style="western"><surname>Lei</surname><given-names>J</given-names></name>
+<name name-style="western"><surname>Ke</surname><given-names>S</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Fecal microbiota transplantation plus tislelizumab and fruquintinib in refractory microsatellite stable metastatic colorectal cancer: an open-label, single-arm, phase II trial (RENMIN-215)</article-title>. <source>EClinicalMedicine</source>
+<year>2023</year>; <volume>66</volume>: <fpage>102315</fpage>.<pub-id pub-id-type="pmid">38024475</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.eclinm.2023.102315</pub-id><pub-id pub-id-type="pmcid">PMC10679864</pub-id></mixed-citation></ref><ref id="bibr112-17562848251327167"><label>112</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Derosa</surname><given-names>L</given-names></name>
+<name name-style="western"><surname>Routy</surname><given-names>B</given-names></name>
+<name name-style="western"><surname>Thomas</surname><given-names>AM</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Intestinal <italic toggle="yes">Akkermansia muciniphila</italic> predicts clinical response to PD-1 blockade in patients with advanced non-small-cell lung cancer</article-title>. <source>Nat Med</source>
+<year>2022</year>; <volume>28</volume>(<issue>2</issue>): <fpage>315</fpage>–<lpage>324</lpage>.<pub-id pub-id-type="pmid">35115705</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/s41591-021-01655-5</pub-id><pub-id pub-id-type="pmcid">PMC9330544</pub-id></mixed-citation></ref><ref id="bibr113-17562848251327167"><label>113</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Amrane</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Lagier</surname><given-names>J-C</given-names></name>
+</person-group>. <article-title>Fecal microbiota transplantation for antibiotic resistant bacteria decolonization</article-title>. <source>Hum Microb J</source>
+<year>2020</year>; <volume>16</volume>: <fpage>100071</fpage>.</mixed-citation></ref><ref id="bibr114-17562848251327167"><label>114</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Yang</surname><given-names>Y</given-names></name>
+<name name-style="western"><surname>An</surname><given-names>Y</given-names></name>
+<name name-style="western"><surname>Dong</surname><given-names>Y</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Fecal microbiota transplantation: no longer cinderella in tumour immunotherapy</article-title>. <source>EBioMedicine</source>
+<year>2024</year>; <volume>100</volume>: <fpage>104967</fpage>.<pub-id pub-id-type="pmid">38241975</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.ebiom.2024.104967</pub-id><pub-id pub-id-type="pmcid">PMC10831174</pub-id></mixed-citation></ref><ref id="bibr115-17562848251327167"><label>115</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>DeFilipp</surname><given-names>Z</given-names></name>
+<name name-style="western"><surname>Bloom</surname><given-names>PP</given-names></name>
+<name name-style="western"><surname>Torres Soto</surname><given-names>M</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Drug-resistant <italic toggle="yes">E. coli</italic> bacteremia transmitted by fecal microbiota transplant</article-title>. <source>N Engl J Med</source>
+<year>2019</year>; <volume>381</volume>(<issue>21</issue>): <fpage>2043</fpage>–<lpage>2050</lpage>.<pub-id pub-id-type="pmid">31665575</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1056/NEJMoa1910437</pub-id></mixed-citation></ref><ref id="bibr116-17562848251327167"><label>116</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Aron-Wisnewsky</surname><given-names>J</given-names></name>
+<name name-style="western"><surname>Warmbrunn</surname><given-names>MV</given-names></name>
+<name name-style="western"><surname>Nieuwdorp</surname><given-names>M</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Metabolism and metabolic disorders and the microbiome: the intestinal microbiota associated with obesity, lipid metabolism, and metabolic health—pathophysiology and therapeutic strategies</article-title>. <source>Gastroenterology</source>
+<year>2021</year>; <volume>160</volume>(<issue>2</issue>): <fpage>573</fpage>–<lpage>599</lpage>.<pub-id pub-id-type="pmid">33253685</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1053/j.gastro.2020.10.057</pub-id></mixed-citation></ref><ref id="bibr117-17562848251327167"><label>117</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Ianiro</surname><given-names>G</given-names></name>
+<name name-style="western"><surname>Masucci</surname><given-names>L</given-names></name>
+<name name-style="western"><surname>Quaranta</surname><given-names>G</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Randomised clinical trial: faecal microbiota transplantation by colonoscopy plus vancomycin for the treatment of severe refractory <italic toggle="yes">Clostridium difficile</italic> infection-single versus multiple infusions</article-title>. <source>Aliment Pharmacol Ther</source>
+<year>2018</year>; <volume>48</volume>(<issue>2</issue>): <fpage>152</fpage>–<lpage>159</lpage>.<pub-id pub-id-type="pmid">29851107</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1111/apt.14816</pub-id></mixed-citation></ref><ref id="bibr118-17562848251327167"><label>118</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Hanssen</surname><given-names>NMJ</given-names></name>
+<name name-style="western"><surname>de Vos</surname><given-names>WM</given-names></name>
+<name name-style="western"><surname>Nieuwdorp</surname><given-names>M</given-names></name>
+</person-group>. <article-title>Fecal microbiota transplantation in human metabolic diseases: from a murky past to a bright future?</article-title>
+<source>Cell Metab</source>
+<year>2021</year>; <volume>33</volume>(<issue>6</issue>): <fpage>1098</fpage>–<lpage>1110</lpage>.<pub-id pub-id-type="pmid">34077717</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.cmet.2021.05.005</pub-id></mixed-citation></ref><ref id="bibr119-17562848251327167"><label>119</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Kelly</surname><given-names>CR</given-names></name>
+<name name-style="western"><surname>Kahn</surname><given-names>S</given-names></name>
+<name name-style="western"><surname>Kashyap</surname><given-names>P</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Update on fecal microbiota transplantation 2015: indications, methodologies, mechanisms, and outlook</article-title>. <source>Gastroenterology</source>
+<year>2015</year>; <volume>149</volume>(<issue>1</issue>): <fpage>223</fpage>–<lpage>237</lpage>.<pub-id pub-id-type="pmid">25982290</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1053/j.gastro.2015.05.008</pub-id><pub-id pub-id-type="pmcid">PMC4755303</pub-id></mixed-citation></ref><ref id="bibr120-17562848251327167"><label>120</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Nicholson</surname><given-names>MR</given-names></name>
+<name name-style="western"><surname>Alexander</surname><given-names>E</given-names></name>
+<name name-style="western"><surname>Ballal</surname><given-names>S</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Efficacy and outcomes of faecal microbiota transplantation for recurrent <italic toggle="yes">Clostridioides difficile</italic> infection in children with inflammatory bowel disease</article-title>. <source>J Crohns Colitis</source>
+<year>2022</year>; <volume>16</volume>(<issue>5</issue>): <fpage>768</fpage>–<lpage>777</lpage>.<pub-id pub-id-type="pmid">34788420</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1093/ecco-jcc/jjab202</pub-id><pub-id pub-id-type="pmcid">PMC9228903</pub-id></mixed-citation></ref><ref id="bibr121-17562848251327167"><label>121</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Yau</surname><given-names>YK</given-names></name>
+<name name-style="western"><surname>Lau</surname><given-names>LHS</given-names></name>
+<name name-style="western"><surname>Lui</surname><given-names>RNS</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Long-term safety outcomes of fecal microbiota transplantation: real-world data over 8 years from the Hong Kong FMT Registry</article-title>. <source>Clin Gastroenterol Hepatol</source>
+<year>2024</year>; <volume>22</volume>(<issue>3</issue>): 611–620.e12.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1016/j.cgh.2023.09.001</pub-id><pub-id pub-id-type="pmid">37734581</pub-id></mixed-citation></ref><ref id="bibr122-17562848251327167"><label>122</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Zhang</surname><given-names>X</given-names></name>
+<name name-style="western"><surname>Luo</surname><given-names>X</given-names></name>
+<name name-style="western"><surname>Tian</surname><given-names>L</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>The gut microbiome dysbiosis and regulation by fecal microbiota transplantation: umbrella review</article-title>. <source>Front Microbiol</source>
+<year>2023</year>; <volume>14</volume>: <fpage>1286429</fpage>.<pub-id pub-id-type="pmid">38029189</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3389/fmicb.2023.1286429</pub-id><pub-id pub-id-type="pmcid">PMC10655098</pub-id></mixed-citation></ref><ref id="bibr123-17562848251327167"><label>123</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Innes</surname><given-names>AJ</given-names></name>
+<name name-style="western"><surname>Mullish</surname><given-names>BH</given-names></name>
+<name name-style="western"><surname>Fernando</surname><given-names>F</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Faecal microbiota transplant: a novel biological approach to extensively drug-resistant organism-related non-relapse mortality</article-title>. <source>Bone Marrow Transplant</source>
+<year>2017</year>; <volume>52</volume>(<issue>10</issue>): <fpage>1452</fpage>–<lpage>1454</lpage>.<pub-id pub-id-type="pmid">28714946</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/bmt.2017.151</pub-id></mixed-citation></ref><ref id="bibr124-17562848251327167"><label>124</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Wang</surname><given-names>X</given-names></name>
+<name name-style="western"><surname>Zhao</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Bi</surname><given-names>D</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Fecal microbiota transplantation: transitioning from chaos and controversial realm to scientific precision era</article-title>. <source>Sci Bull</source>. Epub ahead of print January 2025. DOI: <pub-id pub-id-type="doi">10.1016/j.scib.2025.01.029</pub-id>.<pub-id pub-id-type="pmid">39855927</pub-id></mixed-citation></ref><ref id="bibr125-17562848251327167"><label>125</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Hvas</surname><given-names>CL</given-names></name>
+<name name-style="western"><surname>Dahl Jørgensen</surname><given-names>SM</given-names></name>
+<name name-style="western"><surname>Jørgensen</surname><given-names>SP</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Fecal microbiota transplantation is superior to fidaxomicin for treatment of recurrent <italic toggle="yes">Clostridium difficile</italic> infection</article-title>. <source>Gastroenterology</source>
+<year>2019</year>; <volume>156</volume>(<issue>5</issue>): 1324–1332.e3.<pub-id pub-id-type="doi" assigning-authority="pmc">10.1053/j.gastro.2018.12.019</pub-id><pub-id pub-id-type="pmid">30610862</pub-id></mixed-citation></ref><ref id="bibr126-17562848251327167"><label>126</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Nicco</surname><given-names>C</given-names></name>
+<name name-style="western"><surname>Paule</surname><given-names>A</given-names></name>
+<name name-style="western"><surname>Konturek</surname><given-names>P</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>From donor to patient: collection, preparation and cryopreservation of fecal samples for fecal microbiota transplantation</article-title>. <source>Diseases (Basel, Switzerland)</source>
+<year>2020</year>; <volume>8</volume>(<issue>2</issue>): <fpage>9</fpage>.<pub-id pub-id-type="pmid">32326509</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.3390/diseases8020009</pub-id><pub-id pub-id-type="pmcid">PMC7349373</pub-id></mixed-citation></ref><ref id="bibr127-17562848251327167"><label>127</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Burz</surname><given-names>SD</given-names></name>
+<name name-style="western"><surname>Abraham</surname><given-names>AL</given-names></name>
+<name name-style="western"><surname>Fonseca</surname><given-names>F</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>A guide for ex vivo handling and storage of stool samples intended for fecal microbiota transplantation</article-title>. <source>Sci Rep</source>
+<year>2019</year>; <volume>9</volume>(<issue>1</issue>): <fpage>8897</fpage>.<pub-id pub-id-type="pmid">31222022</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1038/s41598-019-45173-4</pub-id><pub-id pub-id-type="pmcid">PMC6586871</pub-id></mixed-citation></ref><ref id="bibr128-17562848251327167"><label>128</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Bhutiani</surname><given-names>N</given-names></name>
+<name name-style="western"><surname>Schucht</surname><given-names>JE</given-names></name>
+<name name-style="western"><surname>Miller</surname><given-names>KR</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Technical aspects of fecal microbial transplantation (FMT)</article-title>. <source>Curr Gastroenterol Rep</source>
+<year>2018</year>; <volume>20</volume>(<issue>7</issue>): <fpage>30</fpage>.<pub-id pub-id-type="pmid">29886561</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1007/s11894-018-0636-7</pub-id></mixed-citation></ref><ref id="bibr129-17562848251327167"><label>129</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Sunkara</surname><given-names>T</given-names></name>
+<name name-style="western"><surname>Rawla</surname><given-names>P</given-names></name>
+<name name-style="western"><surname>Ofosu</surname><given-names>A</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Fecal microbiota transplant—a new frontier in inflammatory bowel disease</article-title>. <source>J Inflamm Res</source>
+<year>2018</year>; <volume>11</volume>: <fpage>321</fpage>–<lpage>328</lpage>.<pub-id pub-id-type="pmid">30214266</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.2147/JIR.S176190</pub-id><pub-id pub-id-type="pmcid">PMC6124474</pub-id></mixed-citation></ref><ref id="bibr130-17562848251327167"><label>130</label><mixed-citation publication-type="journal">
+<person-group person-group-type="author">
+<name name-style="western"><surname>Ghani</surname><given-names>R</given-names></name>
+<name name-style="western"><surname>Chrysostomou</surname><given-names>D</given-names></name>
+<name name-style="western"><surname>Roberts</surname><given-names>LA</given-names></name>
+</person-group>, <etal>et al</etal>. <article-title>Faecal (or intestinal) microbiota transplant: a tool for repairing the gut microbiome</article-title>. <source>Gut Microbes</source>
+<year>2024</year>; <volume>16</volume>(<issue>1</issue>): <fpage>2423026</fpage>.<pub-id pub-id-type="pmid">39499189</pub-id>
+<pub-id pub-id-type="doi" assigning-authority="pmc">10.1080/19490976.2024.2423026</pub-id><pub-id pub-id-type="pmcid">PMC11540080</pub-id></mixed-citation></ref></ref-list></back></article></pmc-articleset>
