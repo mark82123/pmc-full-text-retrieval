@@ -7,6 +7,8 @@ Query language
     "gut microbiome"              exact phrase (positional match, stop words skipped)
     immun*                        prefix wildcard
     title:crispr                  field restriction (title / abstract / body)
+    semaglutid~  /  word~2        fuzzy term: every vocabulary word within the given
+                                  edit distance (default 1 for short words, else 2)
 
 Scoring
 -------
@@ -89,9 +91,10 @@ def lex(query: str) -> list[QToken]:
 # ----------------------------------------------------------------------- #
 @dataclass
 class Node:
-    kind: str                      # TERM PHRASE PREFIX AND OR NOT
+    kind: str                      # TERM PHRASE PREFIX FUZZY AND OR NOT
     value: str = ""
     field: str = ""
+    dist: int = 0                  # FUZZY: maximum edit distance (0 = default for the word length)
     children: list["Node"] = dc_field(default_factory=list)
 
     def describe(self) -> str:
@@ -99,6 +102,8 @@ class Node:
             return (self.field + ":" if self.field else "") + self.value
         if self.kind == "PREFIX":
             return (self.field + ":" if self.field else "") + self.value + "*"
+        if self.kind == "FUZZY":
+            return (self.field + ":" if self.field else "") + self.value + "~" + (str(self.dist) if self.dist else "")
         if self.kind == "PHRASE":
             return '"' + self.value + '"'
         if self.kind == "NOT":
@@ -189,10 +194,16 @@ class QueryParser:
             self.take()
             if t.value.endswith("*") and len(t.value) > 1:
                 return Node("PREFIX", t.value[:-1], t.field)
+            fz = _FUZZY_RE.match(t.value)
+            if fz:
+                return Node("FUZZY", fz.group(1), t.field, dist=int(fz.group(2) or 0))
             return Node("TERM", t.value, t.field)
         # stray operator
         self.take()
         return self.parse_atom()
+
+
+_FUZZY_RE = re.compile(r"^([^~]+)~([1-3])?$")
 
 
 def parse_query(query: str, default_op: str = "AND") -> Node | None:
@@ -224,6 +235,8 @@ class Searcher:
     def __init__(self, index: InvertedIndex):
         self.index = index
         self.tokenizer = index.tokenizer
+        # fuzzy(word, k) -> vocabulary words within k edits (k = 0: default); set by the engine
+        self.fuzzy = None
 
     # ---- helpers ------------------------------------------------------- #
     def _in_field(self, doc_id: str, positions: list[int], fld: str) -> list[int]:
@@ -285,6 +298,22 @@ class Searcher:
                 out[doc_id] = out[doc_id].merge(m) if doc_id in out else m
         return out
 
+    def fuzzy_words(self, node: Node) -> list[str]:
+        """Vocabulary words a FUZZY node expands to (closest first)."""
+        if self.fuzzy is None:
+            return [node.value.lower()]
+        return self.fuzzy(node.value.lower(), node.dist)
+
+    def _fuzzy_stems(self, node: Node) -> set[str]:
+        return {s for s in (self.tokenizer.normalize(w) for w in self.fuzzy_words(node)) if s}
+
+    def _fuzzy_matches(self, node: Node) -> dict[str, Match]:
+        out: dict[str, Match] = {}
+        for stem in self._fuzzy_stems(node):
+            for doc_id, m in self._term_matches(stem, node.field, node.describe()).items():
+                out[doc_id] = out[doc_id].merge(m) if doc_id in out else m
+        return out
+
     # ---- evaluation ---------------------------------------------------- #
     def evaluate(self, node: Node | None) -> dict[str, Match]:
         if node is None:
@@ -310,6 +339,8 @@ class Searcher:
             return self._prefix_matches(node.value, node.field, node.describe())
         if node.kind == "PHRASE":
             return self._phrase_matches(node.value, node.describe())
+        if node.kind == "FUZZY":
+            return self._fuzzy_matches(node)
         if node.kind == "NOT":
             excluded = self.evaluate(node.children[0])
             return {d: Match() for d in self.index.docs if d not in excluded}
@@ -419,6 +450,8 @@ class Searcher:
                 stems.update(t.stem for t in self.tokenizer.iter_tokens(n.value) if t.stem)
             elif n.kind == "PREFIX":
                 prefixes.add(n.value.lower())
+            elif n.kind == "FUZZY":
+                stems.update(self._fuzzy_stems(n))
             elif n.kind == "PHRASE":
                 stems.update(t.stem for t in self.tokenizer.iter_tokens(n.value) if t.stem)
             else:

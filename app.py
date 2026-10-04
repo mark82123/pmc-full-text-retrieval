@@ -12,6 +12,14 @@ Endpoints
     GET  /api/stopwords          the Snowball list and the biomedical additions
     GET  /api/stem?word=a,b      Porter stem of each word with the step-by-step trace
     GET  /api/analyze?text=..    tokenise / lower-case / stop-word / stem a text; sentence split
+    GET  /api/zipf               Zipf analysis of the abstract collection (4 pre-processing conditions)
+    GET  /api/zipf/terms?cond=C&terms=a,b&scatter=1   CF / DF / IDF of chosen terms
+    GET  /api/edit?a=..&b=..     edit distance: DP table + alignment
+    GET  /api/spell?word=..&k=2  vocabulary words within k edits
+    GET  /api/w2v/status         word2vec model + training job
+    GET  /api/w2v/similar?word=..&n=15      /api/w2v/analogy?a=..&b=..&c=..      /api/w2v/projection?words=..
+    POST /api/w2v/train          (body: JSON {model: sg|cbow, dim, window, negative, min_count, epochs})
+    POST /api/collect            (body: JSON {term, n, name}) build a PubMed abstract collection
     POST /api/upload?filename=x.xml   (body: raw XML)  add a document to the index
     POST /api/fetch?replace=0|1  (body: JSON {"ids": "..."} or plain text)
                                  fetch PMIDs / PMC ids from NCBI and index them
@@ -35,6 +43,7 @@ sys.path.insert(0, str(ROOT))
 from ir.engine import Engine  # noqa: E402
 from ir.porter import stem_trace  # noqa: E402
 from ir.sentence import naive_split, split_sentences  # noqa: E402
+from ir.spell import edit_matrix  # noqa: E402
 from ir.stopwords import BIOMEDICAL_STOP_WORDS, SMART_STOP_WORDS, SNOWBALL_STOP_WORDS, STOP_WORDS  # noqa: E402
 
 STATIC = ROOT / "static"
@@ -86,7 +95,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json({"error": "empty query"}, 400)
                 limit = max(1, min(int(qs.get("limit", 50)), 500))
                 return self._json(engine.search(q, qs.get("method", "bm25"), qs.get("op", "AND"), limit,
-                                                qs.get("scope", "all")))
+                                                qs.get("scope", "all"), autocorrect=qs.get("spell", "1") == "1"))
             if path.startswith("/api/doc/"):
                 doc_id = path[len("/api/doc/"):]
                 d = engine.document(doc_id, qs.get("q", ""), qs.get("op", "AND"))
@@ -107,9 +116,33 @@ class Handler(BaseHTTPRequestHandler):
                 toks = [{"text": t.text, "lower": t.norm, "stem": t.stem, "stopword": not t.stem and engine.tokenizer.is_stopword(t.norm),
                          "position": t.position} for t in engine.tokenizer.tokenize(text)]
                 return self._json({"tokens": toks, "sentences": split_sentences(text), "sentences_naive": naive_split(text)})
+            if path == "/api/zipf":
+                return self._json(engine.zipf())
+            if path == "/api/zipf/terms":
+                return self._json(engine.zipf_terms(qs.get("cond", "C"), qs.get("terms", ""), qs.get("scatter") == "1"))
+            if path == "/api/edit":
+                a, b = qs.get("a", "").strip().lower()[:40], qs.get("b", "").strip().lower()[:40]
+                return self._json(edit_matrix(a, b, qs.get("transpose", "1") == "1"))
+            if path == "/api/spell":
+                w = qs.get("word", "").strip().lower()
+                k = int(qs["k"]) if qs.get("k", "").isdigit() else None
+                return self._json({"word": w, "in_vocabulary": w in engine.spell, "cf": engine.spell.words.get(w, 0),
+                                   "vocabulary": len(engine.spell.words),
+                                   "candidates": len(engine.spell.candidates(w, k or 2)) if w else 0,
+                                   "suggestions": engine.spell.suggest(w, 15, k) if w else []})
+            if path == "/api/w2v/status":
+                return self._json(engine.w2v_status())
+            if path == "/api/w2v/similar":
+                return self._json(engine.w2v_similar(qs.get("word", "").strip(), max(1, min(int(qs.get("n", 15)), 50))))
+            if path == "/api/w2v/analogy":
+                return self._json(engine.w2v_analogy(*(qs.get(k, "").strip() for k in "abc")))
+            if path == "/api/w2v/projection":
+                return self._json(engine.w2v_projection(qs.get("words", ""), int(qs.get("n", 120))))
             if path == "/api/vocab":
                 return self._json(engine.vocabulary(qs.get("prefix", ""), int(qs.get("limit", 200))))
             self.send_error(404)
+        except ValueError as e:
+            self._json({"error": str(e)}, 400)
         except Exception as e:  # pragma: no cover
             import traceback
             traceback.print_exc()
@@ -134,10 +167,19 @@ class Handler(BaseHTTPRequestHandler):
                 results = engine.fetch_ids(text, persist=qs.get("persist", "1") == "1",
                                            replace=qs.get("replace", "0") == "1")
                 return self._json({"results": results, "documents": engine.index.n_docs})
+            if url.path == "/api/w2v/train":
+                return self._json(engine.w2v_train(json.loads(body.decode("utf-8") or "{}")))
+            if url.path == "/api/collect":
+                p = json.loads(body.decode("utf-8") or "{}")
+                if not str(p.get("term", "")).strip():
+                    raise ValueError("empty PubMed query")
+                return self._json(engine.collect(str(p["term"]).strip(), int(p.get("n", 1000)), str(p.get("name", ""))))
             if url.path == "/api/remove":
                 ok = engine.remove(qs.get("id", ""), delete_file=qs.get("delete", "1") == "1")
                 return self._json({"removed": ok, "documents": engine.index.n_docs}, 200 if ok else 404)
             self.send_error(404)
+        except ValueError as e:
+            self._json({"error": str(e)}, 400)
         except Exception as e:
             import traceback
             traceback.print_exc()

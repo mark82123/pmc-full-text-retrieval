@@ -1,5 +1,5 @@
-:root{--bg:#f6f7fb;--card:#fff;--surface:#fff;--surface2:#f9fafb;--surface3:#f3f4f8;--ink:#1d2333;--muted:#6b7280;--line:#e5e7ef;--accent:#2563eb;--accent2:#7c3aed;--mark:#fde68a;--ok:#059669;--warn:#d97706;--danger:#dc2626;--bar:#93c5fd;--bar2:#c4b5fd;--code:#eef0f6;--track:#eef0f6;--tip-bg:#1d2333;--tip-ink:#f8fafc;--hit:#fffbea;--ellip-bg:#f3e8ff;--ellip:#7c3aed;--accent-soft:#eff6ff;--accent-line:#bfdbfe}
-:root[data-theme="dark"]{--bg:#0f1420;--card:#171d2b;--surface:#1c2333;--surface2:#212a3b;--surface3:#263043;--ink:#e6e9f2;--muted:#9aa3b5;--line:#2d374b;--accent:#60a5fa;--accent2:#a78bfa;--mark:#7a5c0a;--ok:#34d399;--warn:#fbbf24;--danger:#f87171;--bar:#3b82f6;--bar2:#8b5cf6;--code:#263043;--track:#2a3347;--tip-bg:#e6e9f2;--tip-ink:#111827;--hit:#2a2a1a;--ellip-bg:#3b2a63;--ellip:#c4b5fd;--accent-soft:#1e2a44;--accent-line:#2f4a7a;color-scheme:dark}
+:root{--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--bg:#f6f7fb;--card:#fff;--surface:#fff;--surface2:#f9fafb;--surface3:#f3f4f8;--ink:#1d2333;--muted:#6b7280;--line:#e5e7ef;--accent:#2563eb;--accent2:#7c3aed;--mark:#fde68a;--ok:#059669;--warn:#d97706;--danger:#dc2626;--bar:#93c5fd;--bar2:#c4b5fd;--code:#eef0f6;--track:#eef0f6;--tip-bg:#1d2333;--tip-ink:#f8fafc;--hit:#fffbea;--ellip-bg:#f3e8ff;--ellip:#7c3aed;--accent-soft:#eff6ff;--accent-line:#bfdbfe}
+:root[data-theme="dark"]{--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--bg:#0f1420;--card:#171d2b;--surface:#1c2333;--surface2:#212a3b;--surface3:#263043;--ink:#e6e9f2;--muted:#9aa3b5;--line:#2d374b;--accent:#60a5fa;--accent2:#a78bfa;--mark:#7a5c0a;--ok:#34d399;--warn:#fbbf24;--danger:#f87171;--bar:#3b82f6;--bar2:#8b5cf6;--code:#263043;--track:#2a3347;--tip-bg:#e6e9f2;--tip-ink:#111827;--hit:#2a2a1a;--ellip-bg:#3b2a63;--ellip:#c4b5fd;--accent-soft:#1e2a44;--accent-line:#2f4a7a;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
 a{color:var(--accent)}
@@ -188,3 +188,58 @@ table.tokens tr.sw td{color:var(--muted)}
 :root[data-theme="dark"] mark{color:#fff7d6}
 :root[data-theme="dark"] .log{background:#0b1020;border:1px solid var(--line)}
 .sub-h{margin:6px 0;color:var(--muted);font-size:13px}
+
+/* ---- Project #2: Zipf / word2vec / edit distance ---- */
+.tabs{flex-wrap:wrap}
+.segs{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+button.seg{border:0;border-radius:0;padding:6px 12px;font-size:13px;background:var(--surface);color:var(--muted);border-right:1px solid var(--line)}
+button.seg:last-child{border-right:0}
+button.seg.on{background:var(--accent);color:#fff;font-weight:600}
+.plot{position:relative}
+.plot .tip{position:absolute;pointer-events:none;background:var(--tip-bg);color:var(--tip-ink);font-size:12px;line-height:1.5;padding:6px 10px;border-radius:8px;white-space:nowrap;z-index:5;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.plot .tip i{display:inline-block;width:12px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.plot .tip span{opacity:.75}
+.plot .tip .tip-h{opacity:.75;margin-bottom:2px}
+.plot-legend{display:flex;margin:4px 0 0 56px}
+.plot-legend i.ln{width:18px;height:0;border-top:3px solid var(--c);border-radius:0;vertical-align:3px}
+.plot-legend i.ln.dash{border-top:2px dashed var(--c)}
+.plot-legend i.dot{width:9px;height:9px;border-radius:50%;background:var(--c)}
+table.num td,table.num th{text-align:right}
+table.num td:first-child,table.num th:first-child{text-align:left}
+table.num td:nth-child(2),table.num th:nth-child(2){text-align:right}
+table.num th{cursor:default}
+table.num td.t{text-align:left;white-space:normal}
+table.num tr.sel{background:var(--accent-soft)}
+table.num i.key{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px}
+table.sim td:first-child{font-weight:600}
+.barcell{width:120px;min-width:80px}
+.barcell i{display:block;height:8px;border-radius:0 4px 4px 0;background:var(--s1)}
+.scroll{overflow:auto;max-height:520px}
+.qa{display:flex;flex-direction:column;gap:10px;margin-top:14px;font-size:14px}
+.qa>div{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:8px 12px}
+.spell-banner{background:var(--card);border:1px solid var(--warn);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:14px}
+.spell-detail{display:flex;flex-direction:column;gap:6px;margin-top:6px;font-size:13px;color:var(--muted)}
+.spell-detail s{color:var(--danger)}
+.chip.fuzzy{background:var(--surface3)}
+.w2v-form label,.row label{font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.w2v-form input,.w2v-form select{font:inherit;width:72px;min-width:0;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.w2v-form select{width:auto}
+.row input[type=number]{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.row select{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+#w2v-progress{margin-top:12px}
+.scorebar.big{height:12px;border-radius:6px}
+.scorebar.big i{transition:width .4s}
+.try.analogy input{min-width:90px;flex:1}
+table.dp{border-collapse:collapse;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px}
+table.dp th,table.dp td{width:34px;height:30px;text-align:center;border:1px solid var(--line)}
+table.dp th{background:var(--surface3);color:var(--accent2)}
+table.dp td.path{background:var(--mark);font-weight:700}
+table.dp td.final{outline:2px solid var(--accent);outline-offset:-2px}
+.ops{display:flex;flex-wrap:wrap;gap:6px}
+.op{display:inline-flex;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:8px;padding:4px 8px;background:var(--surface2);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;min-width:44px}
+.op i{font-style:normal;color:var(--muted);font-size:11px;line-height:1}
+.op small{font-family:system-ui,sans-serif;font-size:10px;color:var(--muted)}
+.op-match{opacity:.6}
+.op-substitute{border-color:var(--warn)}.op-insert{border-color:var(--ok)}.op-delete{border-color:var(--danger)}.op-transpose{border-color:var(--accent2)}
+.op-substitute small{color:var(--warn)}.op-insert small{color:var(--ok)}.op-delete small{color:var(--danger)}.op-transpose small{color:var(--accent2)}
+.try input[type=checkbox]{flex:none;min-width:0}

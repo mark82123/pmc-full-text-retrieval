@@ -28,6 +28,7 @@
     $$('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
     $$('.panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
     if (name === 'corpus' && !state.corpus) loadCorpus();
+    document.dispatchEvent(new CustomEvent('tab', { detail: name }));
     window.scrollTo(0, 0);
   }
   $$('.tab').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
@@ -80,15 +81,33 @@
     state.lastQuery = q;
     $('#summary').textContent = 'Searching…';
     try {
-      const params = new URLSearchParams({ q, method: $('#method').value, op: $('#op').value, limit: $('#limit').value, scope: $('#scope').value });
+      const params = new URLSearchParams({ q, method: $('#method').value, op: $('#op').value, limit: $('#limit').value, scope: $('#scope').value, spell: $('#autocorrect').checked ? 1 : 0 });
       const r = await api('/api/search?' + params);
       state.lastResults = r;
+      state.lastQuery = r.query;                       // the corrected query when auto-correction kicked in
+      renderSpell(r.spell, q);
       renderAnalysis(r.analysis);
       renderResults(r);
     } catch (e) {
       $('#summary').textContent = 'Error: ' + e.message;
       $('#results').innerHTML = '';
     }
+  }
+
+  function renderSpell(sp, typed) {
+    const box = $('#spell-banner');
+    const bad = (sp && sp.corrections) || [];
+    if (!bad.length) { box.classList.add('hidden'); return; }
+    const link = (q, label) => `<a href="#" data-q="${esc(q)}">${esc(label || q)}</a>`;
+    let h = '';
+    if (sp.auto) h += `<div>Showing results for <b>${link(sp.corrected_query)}</b> — no document matches “${esc(sp.original_query)}”.</div>`;
+    else if (sp.corrected_query) h += `<div>Did you mean <b>${link(sp.corrected_query)}</b>?</div>`;
+    h += '<div class="spell-detail">' + bad.map(c => `<span><s>${esc(c.word)}</s> is not in the collection` + (c.suggestions.length
+      ? ' → ' + c.suggestions.map(s => `<span class="chip term" title="edit distance ${s.distance}, collection frequency ${s.cf}">${link(typed.replace(new RegExp(c.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'), s.word), s.word)} <small>d=${s.distance} · cf=${fmt(s.cf)}</small></span>`).join(' ')
+      : ' (no vocabulary word within the edit-distance limit)') + '</span>').join('') + '</div>';
+    box.innerHTML = h;
+    box.classList.remove('hidden');
+    $$('a[data-q]', box).forEach(a => a.addEventListener('click', e => { e.preventDefault(); doSearch(a.dataset.q); }));
   }
 
   function renderAnalysis(a) {
@@ -102,6 +121,9 @@
       return `<span class="chip field">${esc(t.word)}:</span>`;
     }).join('');
     h += ` <span class="chip">parsed as <code>${esc(a.parsed || '∅')}</code></span>`;
+    (a.fuzzy || []).forEach(f => {
+      h += ` <span class="chip fuzzy"><code>${esc(f.term)}</code> matches ${f.words.length ? f.words.map(w => `<b title="edit distance ${w.distance}, cf ${w.cf}">${esc(w.word)}</b><small>d=${w.distance}</small>`).join(' ') : '<i>no vocabulary word</i>'}</span>`;
+    });
     box.innerHTML = h;
   }
 
@@ -407,7 +429,11 @@
     catch (e) { $('#remove-msg').textContent = e.message; }
   });
 
+  window.IR = { $, $$, esc, fmt, api, state, showTab, doSearch, hbarChart };
+
   /* ---------------- init ---------------- */
   const initial = new URLSearchParams(location.search).get('q');
   if (initial) doSearch(initial);
+  const initialTab = new URLSearchParams(location.search).get('tab');       // e.g. /?tab=zipf
+  if (initialTab && $('#tab-' + initialTab)) window.addEventListener('load', () => { const b = $(`.tab[data-tab="${initialTab}"]`); if (b) b.click(); });
 })();

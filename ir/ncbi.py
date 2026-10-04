@@ -207,3 +207,78 @@ def pubmed_to_jats(xml_text: str) -> str:
         x("</article-meta></front></article>")
     out.append("</pmc-articleset>")
     return "".join(out)
+
+
+# ---------------------------------------------------------------------- #
+# Bulk PubMed collection (Project #2): esearch a query, efetch the abstracts
+# ---------------------------------------------------------------------- #
+ESEARCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+
+
+def search_pubmed(term: str, retmax: int = 1000) -> tuple[list[str], int]:
+    """PMIDs of English articles with an abstract matching *term* (most
+    recent first) and the total number of matches in PubMed."""
+    query = f"({term}) AND english[lang] AND hasabstract"
+    try:
+        raw = _get(ESEARCH_URL, {"db": "pubmed", "term": query, "retmax": retmax, "retmode": "json",
+                                 "sort": "pub_date", "tool": TOOL})
+        res = json.loads(raw.decode("utf-8"))["esearchresult"]
+    except (urllib.error.URLError, OSError, ValueError, KeyError) as e:
+        raise ValueError(f"esearch request failed: {e}") from e
+    return list(res.get("idlist", [])), int(res.get("count", 0))
+
+
+def pubmed_records(xml_text: str) -> list[dict]:
+    """PubmedArticleSet XML -> [{pmid, title, abstract: [paragraphs], journal, year, authors, keywords, doi}]."""
+    xml_text = re.sub(r"<!DOCTYPE[^>]*>", "", xml_text, count=1)
+    out = []
+    for pa in ET.fromstring(xml_text).iter("PubmedArticle"):
+        cit = pa.find("MedlineCitation")
+        art = cit.find("Article") if cit is not None else None
+        if art is None:
+            continue
+        paragraphs = []
+        for at in art.findall("Abstract/AbstractText"):
+            text = _t(at)
+            if text:
+                label = at.get("Label", "")
+                paragraphs.append(f"{label.title()}: {text}" if label else text)
+        if not paragraphs:
+            continue
+        doi = next((_t(a) for a in pa.iter("ArticleId") if a.get("IdType") == "doi"), "")
+        authors = [" ".join(x for x in (_t(au.find("ForeName")), _t(au.find("LastName"))) if x) or _t(au.find("CollectiveName"))
+                   for au in art.iter("Author")]
+        out.append({
+            "pmid": _t(cit.find("PMID")),
+            "title": _t(art.find("ArticleTitle")).rstrip("."),
+            "abstract": paragraphs,
+            "journal": _t(art.find("Journal/Title")) or _t(cit.find("MedlineJournalInfo/MedlineTA")),
+            "year": _t(art.find("Journal/JournalIssue/PubDate/Year")) or _t(art.find("ArticleDate/Year"))
+            or _t(art.find("Journal/JournalIssue/PubDate/MedlineDate"))[:4],
+            "authors": [a for a in authors if a],
+            "keywords": [k for k in (_t(k) for k in cit.iter("Keyword")) if k],
+            "doi": doi,
+        })
+    return out
+
+
+def fetch_pubmed_batch(pmids: list[str], batch: int = 200, progress=None) -> list[dict]:
+    """Download the PubMed records (title + abstract) of many PMIDs."""
+    records: list[dict] = []
+    for i in range(0, len(pmids), batch):
+        chunk = pmids[i:i + batch]
+        data = urllib.parse.urlencode({"db": "pubmed", "id": ",".join(chunk), "retmode": "xml", "tool": TOOL}).encode()
+        for attempt in range(4):                     # NCBI answers 429 / 502 now and then: retry with back-off
+            try:
+                _throttle()
+                req = urllib.request.Request(EFETCH_URL, data=data, headers={"User-Agent": TOOL})
+                with urllib.request.urlopen(req, timeout=60) as resp:
+                    records.extend(pubmed_records(resp.read().decode("utf-8", errors="replace")))
+                break
+            except (urllib.error.URLError, OSError, ET.ParseError) as e:
+                if attempt == 3:
+                    raise ValueError(f"efetch (pubmed) request failed: {e}") from e
+                time.sleep(2 * (attempt + 1))
+        if progress:
+            progress(min(i + batch, len(pmids)), len(pmids))
+    return records

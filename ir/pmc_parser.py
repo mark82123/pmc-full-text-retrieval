@@ -8,6 +8,7 @@ add noise (thousands of bare numbers and author names) to the index.
 
 from __future__ import annotations
 
+import json
 import re
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
@@ -248,4 +249,20 @@ def load_directory(directory: str | Path, patterns: Iterable[str] = ("*.xml", "*
             docs.extend(parse_file(f))
         except ET.ParseError as e:
             print(f"[warn] could not parse {f}: {e}")
+    return docs
+
+
+def load_jsonl(path: str | Path) -> list[Document]:
+    """A PubMed abstract collection: one JSON record per line
+    ({pmid, title, abstract: [paragraphs], journal, year, authors, keywords, doi})."""
+    path = Path(path)
+    docs = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        r = json.loads(line)
+        docs.append(Document(doc_id="PMID" + r["pmid"], title=r.get("title", ""), abstract=list(r.get("abstract", [])),
+                             pmid=r["pmid"], doi=r.get("doi", ""), journal=r.get("journal", ""), year=r.get("year", ""),
+                             authors=r.get("authors", []), keywords=r.get("keywords", []),
+                             article_type="pubmed-abstract", source=str(path)))
     return docs

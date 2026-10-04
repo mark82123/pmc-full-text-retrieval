@@ -13,12 +13,15 @@
     <span class="logo">⌕</span>
     <div>
       <h1>PMC Full-Text Retrieval Tool</h1>
-      <p class="sub">AI Information Retrieval 人工智慧資訊檢索 · Project #1 · PubMed Central XML corpus</p>
+      <p class="sub">AI Information Retrieval 人工智慧資訊檢索 · Project #1 + #2 · PMC full text · PubMed abstracts · Zipf · word2vec · spelling correction</p>
     </div>
   </div>
   <nav class="tabs">
     <button class="tab active" data-tab="search">Search</button>
     <button class="tab" data-tab="corpus">Corpus &amp; Statistics</button>
+    <button class="tab" data-tab="zipf">Zipf 分析</button>
+    <button class="tab" data-tab="w2v">Word2Vec</button>
+    <button class="tab" data-tab="spell">Edit Distance</button>
     <button class="tab" data-tab="upload">Add Documents</button>
     <button class="tab" data-tab="algo">前處理與演算法</button>
     <button class="tab" data-tab="help">說明 / Help</button>
@@ -67,8 +70,12 @@
         <a href="#" data-q="alzheimer OR crispr">alzheimer OR crispr</a>
         <a href="#" data-q="immun*">immun*</a>
         <a href="#" data-q="title:diabetes">title:diabetes</a>
+        <a href="#" data-q="semaglutde obesty" title="misspelled on purpose: spelling correction by edit distance">semaglutde obesty</a>
+        <a href="#" data-q="tirzepatid~" title="fuzzy term: all vocabulary words within the edit distance">tirzepatid~</a>
       </span>
+      <label class="check"><input type="checkbox" id="autocorrect" checked> Auto-correct spelling</label>
     </div>
+    <div id="spell-banner" class="spell-banner hidden"></div>
 
     <div id="analysis" class="analysis hidden"></div>
     <div id="summary" class="summary"></div>
@@ -92,8 +99,94 @@
     <div id="corpus"></div>
   </section>
 
+  <!-- ============ ZIPF ============ -->
+  <section id="tab-zipf" class="panel">
+    <div id="zipf"><div class="card">Loading…</div></div>
+  </section>
+
+  <!-- ============ WORD2VEC ============ -->
+  <section id="tab-w2v" class="panel">
+    <div class="card help">
+      <h2>Word2Vec — 詞嵌入訓練</h2>
+      <p>以同一主題的 PubMed 摘要語料訓練 word2vec（<code>ir/word2vec.py</code>，純 Python 自行實作，negative sampling）。
+        前處理：規則式斷句 → 斷詞（保留連字號，如 <code>glp-1</code>、<code>sglt2</code>）→ 小寫 → 移除停用詞；視窗不跨越句子。
+        <b>Skip-gram</b> 用中心詞預測視窗內的每個周圍詞；<b>CBOW</b> 用視窗內詞向量的平均預測中心詞。</p>
+      <div class="row w2v-form">
+        <label>Model <select id="w2v-model"><option value="sg">Skip-gram</option><option value="cbow">CBOW</option></select></label>
+        <label>Dimensions <input id="w2v-dim" type="number" min="10" max="200" value="50"></label>
+        <label>Window <input id="w2v-window" type="number" min="1" max="15" value="5"></label>
+        <label>Negative samples <input id="w2v-negative" type="number" min="1" max="20" value="5"></label>
+        <label>Min count <input id="w2v-min" type="number" min="1" max="100" value="5"></label>
+        <label>Epochs <input id="w2v-epochs" type="number" min="1" max="50" value="10"></label>
+        <button id="w2v-train" class="primary">Train</button>
+      </div>
+      <div id="w2v-progress" class="hidden"><div class="scorebar big"><i style="width:0%"></i></div><span class="muted"></span></div>
+      <div id="w2v-info"></div>
+    </div>
+    <div class="two">
+      <div class="card">
+        <h2>Most similar words</h2>
+        <p class="hint">餘弦相似度（cosine similarity）最高的鄰近詞。點鄰近詞可繼續查，按「search」以該詞檢索文件。</p>
+        <div class="try"><input id="w2v-word" value="semaglutide" placeholder="word"><button id="w2v-sim-btn" class="primary">Neighbours</button></div>
+        <div id="w2v-sim"></div>
+      </div>
+      <div class="card">
+        <h2>Analogy  a : b = c : ?</h2>
+        <p class="hint">向量運算 <code>v(b) − v(a) + v(c)</code> 後找最接近的詞。</p>
+        <div class="try analogy"><input id="w2v-a" value="kidney" placeholder="a"><span>:</span><input id="w2v-b" value="ckd" placeholder="b"><span>=</span><input id="w2v-c" value="liver" placeholder="c"><span>: ?</span><button id="w2v-ana-btn" class="primary">Solve</button></div>
+        <div id="w2v-ana"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Embedding map (PCA → 2-D)</h2>
+      <p class="hint">輸入 1–4 個種子詞（空白分隔）：畫出每個種子詞與其最近鄰，顏色代表所屬種子；留空則畫出最常見的詞。主成分以 power iteration 計算。</p>
+      <div class="try"><input id="w2v-seeds" value="semaglutide nausea kidney mice" placeholder="seed words, e.g. semaglutide nausea kidney"><button id="w2v-map-btn" class="primary">Draw map</button></div>
+      <div id="w2v-map"></div>
+    </div>
+  </section>
+
+  <!-- ============ SPELLING / EDIT DISTANCE ============ -->
+  <section id="tab-spell" class="panel">
+    <div class="card help">
+      <h2>Edit distance — 動態規劃</h2>
+      <p><code>D[i][j]</code> = 把字串 a 的前 i 個字元變成 b 的前 j 個字元所需的最少編輯次數：
+        <code>D[i][j] = min( D[i-1][j] + 1 (刪除), D[i][j-1] + 1 (插入), D[i-1][j-1] + [a<sub>i</sub> ≠ b<sub>j</sub>] (取代／相同) )</code>，
+        另加 Damerau 擴充：相鄰兩字元對調算一次（<code>D[i-2][j-2] + 1</code>）。右下角即為距離；反白格子是回溯得到的一條最佳路徑。</p>
+      <div class="try"><input id="ed-a" value="semaglutide" placeholder="string a"><input id="ed-b" value="samegluitde" placeholder="string b">
+        <label class="check"><input type="checkbox" id="ed-tr" checked> transposition</label><button id="ed-btn" class="primary">Compute</button></div>
+      <div id="ed-out"></div>
+    </div>
+    <div class="card help">
+      <h2>Spelling correction — 拼字校正</h2>
+      <p>字典是語料中所有出現過的詞（小寫原形）及其 collection frequency。流程：
+        ① 用<b>字元 bigram 索引</b>篩出候選（k 次編輯最多破壞 3k 個 bigram，共享 bigram 不足者不可能在距離內）；
+        ② 對候選以<b>帶狀 (banded) DP</b> 計算編輯距離，超過 k 即提前中止；
+        ③ 以（距離小 → 語料頻率高）排序。短字（≤4 字元）k = 1，其餘 k = 2。</p>
+      <p>在 Search 分頁：查詢詞不在語料中時顯示 <i>Did you mean</i>；若原查詢沒有任何結果，會自動改用校正後的查詢。
+        也可以用 <code>word~</code> 或 <code>word~2</code> 做<b>模糊比對</b>（partial matching）：展開成編輯距離內的所有詞。</p>
+      <div class="try"><input id="sp-word" value="diabtes" placeholder="a (misspelled) word">
+        <label>max distance <select id="sp-k"><option value="">auto</option><option>1</option><option>2</option><option>3</option></select></label>
+        <button id="sp-btn" class="primary">Suggest</button></div>
+      <div id="sp-out"></div>
+    </div>
+  </section>
+
   <!-- ============ UPLOAD ============ -->
   <section id="tab-upload" class="panel">
+    <div class="card">
+      <h2>Build a PubMed abstract collection (Project #2)</h2>
+      <p>Searches PubMed with E-utilities <code>esearch</code> (English articles with an abstract, newest first), downloads the
+        records with <code>efetch</code> and stores them as <code>data/pubmed_&lt;name&gt;.jsonl</code>. The collection is indexed for
+        search and is the corpus analysed in the <b>Zipf 分析</b> and <b>Word2Vec</b> tabs. A collection with the same name is replaced.
+        1,000 abstracts take about half a minute.</p>
+      <div class="row">
+        <label>PubMed query <input id="col-term" value="GLP-1" placeholder="e.g. GLP-1"></label>
+        <label>Documents <input id="col-n" type="number" min="10" max="5000" value="1000" style="width:90px;min-width:0"></label>
+        <label>Name <input id="col-name" value="glp1" style="width:120px;min-width:0"></label>
+        <button id="col-btn" class="primary">Search &amp; download</button>
+        <span id="col-msg" class="muted"></span>
+      </div>
+    </div>
     <div class="card">
       <h2>Fetch from PubMed / PMC by ID</h2>
       <p>Paste <b>PMIDs</b> or <b>PMC IDs</b>, one per line (commas, <code>PMID:</code> prefixes and PubMed / PMC URLs are fine too).
@@ -215,6 +308,7 @@
         <tr><td><code>covid AND vaccine NOT pregnancy</code></td><td>Boolean 運算子<i class="info" data-tip="布林檢索模型：把每個詞對應到「包含該詞的文件集合」，再用交集 (AND)、聯集 (OR)、差集 (NOT) 做集合運算。">ⓘ</i>（<code>AND</code>、<code>OR</code>、<code>NOT</code>、<code>-term</code>），可加括號；優先順序<i class="info" data-tip="運算子優先順序 (precedence)：NOT 最先結合，其次 AND，最後 OR。例如 a OR b AND c 會被解讀成 a OR (b AND c)。">ⓘ</i> 為 NOT &gt; AND &gt; OR</td></tr>
         <tr><td><code>"gut microbiome"</code></td><td>Phrase query<i class="info" data-tip="片語查詢：詞必須「相鄰且順序相同」。系統利用倒排索引中記錄的詞位置 (position) 來檢查相鄰關係。">ⓘ</i>，使用 positional index<i class="info" data-tip="位置索引：倒排索引除了記錄「哪些文件含有此詞」，也記錄「該詞出現在文件的第幾個位置」，因此能支援片語與鄰近查詢。">ⓘ</i> 比對；片語中的 stop word<i class="info" data-tip="停用詞：the、of、is 等出現頻率極高但沒有辨識力的詞。索引時移除以縮小索引並提高效率。">ⓘ</i> 會被跳過但保留位置間距，例如 <code>"role of the gut"</code> 會比對 role 與 gut 相距 3 個位置</td></tr>
         <tr><td><code>immun*</code></td><td>Prefix wildcard<i class="info" data-tip="前綴萬用字元：展開成索引中所有以 immun 開頭的詞 (immun, immunotherapi, immunosuppress…)，再以 OR 合併其結果。">ⓘ</i>，比對所有以 <em>immun</em> 開頭的索引詞</td></tr>
+        <tr><td><code>tirzepatid~</code>、<code>word~2</code></td><td>Fuzzy term（模糊比對）：展開成字典中編輯距離 ≤ k 的所有詞（未指定 k 時短字為 1、其餘為 2）。拼錯且查無結果的查詢會自動以編輯距離最近、語料頻率最高的詞校正。</td></tr>
         <tr><td><code>title:crispr</code>、<code>abstract:vaccine</code>、<code>body:…</code></td><td>Field 限制<i class="info" data-tip="欄位檢索：索引時記錄每篇文件的標題、摘要、內文在位置流中的區間，查詢時只保留落在該區間的命中位置。">ⓘ</i>，只在指定欄位中比對</td></tr>
       </table>
 
@@ -253,11 +347,12 @@
         <tr><td>Lexical diversity</td><td>詞彙多樣性<i class="info" data-tip="= 不重複詞幹數 ÷ 索引詞總數 (type-token ratio)。越接近 1 表示用詞越多樣。">ⓘ</i> = unique terms ÷ index terms</td></tr>
         <tr><td>df / cf</td><td>df<i class="info" data-tip="document frequency：含有此詞的文件數，用於計算 IDF。">ⓘ</i> = 含此詞的文件數；cf<i class="info" data-tip="collection frequency：此詞在整個語料庫中出現的總次數。">ⓘ</i> = 此詞在全語料庫的總出現次數</td></tr>
       </table>
-      <p class="author"><b>作者</b> 胡元楨 · 學號 P77141105 · 人工智慧資訊檢索 專案一</p>
+      <p class="author"><b>作者</b> 胡元楨 · 學號 P77141105 · 人工智慧資訊檢索 專案一、專案二</p>
     </div>
   </section>
 </main>
 <footer>Standard-library Python back-end · vanilla JS front-end · no external dependencies</footer>
 <script src="/static/app.js"></script>
+<script src="/static/project2.js"></script>
 </body>
 </html>
