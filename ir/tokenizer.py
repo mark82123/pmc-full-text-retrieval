@@ -20,6 +20,9 @@ from .stopwords import STOP_WORDS
 # [^\W_]+  == one or more "word" characters excluding the underscore
 TOKEN_RE = re.compile(r"[^\W_]+", re.UNICODE)
 WORD_RE = re.compile(r"[^\W\d_]+", re.UNICODE)          # letters only (for word counts)
+# Same, but a hyphenated compound counts as ONE word ("Glucagon-like", "all-cause").
+# Only used for statistics, never for indexing -- see WORD_RE's note above.
+WORD_HYPHEN_RE = re.compile(r"[^\W\d_]+(?:-[^\W\d_]+)*", re.UNICODE)
 
 
 @dataclass(frozen=True)
