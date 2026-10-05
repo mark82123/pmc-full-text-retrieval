@@ -496,6 +496,12 @@ class Engine:
             out["scatter"] = col.scatter()
         return out
 
+    def zipf_resolving(self, condition: str = "C", upper: int | None = None, lower: int | None = None) -> dict:
+        """Resolving power of significant words (Luhn): CF x IDF over the
+        rank axis with an upper / lower cut-off (None = automatic)."""
+        cols = self._zipf_state()["cols"]
+        return (cols.get(condition.upper()) or cols["C"]).resolving(upper, lower)
+
     # ---- word2vec ------------------------------------------------------ #
     def w2v_train(self, params: dict, block: bool = False) -> dict:
         """Train word2vec on the collection in a background thread."""

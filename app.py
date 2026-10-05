@@ -120,6 +120,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(engine.zipf())
             if path == "/api/zipf/terms":
                 return self._json(engine.zipf_terms(qs.get("cond", "C"), qs.get("terms", ""), qs.get("scatter") == "1"))
+            if path == "/api/zipf/resolving":
+                cut = lambda k: int(qs[k]) if qs.get(k, "").isdigit() else None  # noqa: E731
+                return self._json(engine.zipf_resolving(qs.get("cond", "C"), cut("upper"), cut("lower")))
             if path == "/api/edit":
                 a, b = qs.get("a", "").strip().lower()[:40], qs.get("b", "").strip().lower()[:40]
                 return self._json(edit_matrix(a, b, qs.get("transpose", "1") == "1"))

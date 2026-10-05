@@ -25,6 +25,7 @@ python3 -m unittest discover -s tests -v
 python3 cli.py collect "GLP-1" -n 1000 --name glp1   # build the PubMed abstract collection (already in data/)
 python3 cli.py zipf --cond B --svg report/           # Zipf analysis + figures
 python3 cli.py terms --cond C                        # CF / DF / IDF table
+python3 cli.py resolving --cond B                    # resolving power of significant words (Luhn cut-offs)
 python3 cli.py edit semaglutide samegluitde          # edit distance (DP table)
 python3 cli.py spell diabtes                         # spelling suggestions
 python3 cli.py w2v train --model sg --epochs 10      # train word2vec (about 4.5 min in pure Python)
@@ -52,6 +53,7 @@ python3 cli.py w2v similar nausea mice
 | Collection | `esearch` + `efetch` download of the newest N English PubMed abstracts for a query, stored as `data/pubmed_<name>.jsonl` (one record per line, PMID as document id) and indexed alongside the PMC articles. Shipped: 1,000 abstracts for *GLP-1* |
 | Zipf analysis | four cumulative pre-processing conditions (A basic → B punctuation removed → C stop words removed → D Porter stemming); documents / tokens / vocabulary / average length; CF and DF of every term; top-50 table; rank-frequency plot (linear or log frequency axis); log-log plot with OLS regression (slope, intercept, Zipf exponent, R², RMSE) for the whole curve and for the high / middle / low-frequency thirds; overlay of the four conditions; what stemming merges |
 | CF vs DF vs IDF | table for any terms you type (CF, DF, CF/DF, DF/N, `idf = log10(N/df)`) and a CF-vs-DF scatter plot of the 1,500 most frequent terms |
+| Resolving power | Luhn's significant words: `power(t) = CF × idf` (the term's total TF-IDF weight) plotted against rank, smoothed with a running median; upper / lower cut-off sliders (automatic default = where the smoothed curve falls to half of its peak); share of vocabulary, tokens and resolving power in the *too common* / *significant* / *too rare* zones; table of the most discriminating words; the smoothed curve is overlaid on the rank-frequency plot (right-hand axis), a second overlay shows the IDF of every term (and its running median) on the same rank axis, and an A → D chart overlays all four conditions to show how the significant-word range shifts |
 | word2vec | pure-Python skip-gram and CBOW with negative sampling, dynamic window, sub-sampling, decaying learning rate; background training with a progress bar and loss curve; nearest neighbours, analogies, 2-D PCA map; the model is saved to `data/word2vec.json` |
 | Edit distance | dynamic-programming Levenshtein / Damerau distance with the full DP table and alignment shown |
 | Spelling correction | dictionary = surface words of the collection; character-bigram index to select candidates, banded DP to verify, ranking by (distance, collection frequency). Search shows *Did you mean* and automatically re-runs a query that matched nothing with the corrected words |

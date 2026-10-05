@@ -18,6 +18,18 @@ Conditions
     B  punctuation  tokens are runs of letters/digits (punctuation removed)
     C  stop words   B + stop-word removal
     D  stemming     C + Porter stemming
+
+Resolving power of significant words (Luhn, 1958)
+    Luhn's qualitative curve says the words that discriminate best between
+    documents sit in the middle of the rank-frequency curve: the most
+    frequent words are too common, the rarest too rare.  Here the resolving
+    power of a term is measured as
+
+        power(t) = CF(t) * idf(t) = sum over documents of tf * idf
+
+    (its total TF-IDF weight in the collection).  The curve is smoothed with
+    a running median over the rank axis; the default upper / lower cut-offs
+    are where the smoothed curve falls to half of its maximum.
 """
 
 from __future__ import annotations
@@ -36,6 +48,9 @@ CONDITIONS = [
     ("D", "Stemming", "C + Porter stemming"),
 ]
 SEGMENTS = ("high", "middle", "low")
+ZONES = ("common", "significant", "rare")       # above the upper cut-off / between / below the lower cut-off
+SMOOTH_SPAN = 10 ** 0.15                        # running-median window: rank / span .. rank * span
+SMOOTH_MIN = 4                                  # ... and at least this many ranks on each side
 
 _stemmer = PorterStemmer()
 _stem_cache: dict[str, str] = {}
@@ -106,6 +121,8 @@ def _thin(freqs: list[int], dense: int = 60, per_decade: int = 70) -> list[list[
     """Down-sample the rank-frequency curve for plotting: every rank up to
     *dense*, then log-spaced ranks (the curve is plotted on a log axis)."""
     n = len(freqs)
+    if not n:
+        return []
     ranks = set(range(1, min(dense, n) + 1))
     r = float(dense)
     step = 10 ** (1 / per_decade)
@@ -135,6 +152,8 @@ class Collection:
             self.df.update(set(terms))
         self.ranked = sorted(self.cf.items(), key=lambda x: (-x[1], x[0]))
         self.freqs = [c for _, c in self.ranked]
+        self._power: list[float] | None = None
+        self._curve: list[list] | None = None
 
     def idf(self, term: str) -> float:
         df = self.df.get(term, 0)
@@ -191,6 +210,86 @@ class Collection:
     def scatter(self, limit: int = 1500) -> list[list]:
         """(term, cf, df) of the most frequent terms for a CF-vs-DF scatter plot."""
         return [[t, c, self.df[t]] for t, c in self.ranked[:limit]]
+
+
+    # ---- resolving power of significant words (Luhn) -------------------- #
+    def powers(self) -> list[float]:
+        """power(t) = CF(t) * idf(t) of every term, in rank order."""
+        if self._power is None:
+            self._power = [cf * self.idf(t) for t, cf in self.ranked]
+        return self._power
+
+    def _running_median(self, values: list[float], digits: int = 2) -> list[list]:
+        """[[rank, median of values[] in the window around that rank]] at the
+        thinned ranks used for plotting."""
+        n, out = len(values), []
+        for r, _ in _thin(self.freqs):
+            lo = max(1, min(r - SMOOTH_MIN, int(r / SMOOTH_SPAN)))
+            hi = min(n, max(r + SMOOTH_MIN, int(r * SMOOTH_SPAN)))
+            win = sorted(values[lo - 1:hi])
+            out.append([r, round(win[len(win) // 2], digits)])
+        return out
+
+    def power_curve(self) -> list[list]:
+        """Running median of the resolving power over rank."""
+        if self._curve is None:
+            self._curve = self._running_median(self.powers())
+        return self._curve
+
+    def idf_curve(self) -> list[list]:
+        """Running median of idf over rank (the other factor of the power)."""
+        return self._running_median([self.idf(t) for t, _ in self.ranked], 4)
+
+    def auto_cutoffs(self, level: float = 0.5) -> tuple[int, int]:
+        """(upper, lower) cut-off ranks: the stretch around the peak of the
+        smoothed curve that stays at or above *level* x the peak."""
+        curve = self.power_curve()
+        peak = max(range(len(curve)), key=lambda i: curve[i][1])
+        floor = curve[peak][1] * level
+        i = j = peak
+        while i > 0 and curve[i - 1][1] >= floor:
+            i -= 1
+        while j < len(curve) - 1 and curve[j + 1][1] >= floor:
+            j += 1
+        return curve[i][0], curve[j][0]
+
+    def resolving(self, upper: int | None = None, lower: int | None = None, top_n: int = 80) -> dict:
+        """Resolving-power report.  Significant words are ranks upper..lower
+        (inclusive); ranks above *upper* are too common, below *lower* too
+        rare.  Cut-offs left out default to auto_cutoffs()."""
+        vocab = len(self.ranked)
+        out = {"condition": self.key, "documents": self.n_docs, "vocabulary": vocab, "tokens": self.n_tokens}
+        if not vocab:
+            return {**out, "auto": {"upper": 0, "lower": 0}, "upper": 0, "lower": 0, "peak": None,
+                    "curve": [], "idf_curve": [], "points": [], "zones": [], "top": []}
+        auto_upper, auto_lower = self.auto_cutoffs()
+        upper = min(max(1, upper or auto_upper), vocab)
+        lower = min(max(upper, lower or auto_lower), vocab)
+        pw = self.powers()
+        total = sum(pw) or 1.0
+        row = lambda i: {**self.row(self.ranked[i][0]), "rank": i + 1, "power": round(pw[i], 2)}  # noqa: E731
+        zones = []
+        for name, lo, hi in zip(ZONES, (1, upper, lower + 1), (upper - 1, lower, vocab)):
+            idx = range(lo - 1, hi)
+            n = len(idx)
+            cf = sum(self.freqs[lo - 1:hi])
+            power = sum(pw[lo - 1:hi])
+            zone = {"name": name, "from": lo, "to": hi, "terms": n, "vocab_share": round(n / vocab, 4),
+                    "tokens_share": round(cf / max(self.n_tokens, 1), 4), "power_share": round(power / total, 4),
+                    "mean_power": round(power / n, 2) if n else 0,
+                    "mean_idf": round(sum(self.idf(self.ranked[i][0]) for i in idx) / n, 4) if n else 0,
+                    "examples": [self.ranked[i][0] for i in idx[:15]]}
+            if name == "common":
+                zone["stopwords"] = sum(1 for i in idx if self.ranked[i][0] in STOP_WORDS)
+            zones.append(zone)
+        curve = self.power_curve()
+        peak = max(curve, key=lambda p: p[1])
+        best = sorted(range(upper - 1, lower), key=lambda i: (-pw[i], i))[:top_n]
+        return {**out, "auto": {"upper": auto_upper, "lower": auto_lower}, "upper": upper, "lower": lower,
+                "peak": {"rank": peak[0], "power": peak[1]}, "curve": curve, "idf_curve": self.idf_curve(),
+                "points": [[r, round(pw[r - 1], 2), self.ranked[r - 1][0], cf, self.df[self.ranked[r - 1][0]]]
+                           for r, cf in _thin(self.freqs, dense=400)],
+                "zones": zones, "top": [row(i) for i in best]}
 
 
 def stemming_groups(texts: list[str], top_n: int = 25) -> dict:

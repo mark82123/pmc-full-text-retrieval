@@ -2,6 +2,7 @@
 python3 -m unittest discover -s tests -v"""
 
 import json
+import math
 import sys
 import tempfile
 import unittest
@@ -131,6 +132,35 @@ class CollectionEngineTests(unittest.TestCase):
         self.assertEqual((rows["mice"]["cf"], rows["mice"]["df"]), (3, 1))
         self.assertEqual(rows["weight"]["df"], 2)
         self.assertEqual(self.eng.zipf_terms("C", "zzz the")["missing"], ["zzz", "the"])
+
+    def test_resolving_power(self):
+        # 'the' is in every document (idf 0) and each 'rare*' word occurs once: the middle words resolve best
+        texts = [f"the alpha alpha alpha beta rare{i}" if i % 2 else f"the gamma gamma gamma beta rare{i}" for i in range(10)]
+        col = zipf.Collection("B", texts)
+        power = dict(zip((t for t, _ in col.ranked), col.powers()))
+        self.assertEqual(power["the"], 0)
+        self.assertAlmostEqual(power["alpha"], 15 * math.log10(10 / 5))
+        self.assertGreater(power["alpha"], power["rare1"])
+        r = col.resolving()
+        self.assertEqual((r["upper"], r["lower"]), (r["auto"]["upper"], r["auto"]["lower"]))
+        self.assertEqual([z["name"] for z in r["zones"]], ["common", "significant", "rare"])
+        self.assertEqual(sum(z["terms"] for z in r["zones"]), r["vocabulary"])
+        self.assertAlmostEqual(sum(z["power_share"] for z in r["zones"]), 1, places=3)
+        self.assertEqual({x["term"] for x in r["top"][:2]}, {"alpha", "gamma"})
+        self.assertEqual([p[0] for p in r["idf_curve"]], [p[0] for p in r["curve"]])   # same thinned ranks as the power curve
+        self.assertTrue(all(0 <= v <= math.log10(10) for _, v in r["idf_curve"]))
+        self.assertLess(r["idf_curve"][0][1], r["idf_curve"][-1][1])          # idf rises along the rank axis
+        r = col.resolving(upper=2, lower=3)                              # explicit cut-offs; ranks are inclusive
+        self.assertEqual([(z["from"], z["to"], z["terms"]) for z in r["zones"]], [(1, 1, 1), (2, 3, 2), (4, 14, 11)])
+        self.assertEqual(r["zones"][0]["examples"], ["alpha"])
+        self.assertEqual(col.resolving(upper=99, lower=1)["lower"], 14)   # clamped to the vocabulary, lower >= upper
+        self.assertEqual(zipf.Collection("B", []).resolving()["zones"], [])
+
+    def test_resolving_api(self):
+        r = self.eng.zipf_resolving("C")
+        self.assertEqual(r["condition"], "C")
+        self.assertEqual(sum(z["terms"] for z in r["zones"]), r["vocabulary"])
+        self.assertTrue(all(x["power"] >= y["power"] for x, y in zip(r["top"], r["top"][1:])))
 
     def test_spelling_correction_in_search(self):
         r = self.eng.search("semaglutde obesty")

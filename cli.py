@@ -13,6 +13,7 @@
 Project #2
     python3 cli.py collect "GLP-1" -n 1000 --name glp1   build a PubMed abstract collection (data/pubmed_glp1.jsonl)
     python3 cli.py zipf [--cond B] [--top 50] [--svg report/]   Zipf analysis: vocabulary, CF/DF, regression, 4 conditions
+    python3 cli.py resolving [--cond C] [--upper R] [--lower R] Resolving power of significant words (Luhn cut-offs)
     python3 cli.py terms glp obesity nausea [--cond C]   CF / DF / IDF of chosen terms (default set if none given)
     python3 cli.py edit semaglutide samegluitde          edit distance with the DP table
     python3 cli.py spell diabtes                         spelling suggestions from the collection vocabulary
@@ -60,6 +61,8 @@ def main() -> None:
     co = sub.add_parser("collect"); co.add_argument("term"); co.add_argument("-n", type=int, default=1000); co.add_argument("--name", default="")
     zp = sub.add_parser("zipf"); zp.add_argument("--cond", default="B", choices=["A", "B", "C", "D"]); zp.add_argument("--top", type=int, default=50)
     zp.add_argument("--svg", help="directory to write the figures (SVG) to")
+    rp = sub.add_parser("resolving"); rp.add_argument("--cond", default="C", choices=["A", "B", "C", "D"]); rp.add_argument("--top", type=int, default=30)
+    rp.add_argument("--upper", type=int, help="upper cut-off rank (default: automatic)"); rp.add_argument("--lower", type=int, help="lower cut-off rank (default: automatic)")
     tm = sub.add_parser("terms"); tm.add_argument("words", nargs="*"); tm.add_argument("--cond", default="C", choices=["A", "B", "C", "D"])
     ed = sub.add_parser("edit"); ed.add_argument("a"); ed.add_argument("b")
     sp = sub.add_parser("spell"); sp.add_argument("word"); sp.add_argument("-k", type=int)
@@ -205,6 +208,21 @@ def main() -> None:
             for name, svg in figs.items():
                 (out / name).write_text(svg, encoding="utf-8")
             print(f"\nfigures written to {out}/: {', '.join(figs)}")
+    elif args.cmd == "resolving":
+        r = eng.zipf_resolving(args.cond, args.upper, args.lower)
+        print(f"condition {r['condition']}, N = {r['documents']} documents, {r['vocabulary']} terms; resolving power = CF * idf, idf = log10(N / df)")
+        if not r["vocabulary"]:
+            return
+        print(f"smoothed peak at rank {r['peak']['rank']} ({r['peak']['power']}); automatic cut-offs (half of the peak): ranks {r['auto']['upper']}-{r['auto']['lower']}; "
+              f"applied: ranks {r['upper']}-{r['lower']}\n")
+        print(f"{'zone':<13}{'ranks':>14}{'terms':>8}{'%vocab':>9}{'%tokens':>9}{'%power':>9}{'mean pw':>9}{'mean idf':>10}  highest-ranked terms")
+        for z in r["zones"]:
+            ranks = f"{z['from']}-{z['to']}" if z["terms"] else "-"
+            print(f"{z['name']:<13}{ranks:>14}{z['terms']:>8}{z['vocab_share']:>9.1%}{z['tokens_share']:>9.1%}{z['power_share']:>9.1%}"
+                  f"{z['mean_power']:>9}{z['mean_idf']:>10}  {' '.join(z['examples'][:8])}")
+        print(f"\n{'significant word':<22}{'rank':>6}{'CF':>8}{'DF':>7}{'IDF':>8}{'CF*IDF':>10}")
+        for x in r["top"][:args.top]:
+            print(f"{x['term']:<22}{x['rank']:>6}{x['cf']:>8}{x['df']:>7}{x['idf']:>8.3f}{x['power']:>10.1f}")
     elif args.cmd == "terms":
         r = eng.zipf_terms(args.cond, " ".join(args.words))
         print(f"condition {r['condition']}, N = {r['documents']} documents, idf = log10(N / df)\n")

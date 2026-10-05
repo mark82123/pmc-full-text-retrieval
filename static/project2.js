@@ -10,7 +10,9 @@
    * x/y plot (inline SVG): lines or dots, linear or log axes, hover tooltip
    * cfg = { series: [{ name, color, pts: [[x, y, label?]], mode: 'line'|'dots'|'fit', r }],
    *         xlog, ylog, xlabel, ylabel, height, vlines: [{ x, label }], hover: 'x'|'nearest',
-   *         labels (draw point labels), tipX(x) -> text, tipY(y) -> text }
+   *         labels (draw point labels), tipX(x) -> text, tipY(y) -> text,
+ *         y2: { log, zero, label } scale of the series with axis: 'r' (drawn against a right-hand axis),
+ *         strips: [{ from, to, color, label, mark }] x-ranges drawn as bars above the plot }
    * ------------------------------------------------------------------ */
   function niceTicks(a, b, n = 5) {
     const raw = (b - a) / n, mag = 10 ** Math.floor(Math.log10(raw)), norm = raw / mag;
@@ -21,12 +23,16 @@
   const short = v => { const a = Math.abs(v); return a >= 1e6 ? v / 1e6 + 'M' : a >= 1e3 ? v / 1e3 + 'k' : String(+v.toPrecision(3)); };
 
   function plot(el, cfg) {
-    const W = cfg.width || 640, H = cfg.height || 340, P = { l: 58, r: 18, t: 16, b: 44 };
-    const tx = v => (cfg.xlog ? Math.log10(v) : v), ty = v => (cfg.ylog ? Math.log10(v) : v);
+    const y2 = cfg.y2 || {}, strips = cfg.strips || [];
+    const W = cfg.width || 640, H = cfg.height || 340, P = { l: 58, r: cfg.y2 ? 58 : 18, t: 16 + strips.length * 10, b: 44 };
+    const tx = v => (cfg.xlog ? Math.log10(v) : v), ty = v => (cfg.ylog ? Math.log10(v) : v), ty2 = v => (y2.log ? Math.log10(v) : v);
     const all = cfg.series.flatMap(s => s.pts);
     if (!all.length) { el.innerHTML = '<p class="muted">no data</p>'; return; }
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    all.forEach(p => { const x = tx(p[0]), y = ty(p[1]); if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; });
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity, r0 = Infinity, r1 = -Infinity;
+    cfg.series.forEach(se => se.pts.forEach(p => {
+      const x = tx(p[0]); if (x < x0) x0 = x; if (x > x1) x1 = x;
+      if (se.axis === 'r') { const y = ty2(p[1]); if (y < r0) r0 = y; if (y > r1) r1 = y; } else { const y = ty(p[1]); if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    }));
     if (!cfg.xlog && cfg.xzero) x0 = Math.min(0, x0);
     if (!cfg.ylog && cfg.yzero) y0 = Math.min(0, y0);
     const px = (x1 - x0 || 1) * 0.03, py = (y1 - y0 || 1) * 0.05;
@@ -34,6 +40,9 @@
     if (cfg.ylog || !cfg.yzero) y0 -= py; y1 += py;
     const sx = v => P.l + (tx(v) - x0) / (x1 - x0) * (W - P.l - P.r);
     const sy = v => H - P.b - (ty(v) - y0) / (y1 - y0) * (H - P.t - P.b);
+    if (y2.zero && !y2.log) r0 = Math.min(0, r0);
+    r1 += (r1 - r0 || 1) * 0.05;
+    const sy2 = v => H - P.b - (ty2(v) - r0) / (r1 - r0) * (H - P.t - P.b), syOf = se => (se.axis === 'r' ? sy2 : sy);
     const ticks = (log, a, b) => {
       if (!log) return niceTicks(a, b).map(v => [v, short(v)]);
       const out = [];
@@ -47,8 +56,21 @@
     ticks(cfg.xlog, x0, x1).forEach(([v, l]) => {
       s += `<line x1="${sx(v)}" x2="${sx(v)}" y1="${P.t}" y2="${H - P.b}" stroke="var(--line)"/><text x="${sx(v)}" y="${H - P.b + 16}" font-size="11" text-anchor="middle" fill="var(--muted)">${l}</text>`;
     });
+    if (cfg.y2 && r1 > r0) {
+      ticks(y2.log, r0, r1).forEach(([, l], i, a) => { const v = y2.log ? Math.log10(a[i][0]) : a[i][0], y = H - P.b - (v - r0) / (r1 - r0) * (H - P.t - P.b);
+        s += `<text x="${W - P.r + 8}" y="${y + 4}" font-size="11" fill="var(--muted)">${l}</text>`; });
+      s += `<text transform="translate(${W - 8} ${(P.t + H - P.b) / 2}) rotate(90)" font-size="12" text-anchor="middle" fill="var(--muted)">${esc(y2.label || '')}</text>`;
+    }
+    strips.forEach((b, i) => {
+      const y = 8 + i * 10, xa = sx(b.from), xb = Math.max(sx(b.to), xa + 2);
+      s += `<rect x="${xa}" y="${y}" width="${xb - xa}" height="6" rx="2" fill="${b.color}"/><text x="${xa - 5}" y="${y + 6}" font-size="10" font-weight="700" text-anchor="end" fill="${b.color}">${esc(b.label || '')}</text>`;
+      if (b.mark) s += `<circle cx="${sx(b.mark)}" cy="${y + 3}" r="3.5" fill="var(--card)" stroke="${b.color}" stroke-width="2"/>`;
+    });
     s += `<text x="${(P.l + W - P.r) / 2}" y="${H - 6}" font-size="12" text-anchor="middle" fill="var(--muted)">${esc(cfg.xlabel || '')}</text>`;
     s += `<text transform="translate(14 ${(P.t + H - P.b) / 2}) rotate(-90)" font-size="12" text-anchor="middle" fill="var(--muted)">${esc(cfg.ylabel || '')}</text>`;
+    (cfg.shade || []).forEach(b => {
+      s += `<rect x="${sx(b.from)}" y="${P.t}" width="${Math.max(0, sx(b.to) - sx(b.from))}" height="${H - P.t - P.b}" fill="${b.color}" fill-opacity="0.13"/>`;
+    });
     (cfg.vlines || []).forEach(v => {
       s += `<line x1="${sx(v.x)}" x2="${sx(v.x)}" y1="${P.t}" y2="${H - P.b}" stroke="var(--muted)" stroke-dasharray="3 4"/>`;
     });
@@ -56,18 +78,19 @@
       s += `<text x="${(sx(b.from) + sx(b.to)) / 2}" y="${P.t + 12}" font-size="11" text-anchor="middle" fill="var(--muted)">${esc(b.label)}</text>`;
     });
     cfg.series.forEach(se => {
+      const sy = syOf(se);
       if (se.mode === 'dots') {
         s += se.pts.map(p => `<circle cx="${sx(p[0]).toFixed(1)}" cy="${sy(p[1]).toFixed(1)}" r="${se.r || 3}" fill="${se.color}" fill-opacity="${se.opacity || 0.75}"/>`).join('');
       } else {
         const d = se.pts.map((p, i) => (i ? 'L' : 'M') + sx(p[0]).toFixed(1) + ' ' + sy(p[1]).toFixed(1)).join('');
-        s += `<path d="${d}" fill="none" stroke="${se.color}" stroke-width="${se.mode === 'fit' ? 1.5 : 2}" ${se.mode === 'fit' ? 'stroke-dasharray="6 4"' : ''} stroke-linejoin="round"/>`;
+        s += `<path d="${d}" fill="none" stroke="${se.color}" stroke-width="${se.width || (se.mode === 'fit' ? 1.5 : 2)}" stroke-opacity="${se.opacity || 1}" ${se.mode === 'fit' ? 'stroke-dasharray="6 4"' : ''} stroke-linejoin="round"/>`;
       }
     });
     if (cfg.labels) {                                    // point labels, skipping the ones that would collide
       const boxes = [];
-      cfg.series.flatMap(se => se.pts).sort((p, q) => (q[3] ? 1 : 0) - (p[3] ? 1 : 0)).forEach(p => {      // emphasised labels first
+      cfg.series.flatMap(se => se.pts.map(p => [p, se])).sort(([p], [q]) => (q[3] ? 1 : 0) - (p[3] ? 1 : 0)).forEach(([p, se]) => {      // emphasised labels first
         if (!p[2]) return;
-        const x = sx(p[0]) + 6, y = sy(p[1]) + 4, w = String(p[2]).length * 6.2, box = [x, y - 10, x + w, y + 2];
+        const x = sx(p[0]) + 6, y = syOf(se)(p[1]) + 4, w = String(p[2]).length * 6.2, box = [x, y - 10, x + w, y + 2];
         if (x + w > W - 2 || boxes.some(b => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1])) return;
         boxes.push(box);
         s += `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="11" fill="var(--ink)" ${p[3] ? 'font-weight="700"' : ''}>${esc(p[2])}</text>`;
@@ -75,7 +98,7 @@
     }
     s += `<line class="xh" y1="${P.t}" y2="${H - P.b}" stroke="var(--muted)" visibility="hidden"/><circle class="ring" r="6" fill="none" stroke="var(--ink)" stroke-width="2" visibility="hidden"/>`;
     s += `<rect class="hit" x="${P.l}" y="${P.t}" width="${W - P.l - P.r}" height="${H - P.t - P.b}" fill="transparent"/></svg>`;
-    const named = cfg.series.filter(se => se.name);
+    const named = cfg.series.filter(se => se.name && se.legend !== false);
     if (named.length >= 2) {
       s += '<div class="legend plot-legend">' + named.map(se => `<span><i class="${se.mode === 'dots' ? 'dot' : 'ln'}${se.mode === 'fit' ? ' dash' : ''}" style="--c:${se.color}"></i>${esc(se.name)}</span>`).join('') + '</div>';
     }
@@ -98,9 +121,9 @@
       };
       if (cfg.hover === 'nearest') {
         let best = null, bd = Infinity, bs = null;
-        cfg.series.forEach(se => se.pts.forEach(p => { const d = (sx(p[0]) - mx) ** 2 + (sy(p[1]) - my) ** 2; if (d < bd) { bd = d; best = p; bs = se; } }));
+        cfg.series.forEach(se => se.pts.forEach(p => { const d = (sx(p[0]) - mx) ** 2 + (syOf(se)(p[1]) - my) ** 2; if (d < bd) { bd = d; best = p; bs = se; } }));
         if (!best) return hide();
-        ring.setAttribute('cx', sx(best[0])); ring.setAttribute('cy', sy(best[1])); ring.setAttribute('visibility', 'visible');
+        ring.setAttribute('cx', sx(best[0])); ring.setAttribute('cy', syOf(bs)(best[1])); ring.setAttribute('visibility', 'visible');
         (cfg.tipRows ? cfg.tipRows(best, bs) : [[bs.color, String(best[2] || ''), ''], [null, tipY(best[1]), tipX(best[0])]]).forEach(a => row(...a));
       } else {
         let anchor = null;
@@ -109,7 +132,7 @@
           let best = se.pts[0], bd = Infinity;
           se.pts.forEach(p => { const d = Math.abs(sx(p[0]) - mx); if (d < bd) { bd = d; best = p; } });
           if (!anchor) { anchor = best; const h = document.createElement('div'); h.className = 'tip-h'; h.textContent = tipX(best[0]) + (best[2] ? ' · ' + best[2] : ''); tip.appendChild(h); }
-          row(se.color, tipY(best[1]), se.name || '');
+          row(se.color, (se.tipY || tipY)(best[1]), se.name || '');
         });
         if (!anchor) return hide();
         xh.setAttribute('x1', sx(anchor[0])); xh.setAttribute('x2', sx(anchor[0])); xh.setAttribute('visibility', 'visible');
@@ -124,16 +147,20 @@
   /* ================================================================== *
    * Zipf tab
    * ================================================================== */
-  const zs = { data: null, cond: 'B', scale: 'logy', terms: '', table: null };
+  const zs = { data: null, cond: 'B', scale: 'logy', terms: '', table: null, res: null, resAll: null, upper: null, lower: null, nonum: false };
   const SEG_ZH = { high: '高頻', middle: '中頻', low: '低頻' };
+  const ZONE_ZH = { common: '太常見', significant: '有效詞', rare: '太罕見' };
 
   async function loadZipf(force) {
     if (zs.data && !force) return;
     $('#zipf').innerHTML = '<div class="card">Computing the Zipf analysis…</div>';
     try {
       zs.data = await api('/api/zipf');
+      zs.upper = zs.lower = null; zs.resAll = null;
       renderZipf();
       loadTerms();
+      loadResolving();
+      loadResolvingAll();
     } catch (e) { $('#zipf').innerHTML = `<div class="card">${esc(e.message)}</div>`; }
   }
 
@@ -149,6 +176,8 @@
     const best = c.segments.slice().sort((a, b) => a.rmse - b.rmse)[0];
     const mid = c.segments.find(s => s.name === 'middle');
     const condBtns = z.conditions.map(x => `<button class="seg${x.key === zs.cond ? ' on' : ''}" data-cond="${x.key}" title="${esc(x.description)}">${x.key} · ${esc(x.name)}</button>`).join('');
+    // compact A / B / C / D switch repeated in every per-condition heading, so the condition can be changed without scrolling back up
+    const condSw = `<span class="segs cond-sw" title="Pre-processing condition">${z.conditions.map(x => `<button class="seg${x.key === zs.cond ? ' on' : ''}" data-cond="${x.key}" title="${esc(x.key + ' · ' + x.name)}">${x.key}</button>`).join('')}</span>`;
     let h = `<div class="card help">
       <h2>Zipf's law — ${esc(z.collection)}</h2>
       <p>語料：<b>${fmt(c.documents)}</b> 篇 PubMed 英文摘要（標題 + 摘要，每篇以 PMID 為唯一 ID）。對每個詞計算 collection frequency <code>CF(t)</code>（全語料出現次數）與 document frequency <code>DF(t)</code>（出現的文件數），
@@ -167,19 +196,19 @@
     </div>`;
 
     h += `<div class="two">
-      <div class="card"><h2>Experiment 1 — Rank vs frequency</h2>
+      <div class="card"><h2>Experiment 1 — Rank vs frequency${condSw}</h2>
         <div class="row"><span class="segs">
           <button class="seg${zs.scale === 'logy' ? ' on' : ''}" data-scale="logy">log frequency axis</button>
           <button class="seg${zs.scale === 'linear' ? ' on' : ''}" data-scale="linear">linear axes</button></span>
           <span class="muted">${zs.scale === 'linear' ? '線性座標下曲線貼著兩軸，幾乎看不出分布——這就是需要對數座標的原因。' : '頻率軸取對數後，整條長尾都看得見。'}</span></div>
         <div id="zp-rank"></div></div>
-      <div class="card"><h2>Experiment 2 — Log-log plot + linear regression</h2>
+      <div class="card"><h2>Experiment 2 — Log-log plot + linear regression${condSw}</h2>
         <div class="row"><span class="muted">log₁₀ CF = ${f2(c.fit.intercept)} − ${f2(c.fit.exponent)} · log₁₀ r　·　虛線為迴歸線，垂直虛線分隔高／中／低頻三段</span></div>
         <div id="zp-loglog"></div></div>
     </div>`;
 
     const fitRow = (name, f, extra = '') => `<tr><td>${name}</td><td>${fmt(f.from)} – ${fmt(f.to)}</td><td>${f2(f.slope)}</td><td>${f2(f.intercept)}</td><td><b>${f2(f.exponent)}</b></td><td>${f2(f.r2, 4)}</td><td>${f2(f.rmse, 4)}</td>${extra}</tr>`;
-    h += `<div class="card"><h2>Regression report　<small class="muted">log₁₀(CF) = a − b · log₁₀(r)</small></h2>
+    h += `<div class="card"><h2>Regression report　<small class="muted">log₁₀(CF) = a − b · log₁₀(r) · condition ${c.key}</small>${condSw}</h2>
       <table class="grid num"><thead><tr><th>Range</th><th>Ranks</th><th>Slope (−b)</th><th>Intercept (a)</th><th>Zipf exponent k</th><th>R²</th><th>RMSE</th><th>Share of tokens</th><th>Mean residual vs whole-curve line</th></tr></thead><tbody>
       ${fitRow('<b>Whole curve</b>', c.fit, '<td>100%</td><td>0</td>')}
       ${c.segments.map(sg => fitRow(`${SEG_ZH[sg.name]} ${sg.name}-frequency terms`, sg, `<td>${pct(sg.tokens_share)}</td><td>${sg.global_bias > 0 ? '+' : ''}${f2(sg.global_bias)}</td>`)).join('')}
@@ -195,7 +224,33 @@
         <div><b>Q4 　Which portion fits best?</b> <b>${SEG_ZH[best.name]}（${best.name}-frequency）段</b>：RMSE = ${f2(best.rmse, 4)}、R² = ${f2(best.r2, 4)}。高頻段只有 ${c.segments[0].n} 個點且多為功能詞／主題詞，曲線較平；低頻段受整數頻率與 hapax（${pct(c.hapax_share)} 的詞只出現一次）影響呈階梯狀。</div>
       </div></div>`;
 
-    h += `<div class="card"><h2>Top 50 terms by collection frequency　<small class="muted">condition ${c.key}</small></h2>
+    h += `<div class="card"><h2>Resolving power of significant words　<small class="muted">Luhn (1958) · condition ${c.key}</small>${condSw}</h2>
+      <p>Luhn 的觀察：排名最前的詞太常見、排名最後的詞太罕見，都分不開文件；鑑別力（resolving power）最高的「有效詞」落在 rank–frequency 曲線的中段，用 upper / lower 兩條截斷線框出來。
+        這裡把每個詞的鑑別力量化為 <code>power(t) = CF(t) × idf(t)</code>，也就是該詞在全語料累積的 TF-IDF 權重：出現在幾乎每篇文件的詞 idf ≈ 0，只出現一兩次的詞 CF 太小，兩端都會被壓低。</p>
+      <div class="row rp-ctl">
+        <label>Upper cut-off（太常見）<input type="range" id="rp-upper" min="0" max="1000" step="1"><b id="rp-upper-v"></b></label>
+        <label>Lower cut-off（太罕見）<input type="range" id="rp-lower" min="0" max="1000" step="1"><b id="rp-lower-v"></b></label>
+        <button id="rp-auto" title="Cut-offs where the smoothed curve falls to half of its peak">Auto（半高寬）</button>
+        <label><input type="checkbox" id="rp-nonum"${zs.nonum ? ' checked' : ''}>隱藏純數字詞</label>
+      </div>
+      <div id="rp-tiles" class="tiles"><span class="muted">Computing the resolving power…</span></div>
+      <div class="two">
+        <div><div id="rp-freq"></div><p class="hint">Rank–frequency 曲線（左軸，log）疊上鑑別力的移動中位數（右軸，線性）。著色區間是兩條截斷線之間的有效詞。</p></div>
+        <div><div id="rp-power"></div><p class="hint">每個點是一個詞（前 400 名全畫，之後依 log 間距取樣）；實線是沿 rank 軸的移動中位數。滑鼠移到點上可看該詞。</p></div>
+      </div>
+      <div id="rp-zones" class="scroll" style="margin-top:6px"></div>
+      <h3 class="rp-h">IDF 疊在 CF × rank 上　<small class="muted">鑑別力的兩個因子 · condition ${c.key}</small>${condSw}</h3>
+      <div id="rp-idf"></div>
+      <p class="hint">同一條 rank 軸：CF 走左軸（log），每個詞的 <code>IDF = log<sub>10</sub>(N / DF)</code> 走右軸（線性），實線是 IDF 的移動中位數。CF 沿 rank 單調下降、IDF 大致單調上升，兩者相乘的 <code>CF × IDF</code> 就是中間凸起的鑑別力曲線——有效詞是「CF 還夠大、IDF 也已經夠高」的交會區。</p>
+      <h3 class="rp-h">A → D：有效詞分布怎麼移動　<small class="muted">四個條件各自的 Auto 截斷線 · 粗線 / 表格反白 = 目前條件</small>${condSw}</h3>
+      <div id="rp-shift"><span class="muted">Computing the four conditions…</span></div>
+      <p class="hint">細線是各條件的 CF（左軸，log），粗線是同一條件的鑑別力移動中位數（右軸）。圖上方的橫條是該條件的有效詞區間，圓點是鑑別力峰值所在的 rank。</p>
+      <div id="rp-shift-table" class="scroll"></div>
+      <div id="rp-shift-notes" class="qa"></div>
+      <div class="two" style="margin-top:14px"><div><div id="rp-top" class="scroll"></div></div><div id="rp-notes" class="qa" style="margin-top:0"></div></div>
+    </div>`;
+
+    h += `<div class="card"><h2>Top 50 terms by collection frequency　<small class="muted">condition ${c.key}</small>${condSw}</h2>
       <div class="scroll"><table class="grid num"><thead><tr><th>Rank r</th><th>Term</th><th>CF</th><th>DF</th><th>CF / DF</th><th>% of tokens</th><th>r × CF</th></tr></thead><tbody>
       ${c.top.map(([t, cf, df], i) => `<tr><td>${i + 1}</td><td><code>${esc(t)}</code></td><td>${fmt(cf)}</td><td>${fmt(df)}</td><td>${f2(cf / df, 2)}</td><td>${pct(cf / c.tokens)}</td><td>${fmt((i + 1) * cf)}</td></tr>`).join('')}
       </tbody></table></div>
@@ -219,7 +274,7 @@
       <p>${fmt(st.words)} 個不同的詞被化為 ${fmt(st.stems)} 個詞幹（詞彙減少 <b>${pct(st.reduction)}</b>）；其中 ${fmt(st.merged_stems)} 個詞幹合併了兩個以上的詞形。以下是合併最多詞形的詞幹（括號內為各詞形的 CF）：</p>
       <div class="stem-groups">${st.groups.slice(0, 14).map(g => `<div class="stem-group"><span class="chip term"><b>${esc(g.stem)}</b> <small>CF ${fmt(g.cf)} · ${g.n_forms} forms</small></span>${g.forms.map(([w, n]) => `<span class="chip">${esc(w)} <small>${fmt(n)}</small></span>`).join('')}</div>`).join('')}</div></div>`;
 
-    h += `<div class="card"><h2>CF vs DF vs IDF　<small class="muted">condition ${c.key} · idf(t) = log₁₀(N / df(t)), N = ${fmt(c.documents)}</small></h2>
+    h += `<div class="card"><h2>CF vs DF vs IDF　<small class="muted">condition ${c.key} · idf(t) = log₁₀(N / df(t)), N = ${fmt(c.documents)}</small>${condSw}</h2>
       <div class="try"><input id="zp-terms" placeholder="terms to compare (space or comma separated) – leave empty for the default set" value="${esc(zs.terms)}"><button id="zp-terms-btn" class="primary">Compare</button></div>
       <div class="two"><div><div id="zp-table" class="scroll"></div></div><div><div id="zp-scatter"></div>
         <p class="hint">每個點是一個詞（CF 最高的 1,500 個）。對角線 CF = DF 代表「每篇最多出現一次」；離對角線越遠（越靠上）表示該詞集中在少數文件裡反覆出現（bursty）。圈起來的是左表的詞。</p></div></div>
@@ -232,8 +287,26 @@
       </div></div>`;
 
     $('#zipf').innerHTML = h;
-    $$('#zipf [data-cond]').forEach(b => b.addEventListener('click', () => { zs.cond = b.dataset.cond; renderZipf(); loadTerms(); }));
-    $$('#zipf [data-scale]').forEach(b => b.addEventListener('click', () => { zs.scale = b.dataset.scale; renderZipf(); renderTerms(); }));
+    $$('#zipf [data-cond]').forEach(b => b.addEventListener('click', () => {
+      // the whole tab is re-rendered: keep the switch that was clicked where it is on screen
+      const groups = $$('#zipf .segs'), gi = groups.indexOf(b.closest('.segs')), top = gi >= 0 ? groups[gi].getBoundingClientRect().top : null;
+      zs.cond = b.dataset.cond; zs.upper = zs.lower = null; zs.res = null;
+      renderZipf(); loadTerms(); loadResolving(); renderShift();
+      const g = top !== null && $$('#zipf .segs')[gi];
+      if (g) window.scrollBy(0, g.getBoundingClientRect().top - top);
+    }));
+    $$('#zipf [data-scale]').forEach(b => b.addEventListener('click', () => { zs.scale = b.dataset.scale; renderZipf(); renderTerms(); renderResolving(); renderShift(); }));
+    const toRank = v => sliderRank(v, c.vocabulary);
+    const cutMoved = which => {
+      zs.upper = toRank(+$('#rp-upper').value); zs.lower = toRank(+$('#rp-lower').value);
+      if (zs.upper > zs.lower) { if (which === 'upper') zs.lower = zs.upper; else zs.upper = zs.lower; }
+      $('#rp-upper-v').textContent = 'rank ' + fmt(zs.upper); $('#rp-lower-v').textContent = 'rank ' + fmt(zs.lower);
+      clearTimeout(resTimer); resTimer = setTimeout(loadResolving, 120);
+    };
+    $('#rp-upper').addEventListener('input', () => cutMoved('upper'));
+    $('#rp-lower').addEventListener('input', () => cutMoved('lower'));
+    $('#rp-auto').addEventListener('click', () => { zs.upper = zs.lower = null; loadResolving(); });
+    $('#rp-nonum').addEventListener('change', e => { zs.nonum = e.target.checked; renderResolving(); renderShift(); });
     $('#zp-terms-btn').addEventListener('click', () => { zs.terms = $('#zp-terms').value; loadTerms(); });
     $('#zp-terms').addEventListener('keydown', e => { if (e.key === 'Enter') { zs.terms = $('#zp-terms').value; loadTerms(); } });
 
@@ -248,6 +321,134 @@
     plot($('#zp-overlay'), { title: 'Rank-frequency curves of the four conditions', xlog: true, ylog: true, xlabel: 'Rank r (log scale)', ylabel: 'CF (log scale)', height: 360,
       series: z.conditions.map((x, i) => ({ name: `${x.key} · ${x.name}`, color: SERIES[i], pts: x.points, mode: 'line' })),
       tipX: v => 'near rank ' + fmt(v), tipY: v => 'CF ' + fmt(v) });
+  }
+
+  /* ---- resolving power of significant words (Luhn) ---- */
+  let resTimer = null, resSeq = 0;
+  const sliderRank = (v, V) => Math.max(1, Math.min(V, Math.round(V ** (v / 1000))));      // the sliders are on a log-rank scale
+  async function loadResolving() {
+    const seq = ++resSeq, q = { cond: zs.cond };
+    if (zs.upper) q.upper = zs.upper;
+    if (zs.lower) q.lower = zs.lower;
+    try {
+      const r = await api('/api/zipf/resolving?' + new URLSearchParams(q));
+      if (seq !== resSeq) return;                        // a newer request is on its way
+      zs.res = r;
+      renderResolving();
+    } catch (e) { const t = $('#rp-tiles'); if (t) t.textContent = e.message; }
+  }
+  function renderResolving() {
+    const r = zs.res, box = $('#rp-tiles');
+    if (!r || !box || r.condition !== zs.cond || !r.vocabulary) return;
+    const c = zs.data.conditions.find(x => x.key === zs.cond), V = r.vocabulary;
+    const [common, sig, rare] = r.zones, isAuto = r.upper === r.auto.upper && r.lower === r.auto.lower;
+    const toSlider = rank => Math.round(1000 * Math.log(rank) / Math.log(Math.max(V, 2)));
+    [['#rp-upper', r.upper], ['#rp-lower', r.lower]].forEach(([id, rank]) => {             // leave a slider alone while it already shows this rank
+      if (sliderRank(+$(id).value, V) !== rank) $(id).value = toSlider(rank);
+    });
+    $('#rp-upper-v').textContent = 'rank ' + fmt(r.upper); $('#rp-lower-v').textContent = 'rank ' + fmt(r.lower);
+    $('#rp-auto').disabled = isAuto;
+    const isNum = t => /^\d+$/.test(t), keep = t => !zs.nonum || !isNum(t);
+
+    box.innerHTML = `
+      <div class="tile accent"><b>${fmt(sig.terms)}</b><span>significant words · rank ${fmt(sig.from)} – ${fmt(sig.to)}（詞彙的 ${pct(sig.vocab_share)}）</span></div>
+      <div class="tile accent"><b>${pct(sig.power_share)}</b><span>of the total resolving power</span></div>
+      <div class="tile"><b>${pct(sig.tokens_share)}</b><span>of all tokens are significant words</span></div>
+      <div class="tile"><b>${f2(sig.mean_power, 1)}</b><span>mean power per significant word（太罕見區 ${f2(rare.mean_power, 1)}）</span></div>
+      <div class="tile"><b>${fmt(common.terms)}</b><span>terms above the upper cut-off · ${pct(common.tokens_share)} of tokens</span></div>
+      <div class="tile"><b>${fmt(rare.terms)}</b><span>terms below the lower cut-off · ${pct(rare.tokens_share)} of tokens</span></div>`;
+
+    const color = SERIES[zs.data.conditions.indexOf(c)], band = [{ from: r.upper, to: r.lower, color: 'var(--s3)' }];
+    const cuts = [{ x: r.upper }, { x: r.lower }];
+    const bands = r.zones.filter(z => z.terms).map(z => ({ from: z.from, to: z.to, label: ZONE_ZH[z.name] }));
+    plot($('#rp-freq'), { title: 'Rank-frequency curve with the upper and lower cut-offs', xlog: true, ylog: true, xlabel: 'Rank r (log scale)', ylabel: 'CF (log scale)',
+      series: [{ name: 'CF (left axis)', color, pts: c.points, mode: 'line' },
+        { name: 'Resolving power, running median (right axis)', color: 'var(--s3)', pts: r.curve, mode: 'line', axis: 'r', width: 2.6, tipY: v => 'power ' + f2(v, 1) }],
+      y2: { zero: true, label: 'Resolving power CF × IDF' }, shade: band, vlines: cuts, bands,
+      tipX: v => 'rank ' + fmt(v), tipY: v => 'CF ' + fmt(v) });
+
+    // points: [rank, power, label, emphasised, cf, df, term]
+    const inBand = p => p[0] >= r.upper && p[0] <= r.lower;
+    const labelled = new Set(r.top.filter(t => keep(t.term)).slice(0, 14).map(t => t.term));
+    const pts = r.points.filter(p => keep(p[2])).map(([rank, power, term, cf, df]) => [rank, power, labelled.has(term) ? term : '', false, cf, df, term]);
+    plot($('#rp-power'), { title: 'Resolving power of each term against its rank', xlog: true, yzero: true, xlabel: 'Rank r (log scale)', ylabel: 'Resolving power CF × IDF', hover: 'nearest', labels: true,
+      series: [{ name: 'Outside the cut-offs', color: 'var(--muted)', mode: 'dots', r: 2.5, opacity: 0.4, pts: pts.filter(p => !inBand(p)).map(p => [p[0], p[1], '', false, p[4], p[5], p[6]]) },
+        { name: 'Significant words', color: 'var(--s3)', mode: 'dots', r: 3.2, opacity: 0.85, pts: pts.filter(inBand) },
+        { name: 'Running median', color: 'var(--ink)', mode: 'line', pts: r.curve }],
+      shade: band, vlines: cuts,
+      tipRows: (p, se) => (p.length < 7 ? [[se.color, 'running median', ''], [null, f2(p[1], 1), 'around rank ' + fmt(p[0])]]
+        : [[se.color, String(p[6]), ''], [null, f2(p[1], 1), 'CF × IDF'], [null, fmt(p[0]), 'rank'], [null, fmt(p[4]), 'CF'], [null, fmt(p[5]), 'DF'], [null, f2(Math.log10(r.documents / p[5])), 'IDF']]) });
+
+    // IDF against the same rank axis: [rank, idf, label, emphasised, cf, df, term]
+    const idfOf = df => Math.log10(r.documents / df), maxIdf = Math.log10(r.documents);
+    const idfPts = pts.map(p => [p[0], idfOf(p[5]), p[2], false, p[4], p[5], p[6]]);
+    const idfTip = (p, se) => (p.length < 7 ? [[se.color, 'IDF running median', ''], [null, f2(p[1]), 'around rank ' + fmt(p[0])]]
+      : [[se.color, String(p[6]), ''], [null, f2(p[1]), 'IDF'], [null, fmt(p[0]), 'rank'], [null, fmt(p[4]), 'CF'], [null, fmt(p[5]), 'DF of ' + fmt(r.documents)], [null, f2(p[4] * p[1], 1), 'CF × IDF']]);
+    plot($('#rp-idf'), { title: 'Rank-frequency curve with the IDF of each term', width: 1100, height: 400, xlog: true, ylog: true,
+      xlabel: 'Rank r (log scale)', ylabel: 'CF (log scale)', y2: { zero: true, label: 'IDF = log10(N / DF)' }, hover: 'nearest', labels: true,
+      series: [{ name: 'CF (left axis)', color, pts: c.points.map(p => [p[0], p[1]]), mode: 'line', width: 2.2, opacity: 0.8 },
+        { name: 'IDF, outside the cut-offs', color: 'var(--muted)', mode: 'dots', r: 2.2, opacity: 0.35, axis: 'r', pts: idfPts.filter(p => !inBand(p)).map(p => [p[0], p[1], '', false, p[4], p[5], p[6]]) },
+        { name: 'IDF, significant words', color: 'var(--s2)', mode: 'dots', r: 3, opacity: 0.8, axis: 'r', pts: idfPts.filter(inBand) },
+        { name: 'IDF running median (right axis)', color: 'var(--ink)', mode: 'line', axis: 'r', width: 2.4, pts: r.idf_curve },
+        { name: 'IDF ceiling: DF = 1', legend: false, color: 'var(--muted)', mode: 'fit', axis: 'r', pts: [[1, maxIdf], [V, maxIdf]] }],
+      shade: band, vlines: cuts, bands,
+      tipRows: (p, se) => (se.axis === 'r' ? idfTip(p, se) : [[se.color, 'CF', ''], [null, fmt(p[1]), 'at rank ' + fmt(p[0])]]) });
+
+    $('#rp-zones').innerHTML = `<table class="grid num"><thead><tr><th>Zone</th><th>Ranks</th><th>Terms</th><th>% of vocabulary</th><th>% of tokens</th><th>% of power</th><th>Mean power</th><th>Mean IDF</th><th>Top-ranked terms</th></tr></thead><tbody>` +
+      r.zones.map(z => `<tr class="${z.name === 'significant' ? 'sel' : ''}"><td><b>${ZONE_ZH[z.name]}</b> ${z.name}</td><td>${z.terms ? fmt(z.from) + ' – ' + fmt(z.to) : '—'}</td><td>${fmt(z.terms)}</td><td>${pct(z.vocab_share)}</td><td>${pct(z.tokens_share)}</td><td>${pct(z.power_share)}</td><td>${f2(z.mean_power, 1)}</td><td>${f2(z.mean_idf)}</td><td class="t">${z.examples.slice(0, 6).map(t => `<code>${esc(t)}</code>`).join(' ') || '—'}</td></tr>`).join('') +
+      '</tbody></table>';
+
+    const top = r.top.filter(t => keep(t.term)).slice(0, 50), maxP = Math.max(...top.map(t => t.power), 0.001);
+    $('#rp-top').innerHTML = `<table class="grid num"><thead><tr><th>Significant word</th><th>Rank</th><th>CF</th><th>DF</th><th>IDF</th><th>CF × IDF</th><th></th></tr></thead><tbody>` +
+      top.map(t => `<tr><td><code>${esc(t.term)}</code></td><td>${fmt(t.rank)}</td><td>${fmt(t.cf)}</td><td>${fmt(t.df)}</td><td>${f2(t.idf)}</td><td><b>${f2(t.power, 1)}</b></td><td class="barcell"><i style="width:${Math.max(1, t.power / maxP * 100)}%;background:var(--s3)"></i></td></tr>`).join('') +
+      '</tbody></table>';
+
+    const stopNote = common.terms
+      ? `目前 upper cut-off 以上有 ${fmt(common.terms)} 個詞（${common.examples.slice(0, 8).map(t => `<code>${esc(t)}</code>`).join(' ')}…），其中 ${fmt(common.stopwords)} 個在本系統的停用詞表裡，它們佔了 ${pct(common.tokens_share)} 的 token，卻只貢獻 ${pct(common.power_share)} 的鑑別力。`
+      : `目前 upper cut-off 在 rank 1，沒有任何詞被當成「太常見」${'CD'.includes(r.condition) ? '——條件 ' + r.condition + ' 已經先移除停用詞，等於事先做過 upper cut-off；切到條件 B 可以看到曲線左端被停用詞壓低的樣子。' : '。'}`;
+    $('#rp-notes').innerHTML = `
+      <div><b>怎麼讀這兩張圖</b>　左圖是 Zipf 曲線加上兩條截斷線；右圖把同一條 rank 軸上每個詞的 <code>CF × IDF</code> 畫出來。移動中位數的峰值在 rank ${fmt(r.peak.rank)} 附近（${f2(r.peak.power, 1)}）。
+        Auto 取的是曲線維持在峰值一半以上的區間：rank ${fmt(r.auto.upper)} – ${fmt(r.auto.lower)}${isAuto ? '（目前套用中）' : '；目前是手動設定'}。</div>
+      <div><b>有效詞佔多少</b>　rank ${fmt(sig.from)} – ${fmt(sig.to)} 只有 ${fmt(sig.terms)} 個詞（詞彙的 ${pct(sig.vocab_share)}），平均每個詞的鑑別力是 ${f2(sig.mean_power, 1)}，是太罕見區（${f2(rare.mean_power, 1)}）的 ${rare.mean_power ? f2(sig.mean_power / rare.mean_power, 1) : '—'} 倍。</div>
+      <div><b>Upper cut-off 與停用詞</b>　${stopNote}</div>
+      <div><b>IDF 圖怎麼看</b>　三區的平均 IDF 是 ${f2(common.mean_idf)} → ${f2(sig.mean_idf)} → ${f2(rare.mean_idf)}（上限 log<sub>10</sub>(${fmt(r.documents)}) = ${f2(Math.log10(r.documents))}，即 DF = 1）。
+        太常見區的 IDF 貼近 0，把再大的 CF 都乘掉；太罕見區的 IDF 已經頂到上限，但 CF 只剩個位數；只有中段兩個因子都不小，所以 <code>CF × IDF</code> 在那裡凸起。</div>
+      <div><b>Lower cut-off 的代價</b>　截斷線以下有 ${fmt(rare.terms)} 個詞（詞彙的 ${pct(rare.vocab_share)}）。單看每個詞，鑑別力很低（平均 IDF 高達 ${f2(rare.mean_idf, 2)}，但 CF 太小）；但加總起來仍佔全部鑑別力的 ${pct(rare.power_share)}。
+        所以 Luhn 的 lower cut-off 適合用來挑「代表語料主題的詞」（摘要、關鍵詞），檢索系統則通常保留長尾，改用 IDF 加權。</div>`;
+  }
+
+  async function loadResolvingAll() {
+    try {
+      const all = await Promise.all(zs.data.conditions.map(x => api('/api/zipf/resolving?' + new URLSearchParams({ cond: x.key }))));
+      zs.resAll = Object.fromEntries(all.map(r => [r.condition, r]));
+      renderShift();
+    } catch (e) { const t = $('#rp-shift'); if (t) t.textContent = e.message; }
+  }
+  function renderShift() {
+    const all = zs.resAll, box = $('#rp-shift');
+    if (!all || !box) return;
+    const conds = zs.data.conditions.filter(x => all[x.key] && all[x.key].vocabulary), R = k => all[k];
+    if (!conds.length) return;
+    const colorOf = x => SERIES[zs.data.conditions.indexOf(x)], keep = t => !zs.nonum || !/^\d+$/.test(t);
+    plot(box, { title: 'Rank-frequency curves and resolving power of the four conditions', width: 1100, height: 400, xlog: true, ylog: true,
+      xlabel: 'Rank r (log scale)', ylabel: 'CF (log scale)', y2: { zero: true, label: 'Resolving power (running median)' },
+      series: conds.map(x => ({ name: `${x.key} CF`, legend: false, color: colorOf(x), pts: x.points, mode: 'line', width: 1.2, opacity: 0.55, tipY: v => 'CF ' + fmt(v) }))
+        .concat(conds.map(x => ({ name: `${x.key} · ${x.name}`, color: colorOf(x), pts: R(x.key).curve, mode: 'line', axis: 'r', width: x.key === zs.cond ? 3.4 : 2.2, tipY: v => 'power ' + f2(v, 1) }))),
+      strips: conds.map(x => ({ from: R(x.key).auto.upper, to: R(x.key).auto.lower, color: colorOf(x), label: x.key, mark: R(x.key).peak.rank })),
+      tipX: v => 'near rank ' + fmt(v) });
+
+    $('#rp-shift-table').innerHTML = `<table class="grid num"><thead><tr><th>Condition</th><th>Significant ranks</th><th>Words</th><th>% of tokens</th><th>% of power</th><th>Peak rank</th><th>Too common</th><th>Most discriminating significant words</th></tr></thead><tbody>` +
+      conds.map(x => { const r = R(x.key), [common, sig] = r.zones;
+        return `<tr class="${x.key === zs.cond ? 'sel' : ''}"><td><i class="key" style="background:${colorOf(x)}"></i><b>${x.key}</b> ${esc(x.name)}</td><td>${fmt(sig.from)} – ${fmt(sig.to)}</td><td>${fmt(sig.terms)}</td><td>${pct(sig.tokens_share)}</td><td>${pct(sig.power_share)}</td><td>${fmt(r.peak.rank)}</td><td>${fmt(common.terms)}</td><td class="t">${r.top.filter(t => keep(t.term)).slice(0, 7).map(t => `<code>${esc(t.term)}</code>`).join(' ')}</td></tr>`; }).join('') +
+      '</tbody></table>';
+
+    const by = Object.fromEntries(conds.map(x => [x.key, R(x.key)])), span = k => `rank ${fmt(by[k].auto.upper)} – ${fmt(by[k].auto.lower)}`;
+    if (!(by.A && by.B && by.C && by.D)) { $('#rp-shift-notes').innerHTML = ''; return; }
+    $('#rp-shift-notes').innerHTML = `
+      <div><b>A → B（去標點）</b>　有效詞區間由 ${span('A')} 變成 ${span('B')}。黏著標點的詞型（<code>data,</code>、<code>data.</code>）合併後，同一個詞的 CF 集中，鑑別力峰值由 ${f2(by.A.peak.power, 1)} 變為 ${f2(by.B.peak.power, 1)}；區間以上有 ${fmt(by.B.zones[0].terms)} 個太常見的詞。</div>
+      <div><b>B → C（去停用詞）</b>　區間變成 ${span('C')}，upper cut-off 以上的詞由 ${fmt(by.B.zones[0].terms)} 個變為 ${fmt(by.C.zones[0].terms)} 個。停用詞表做的事等於事先套用了 upper cut-off：曲線最左端被 idf ≈ 0 壓低的那一段先被拿掉了。</div>
+      <div><b>C → D（Porter stemming）</b>　區間變成 ${span('D')}。同詞幹的變形頻率相加，詞彙由 ${fmt(by.C.vocabulary)} 降到 ${fmt(by.D.vocabulary)}，有效詞佔 token 的比例由 ${pct(by.C.zones[1].tokens_share)} 變為 ${pct(by.D.zones[1].tokens_share)}、佔總鑑別力由 ${pct(by.C.zones[1].power_share)} 變為 ${pct(by.D.zones[1].power_share)}。</div>
+      <div><b>注意 rank 不能直接跨條件對照</b>　每個條件都重新排名：C、D 少了停用詞，同一個詞的 rank 會比在 B 裡靠前。要比較的是區間相對於各自曲線的位置與寬度，而不是 rank 數字本身。</div>`;
   }
 
   async function loadTerms() {
