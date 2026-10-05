@@ -150,6 +150,8 @@
   const zs = { data: null, cond: 'B', scale: 'logy', terms: '', table: null, res: null, resAll: null, upper: null, lower: null, nonum: false };
   const SEG_ZH = { high: '高頻', middle: '中頻', low: '低頻' };
   const ZONE_ZH = { common: '太常見', significant: '有效詞', rare: '太罕見' };
+  const HOLD_IDS = ['rp-tiles', 'rp-freq', 'rp-power', 'rp-idf', 'rp-zones', 'rp-shift', 'rp-shift-table', 'rp-shift-notes', 'rp-top', 'rp-notes', 'zp-table', 'zp-scatter'];
+  const release = (...ids) => ids.forEach(id => { const e = $('#' + id); if (e) e.style.minHeight = ''; });
 
   async function loadZipf(force) {
     if (zs.data && !force) return;
@@ -176,13 +178,10 @@
     const best = c.segments.slice().sort((a, b) => a.rmse - b.rmse)[0];
     const mid = c.segments.find(s => s.name === 'middle');
     const condBtns = z.conditions.map(x => `<button class="seg${x.key === zs.cond ? ' on' : ''}" data-cond="${x.key}" title="${esc(x.description)}">${x.key} · ${esc(x.name)}</button>`).join('');
-    // compact A / B / C / D switch repeated in every per-condition heading, so the condition can be changed without scrolling back up
-    const condSw = `<span class="segs cond-sw" title="Pre-processing condition">${z.conditions.map(x => `<button class="seg${x.key === zs.cond ? ' on' : ''}" data-cond="${x.key}" title="${esc(x.key + ' · ' + x.name)}">${x.key}</button>`).join('')}</span>`;
     let h = `<div class="card help">
       <h2>Zipf's law — ${esc(z.collection)}</h2>
       <p>語料：<b>${fmt(c.documents)}</b> 篇 PubMed 英文摘要（標題 + 摘要，每篇以 PMID 為唯一 ID）。對每個詞計算 collection frequency <code>CF(t)</code>（全語料出現次數）與 document frequency <code>DF(t)</code>（出現的文件數），
         依 CF 由高到低排名後檢驗 <code>f(r) ∝ 1 / r<sup>k</sup></code>，即 <code>log f = log C − k · log r</code> 在 log-log 圖上是否為直線。</p>
-      <div class="row"><b>Pre-processing condition</b><span class="segs">${condBtns}</span><span class="muted">${esc(c.description)}</span></div>
       <div class="tiles">
         <div class="tile"><b>${fmt(c.documents)}</b><span>Documents</span></div>
         <div class="tile"><b>${fmt(c.tokens)}</b><span>Total tokens</span></div>
@@ -193,22 +192,39 @@
         <div class="tile accent"><b>${f2(c.fit.exponent)}</b><span>Zipf exponent k (whole curve)</span></div>
         <div class="tile accent"><b>${f2(c.fit.r2)}</b><span>R² of the log-log fit</span></div>
       </div>
+      <h3 class="rp-h">Token vs term — A → D 一覽　<small class="muted">${fmt(c.documents)} 篇文件 · 點任一列即可切換條件</small></h3>
+      <p><b>Token</b> 是文本切出來的每一個「出現」（occurrence）：句子 <code>the glp-1 receptor and the insulin receptor</code> 在條件 B 有 8 個 token。
+        <b>Term</b>（unique term / type / vocabulary）是去重後不同的字串：同一句只有 5 個 term（<code>the</code>、<code>receptor</code> 各算一次）。
+        Total tokens 加總的是前者、Unique terms 數的是後者；每個 term 的 CF 就是它的 token 數，所有 term 的 CF 加總 = total tokens。</p>
+      <div class="scroll"><table class="grid num"><thead><tr><th>Condition</th><th>Total tokens</th><th>Δ</th><th>Unique terms</th><th>Δ</th><th>Tokens / term</th><th>Tokens / doc</th><th>Hapax</th><th>Top-10</th><th>Zipf k</th></tr></thead><tbody>
+        ${z.conditions.map((x, i) => { const p = z.conditions[i - 1], d = (v, pv) => (p ? `<span class="${v > pv ? 'up' : v < pv ? 'down' : 'muted'}">${v > pv ? '+' : ''}${fmt(v - pv)}</span>` : '—');
+          return `<tr class="click${x.key === zs.cond ? ' sel' : ''}" data-cond="${x.key}" title="${esc(x.description)}"><td><i class="key" style="background:${SERIES[i]}"></i><b>${x.key}</b> ${esc(x.name)}</td><td><b>${fmt(x.tokens)}</b></td><td>${d(x.tokens, p && p.tokens)}</td><td><b>${fmt(x.vocabulary)}</b></td><td>${d(x.vocabulary, p && p.vocabulary)}</td><td>${f2(x.tokens / x.vocabulary, 1)}</td><td>${fmt(x.avg_tokens)}</td><td title="${fmt(x.hapax)} terms occur once">${pct(x.hapax_share)}</td><td title="share of tokens taken by the 10 most frequent terms">${pct(x.top10_share)}</td><td>${f2(x.fit.exponent)}</td></tr>`; }).join('')}
+      </tbody></table></div>
+      <div class="qa">
+        <div><b>A → B</b>　token 反而<b>變多</b>（${fmt(byKey.A.tokens)} → ${fmt(byKey.B.tokens)}）、term 卻<b>大減</b>（${fmt(byKey.A.vocabulary)} → ${fmt(byKey.B.vocabulary)}）：拆掉標點把 <code>glp-1</code>、<code>p&lt;0.05</code> 這類黏著字串切成兩三個 token，同時 <code>receptor,</code>／<code>receptor.</code>／<code>(receptor</code> 併成同一個 term。</div>
+        <div><b>B → C</b>　token <b>大減</b>（−${fmt(byKey.B.tokens - byKey.C.tokens)}，${pct((byKey.B.tokens - byKey.C.tokens) / byKey.B.tokens)}）、term 幾乎不變（−${fmt(byKey.B.vocabulary - byKey.C.vocabulary)}）：停用詞只有一百多個 term，但每個都出現成千上萬次。</div>
+        <div><b>C → D</b>　token <b>完全不變</b>（stemming 不會刪字，只改寫）、term 減少 ${fmt(byKey.C.vocabulary - byKey.D.vocabulary)}：<code>receptor</code>／<code>receptors</code>、<code>treat</code>／<code>treated</code>／<code>treatment</code> 等併入同一個詞幹。</div>
+        <div><b>Tokens / term</b>　平均每個 term 出現幾次，是最直接的「型／例比」倒數：A ${f2(byKey.A.tokens / byKey.A.vocabulary, 1)} → D ${f2(byKey.D.tokens / byKey.D.vocabulary, 1)}，前處理的效果就是用更少的 term 承接同樣多（或更少）的 token。</div>
+      </div>
     </div>`;
 
+    // the condition switch is its own card, sticky under the page header, so it is reachable from anywhere in the tab
+    h += `<div class="card cond-card"><div class="row"><b>Pre-processing condition</b><span class="segs">${condBtns}</span><span class="muted">${esc(c.description)}</span></div></div>`;
+
     h += `<div class="two">
-      <div class="card"><h2>Experiment 1 — Rank vs frequency${condSw}</h2>
+      <div class="card"><h2>Experiment 1 — Rank vs frequency</h2>
         <div class="row"><span class="segs">
           <button class="seg${zs.scale === 'logy' ? ' on' : ''}" data-scale="logy">log frequency axis</button>
           <button class="seg${zs.scale === 'linear' ? ' on' : ''}" data-scale="linear">linear axes</button></span>
           <span class="muted">${zs.scale === 'linear' ? '線性座標下曲線貼著兩軸，幾乎看不出分布——這就是需要對數座標的原因。' : '頻率軸取對數後，整條長尾都看得見。'}</span></div>
         <div id="zp-rank"></div></div>
-      <div class="card"><h2>Experiment 2 — Log-log plot + linear regression${condSw}</h2>
+      <div class="card"><h2>Experiment 2 — Log-log plot + linear regression</h2>
         <div class="row"><span class="muted">log₁₀ CF = ${f2(c.fit.intercept)} − ${f2(c.fit.exponent)} · log₁₀ r　·　虛線為迴歸線，垂直虛線分隔高／中／低頻三段</span></div>
         <div id="zp-loglog"></div></div>
     </div>`;
 
     const fitRow = (name, f, extra = '') => `<tr><td>${name}</td><td>${fmt(f.from)} – ${fmt(f.to)}</td><td>${f2(f.slope)}</td><td>${f2(f.intercept)}</td><td><b>${f2(f.exponent)}</b></td><td>${f2(f.r2, 4)}</td><td>${f2(f.rmse, 4)}</td>${extra}</tr>`;
-    h += `<div class="card"><h2>Regression report　<small class="muted">log₁₀(CF) = a − b · log₁₀(r) · condition ${c.key}</small>${condSw}</h2>
+    h += `<div class="card"><h2>Regression report　<small class="muted">log₁₀(CF) = a − b · log₁₀(r) · condition ${c.key}</small></h2>
       <table class="grid num"><thead><tr><th>Range</th><th>Ranks</th><th>Slope (−b)</th><th>Intercept (a)</th><th>Zipf exponent k</th><th>R²</th><th>RMSE</th><th>Share of tokens</th><th>Mean residual vs whole-curve line</th></tr></thead><tbody>
       ${fitRow('<b>Whole curve</b>', c.fit, '<td>100%</td><td>0</td>')}
       ${c.segments.map(sg => fitRow(`${SEG_ZH[sg.name]} ${sg.name}-frequency terms`, sg, `<td>${pct(sg.tokens_share)}</td><td>${sg.global_bias > 0 ? '+' : ''}${f2(sg.global_bias)}</td>`)).join('')}
@@ -224,7 +240,7 @@
         <div><b>Q4 　Which portion fits best?</b> <b>${SEG_ZH[best.name]}（${best.name}-frequency）段</b>：RMSE = ${f2(best.rmse, 4)}、R² = ${f2(best.r2, 4)}。高頻段只有 ${c.segments[0].n} 個點且多為功能詞／主題詞，曲線較平；低頻段受整數頻率與 hapax（${pct(c.hapax_share)} 的詞只出現一次）影響呈階梯狀。</div>
       </div></div>`;
 
-    h += `<div class="card"><h2>Resolving power of significant words　<small class="muted">Luhn (1958) · condition ${c.key}</small>${condSw}</h2>
+    h += `<div class="card"><h2>Resolving power of significant words　<small class="muted">Luhn (1958) · condition ${c.key}</small></h2>
       <p>Luhn 的觀察：排名最前的詞太常見、排名最後的詞太罕見，都分不開文件；鑑別力（resolving power）最高的「有效詞」落在 rank–frequency 曲線的中段，用 upper / lower 兩條截斷線框出來。
         這裡把每個詞的鑑別力量化為 <code>power(t) = CF(t) × idf(t)</code>，也就是該詞在全語料累積的 TF-IDF 權重：出現在幾乎每篇文件的詞 idf ≈ 0，只出現一兩次的詞 CF 太小，兩端都會被壓低。</p>
       <div class="row rp-ctl">
@@ -239,10 +255,10 @@
         <div><div id="rp-power"></div><p class="hint">每個點是一個詞（前 400 名全畫，之後依 log 間距取樣）；實線是沿 rank 軸的移動中位數。滑鼠移到點上可看該詞。</p></div>
       </div>
       <div id="rp-zones" class="scroll" style="margin-top:6px"></div>
-      <h3 class="rp-h">IDF 疊在 CF × rank 上　<small class="muted">鑑別力的兩個因子 · condition ${c.key}</small>${condSw}</h3>
+      <h3 class="rp-h">IDF 疊在 CF × rank 上　<small class="muted">鑑別力的兩個因子 · condition ${c.key}</small></h3>
       <div id="rp-idf"></div>
       <p class="hint">同一條 rank 軸：CF 走左軸（log），每個詞的 <code>IDF = log<sub>10</sub>(N / DF)</code> 走右軸（線性），實線是 IDF 的移動中位數。CF 沿 rank 單調下降、IDF 大致單調上升，兩者相乘的 <code>CF × IDF</code> 就是中間凸起的鑑別力曲線——有效詞是「CF 還夠大、IDF 也已經夠高」的交會區。</p>
-      <h3 class="rp-h">A → D：有效詞分布怎麼移動　<small class="muted">四個條件各自的 Auto 截斷線 · 粗線 / 表格反白 = 目前條件</small>${condSw}</h3>
+      <h3 class="rp-h">A → D：有效詞分布怎麼移動　<small class="muted">四個條件各自的 Auto 截斷線 · 粗線 / 表格反白 = 目前條件</small></h3>
       <div id="rp-shift"><span class="muted">Computing the four conditions…</span></div>
       <p class="hint">細線是各條件的 CF（左軸，log），粗線是同一條件的鑑別力移動中位數（右軸）。圖上方的橫條是該條件的有效詞區間，圓點是鑑別力峰值所在的 rank。</p>
       <div id="rp-shift-table" class="scroll"></div>
@@ -250,7 +266,7 @@
       <div class="two" style="margin-top:14px"><div><div id="rp-top" class="scroll"></div></div><div id="rp-notes" class="qa" style="margin-top:0"></div></div>
     </div>`;
 
-    h += `<div class="card"><h2>Top 50 terms by collection frequency　<small class="muted">condition ${c.key}</small>${condSw}</h2>
+    h += `<div class="card"><h2>Top 50 terms by collection frequency　<small class="muted">condition ${c.key}</small></h2>
       <div class="scroll"><table class="grid num"><thead><tr><th>Rank r</th><th>Term</th><th>CF</th><th>DF</th><th>CF / DF</th><th>% of tokens</th><th>r × CF</th></tr></thead><tbody>
       ${c.top.map(([t, cf, df], i) => `<tr><td>${i + 1}</td><td><code>${esc(t)}</code></td><td>${fmt(cf)}</td><td>${fmt(df)}</td><td>${f2(cf / df, 2)}</td><td>${pct(cf / c.tokens)}</td><td>${fmt((i + 1) * cf)}</td></tr>`).join('')}
       </tbody></table></div>
@@ -274,7 +290,7 @@
       <p>${fmt(st.words)} 個不同的詞被化為 ${fmt(st.stems)} 個詞幹（詞彙減少 <b>${pct(st.reduction)}</b>）；其中 ${fmt(st.merged_stems)} 個詞幹合併了兩個以上的詞形。以下是合併最多詞形的詞幹（括號內為各詞形的 CF）：</p>
       <div class="stem-groups">${st.groups.slice(0, 14).map(g => `<div class="stem-group"><span class="chip term"><b>${esc(g.stem)}</b> <small>CF ${fmt(g.cf)} · ${g.n_forms} forms</small></span>${g.forms.map(([w, n]) => `<span class="chip">${esc(w)} <small>${fmt(n)}</small></span>`).join('')}</div>`).join('')}</div></div>`;
 
-    h += `<div class="card"><h2>CF vs DF vs IDF　<small class="muted">condition ${c.key} · idf(t) = log₁₀(N / df(t)), N = ${fmt(c.documents)}</small>${condSw}</h2>
+    h += `<div class="card"><h2>CF vs DF vs IDF　<small class="muted">condition ${c.key} · idf(t) = log₁₀(N / df(t)), N = ${fmt(c.documents)}</small></h2>
       <div class="try"><input id="zp-terms" placeholder="terms to compare (space or comma separated) – leave empty for the default set" value="${esc(zs.terms)}"><button id="zp-terms-btn" class="primary">Compare</button></div>
       <div class="two"><div><div id="zp-table" class="scroll"></div></div><div><div id="zp-scatter"></div>
         <p class="hint">每個點是一個詞（CF 最高的 1,500 個）。對角線 CF = DF 代表「每篇最多出現一次」；離對角線越遠（越靠上）表示該詞集中在少數文件裡反覆出現（bursty）。圈起來的是左表的詞。</p></div></div>
@@ -286,14 +302,15 @@
           IDF 正好以 log 尺度抵銷這個冪次律的頭部，讓落在中、低頻段的內容詞得到較高權重——TF-IDF 等於是依 Zipf 曲線上的位置重新加權。</div>
       </div></div>`;
 
+    // re-rendering must not make the page jump: the sections that are filled in asynchronously keep their previous
+    // height (released once their new content is in) and the scroll position is restored
+    const held = HOLD_IDS.map(id => [id, $('#' + id) ? $('#' + id).offsetHeight : 0]), y = window.scrollY;
     $('#zipf').innerHTML = h;
+    held.forEach(([id, px]) => { const e = $('#' + id); if (e && px) e.style.minHeight = px + 'px'; });
+    window.scrollTo(0, y);
     $$('#zipf [data-cond]').forEach(b => b.addEventListener('click', () => {
-      // the whole tab is re-rendered: keep the switch that was clicked where it is on screen
-      const groups = $$('#zipf .segs'), gi = groups.indexOf(b.closest('.segs')), top = gi >= 0 ? groups[gi].getBoundingClientRect().top : null;
       zs.cond = b.dataset.cond; zs.upper = zs.lower = null; zs.res = null;
       renderZipf(); loadTerms(); loadResolving(); renderShift();
-      const g = top !== null && $$('#zipf .segs')[gi];
-      if (g) window.scrollBy(0, g.getBoundingClientRect().top - top);
     }));
     $$('#zipf [data-scale]').forEach(b => b.addEventListener('click', () => { zs.scale = b.dataset.scale; renderZipf(); renderTerms(); renderResolving(); renderShift(); }));
     const toRank = v => sliderRank(v, c.vocabulary);
@@ -415,6 +432,7 @@
         太常見區的 IDF 貼近 0，把再大的 CF 都乘掉；太罕見區的 IDF 已經頂到上限，但 CF 只剩個位數；只有中段兩個因子都不小，所以 <code>CF × IDF</code> 在那裡凸起。</div>
       <div><b>Lower cut-off 的代價</b>　截斷線以下有 ${fmt(rare.terms)} 個詞（詞彙的 ${pct(rare.vocab_share)}）。單看每個詞，鑑別力很低（平均 IDF 高達 ${f2(rare.mean_idf, 2)}，但 CF 太小）；但加總起來仍佔全部鑑別力的 ${pct(rare.power_share)}。
         所以 Luhn 的 lower cut-off 適合用來挑「代表語料主題的詞」（摘要、關鍵詞），檢索系統則通常保留長尾，改用 IDF 加權。</div>`;
+    release('rp-tiles', 'rp-freq', 'rp-power', 'rp-idf', 'rp-zones', 'rp-top', 'rp-notes');
   }
 
   async function loadResolvingAll() {
@@ -443,6 +461,7 @@
       '</tbody></table>';
 
     const by = Object.fromEntries(conds.map(x => [x.key, R(x.key)])), span = k => `rank ${fmt(by[k].auto.upper)} – ${fmt(by[k].auto.lower)}`;
+    release('rp-shift', 'rp-shift-table', 'rp-shift-notes');
     if (!(by.A && by.B && by.C && by.D)) { $('#rp-shift-notes').innerHTML = ''; return; }
     $('#rp-shift-notes').innerHTML = `
       <div><b>A → B（去標點）</b>　有效詞區間由 ${span('A')} 變成 ${span('B')}。黏著標點的詞型（<code>data,</code>、<code>data.</code>）合併後，同一個詞的 CF 集中，鑑別力峰值由 ${f2(by.A.peak.power, 1)} 變為 ${f2(by.B.peak.power, 1)}；區間以上有 ${fmt(by.B.zones[0].terms)} 個太常見的詞。</div>
@@ -472,6 +491,7 @@
         { name: 'Other terms', color: 'var(--s1)', mode: 'dots', r: 2.5, opacity: 0.35, pts: others.map(p => [p[0], p[1]]).map((p, i) => [p[0], p[1], '', false, others[i][2]]) },
         { name: 'Compared terms', color: 'var(--s2)', mode: 'dots', r: 4.5, opacity: 1, pts: picked }],
       tipRows: (p, se) => [[se.color === 'var(--muted)' ? null : se.color, String(p[2] || p[4] || ''), ''], [null, fmt(p[1]), 'CF'], [null, fmt(p[0]), 'DF'], [null, f2(p[1] / p[0], 2), 'CF / DF'], [null, f2(Math.log10(t.documents / p[0])), 'IDF']] });
+    release('zp-table', 'zp-scatter');
   }
 
   /* ================================================================== *
