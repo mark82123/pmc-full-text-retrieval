@@ -26,6 +26,7 @@ class ZipfTests(unittest.TestCase):
         self.assertEqual(zipf.terms_for(text, "B"), ["the", "data", "data", "glp", "1", "agonists", "reduced", "the", "weights", "data"])
         self.assertEqual(zipf.terms_for(text, "C"), ["data", "data", "glp", "1", "agonists", "reduced", "weights", "data"])
         self.assertEqual(zipf.terms_for(text, "D"), ["data", "data", "glp", "1", "agonist", "reduc", "weight", "data"])
+        self.assertEqual(zipf.terms_for(text, "E"), ["the", "data", "data", "glp", "1", "agonist", "reduc", "the", "weight", "data"])
 
     def test_fit_recovers_exact_power_law(self):
         freqs = [round(1e6 / r ** 1.2) for r in range(1, 400)]
@@ -122,12 +123,15 @@ class CollectionEngineTests(unittest.TestCase):
 
     def test_zipf_api(self):
         z = self.eng.zipf()
-        self.assertEqual([c["key"] for c in z["conditions"]], ["A", "B", "C", "D"])
-        a, b, c, d = z["conditions"]
+        self.assertEqual([c["key"] for c in z["conditions"]], ["A", "B", "C", "D", "E"])
+        a, b, c, d, e = z["conditions"]
         self.assertTrue(all(x["documents"] == 3 for x in z["conditions"]))
         self.assertGreater(a["vocabulary"], b["vocabulary"])          # punctuation glued to words inflates the vocabulary
         self.assertGreater(b["tokens"], c["tokens"])                  # stop words removed
         self.assertGreaterEqual(c["vocabulary"], d["vocabulary"])     # stemming merges forms
+        self.assertEqual(e["tokens"], b["tokens"])                    # E stems B without removing anything
+        self.assertGreaterEqual(b["vocabulary"], e["vocabulary"])
+        self.assertGreaterEqual(e["vocabulary"], d["vocabulary"])     # D = E minus the stop-word stems
         rows = {r["term"]: r for r in self.eng.zipf_terms("C", "mice weight zzz the")["rows"]}
         self.assertEqual((rows["mice"]["cf"], rows["mice"]["df"]), (3, 1))
         self.assertEqual(rows["weight"]["df"], 2)

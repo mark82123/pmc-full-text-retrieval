@@ -1,7 +1,8 @@
 /* Project #2 tabs: Zipf analysis, word2vec, edit distance / spelling correction */
 (() => {
   const { $, $$, esc, fmt, api, state, showTab, doSearch } = window.IR;
-  const SERIES = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)'];
+  const SERIES = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)'];
+  const PREV = { B: 'A', C: 'B', D: 'C', E: 'B' };   // which condition each one is built on (E branches off B, skipping the stop-word step)
   const f2 = (v, d = 3) => Number(v).toFixed(d);
   const pct = v => (v * 100).toFixed(1) + '%';
   const SVGNS = 'http://www.w3.org/2000/svg';
@@ -192,18 +193,19 @@
         <div class="tile accent"><b>${f2(c.fit.exponent)}</b><span>Zipf exponent k (whole curve)</span></div>
         <div class="tile accent"><b>${f2(c.fit.r2)}</b><span>R² of the log-log fit</span></div>
       </div>
-      <h3 class="rp-h">Token vs term — A → D 一覽　<small class="muted">${fmt(c.documents)} 篇文件 · 點任一列即可切換條件</small></h3>
+      <h3 class="rp-h">Token vs term — A → E 一覽　<small class="muted">${fmt(c.documents)} 篇文件 · Δ 相對於箭頭所指的條件 · 點任一列即可切換</small></h3>
       <p><b>Token</b> 是文本切出來的每一個「出現」（occurrence）：句子 <code>the glp-1 receptor and the insulin receptor</code> 在條件 B 有 8 個 token。
         <b>Term</b>（unique term / type / vocabulary）是去重後不同的字串：同一句只有 5 個 term（<code>the</code>、<code>receptor</code> 各算一次）。
         Total tokens 加總的是前者、Unique terms 數的是後者；每個 term 的 CF 就是它的 token 數，所有 term 的 CF 加總 = total tokens。</p>
       <div class="scroll"><table class="grid num"><thead><tr><th>Condition</th><th>Total tokens</th><th>Δ</th><th>Unique terms</th><th>Δ</th><th>Tokens / term</th><th>Tokens / doc</th><th>Hapax</th><th>Top-10</th><th>Zipf k</th></tr></thead><tbody>
-        ${z.conditions.map((x, i) => { const p = z.conditions[i - 1], d = (v, pv) => (p ? `<span class="${v > pv ? 'up' : v < pv ? 'down' : 'muted'}">${v > pv ? '+' : ''}${fmt(v - pv)}</span>` : '—');
-          return `<tr class="click${x.key === zs.cond ? ' sel' : ''}" data-cond="${x.key}" title="${esc(x.description)}"><td><i class="key" style="background:${SERIES[i]}"></i><b>${x.key}</b> ${esc(x.name)}</td><td><b>${fmt(x.tokens)}</b></td><td>${d(x.tokens, p && p.tokens)}</td><td><b>${fmt(x.vocabulary)}</b></td><td>${d(x.vocabulary, p && p.vocabulary)}</td><td>${f2(x.tokens / x.vocabulary, 1)}</td><td>${fmt(x.avg_tokens)}</td><td title="${fmt(x.hapax)} terms occur once">${pct(x.hapax_share)}</td><td title="share of tokens taken by the 10 most frequent terms">${pct(x.top10_share)}</td><td>${f2(x.fit.exponent)}</td></tr>`; }).join('')}
+        ${z.conditions.map((x, i) => { const p = byKey[PREV[x.key]], d = (v, pv) => (p ? `<span class="${v > pv ? 'up' : v < pv ? 'down' : 'muted'}">${v > pv ? '+' : ''}${fmt(v - pv)}</span>` : '—');
+          return `<tr class="click${x.key === zs.cond ? ' sel' : ''}" data-cond="${x.key}" title="${esc(x.description)}"><td><i class="key" style="background:${SERIES[i]}"></i><b>${x.key}</b> ${esc(x.name)}${p ? ` <small class="muted">← ${PREV[x.key]}</small>` : ''}</td><td><b>${fmt(x.tokens)}</b></td><td>${d(x.tokens, p && p.tokens)}</td><td><b>${fmt(x.vocabulary)}</b></td><td>${d(x.vocabulary, p && p.vocabulary)}</td><td>${f2(x.tokens / x.vocabulary, 1)}</td><td>${fmt(x.avg_tokens)}</td><td title="${fmt(x.hapax)} terms occur once">${pct(x.hapax_share)}</td><td title="share of tokens taken by the 10 most frequent terms">${pct(x.top10_share)}</td><td>${f2(x.fit.exponent)}</td></tr>`; }).join('')}
       </tbody></table></div>
       <div class="qa">
         <div><b>A → B</b>　token 反而<b>變多</b>（${fmt(byKey.A.tokens)} → ${fmt(byKey.B.tokens)}）、term 卻<b>大減</b>（${fmt(byKey.A.vocabulary)} → ${fmt(byKey.B.vocabulary)}）：拆掉標點把 <code>glp-1</code>、<code>p&lt;0.05</code> 這類黏著字串切成兩三個 token，同時 <code>receptor,</code>／<code>receptor.</code>／<code>(receptor</code> 併成同一個 term。</div>
         <div><b>B → C</b>　token <b>大減</b>（−${fmt(byKey.B.tokens - byKey.C.tokens)}，${pct((byKey.B.tokens - byKey.C.tokens) / byKey.B.tokens)}）、term 幾乎不變（−${fmt(byKey.B.vocabulary - byKey.C.vocabulary)}）：停用詞只有一百多個 term，但每個都出現成千上萬次。</div>
         <div><b>C → D</b>　token <b>完全不變</b>（stemming 不會刪字，只改寫）、term 減少 ${fmt(byKey.C.vocabulary - byKey.D.vocabulary)}：<code>receptor</code>／<code>receptors</code>、<code>treat</code>／<code>treated</code>／<code>treatment</code> 等併入同一個詞幹。</div>
+        <div><b>B → E</b>　跳過停用詞、直接 stemming：token 跟 B 一樣（${fmt(byKey.E.tokens)}），term 由 ${fmt(byKey.B.vocabulary)} 降到 ${fmt(byKey.E.vocabulary)}；再和 D 比：E − D = ${fmt(byKey.E.vocabulary - byKey.D.vocabulary)} 個 term，就是停用詞經 stemming 後剩下的詞幹數（the / of / and 本身不會被合併，但 <code>was</code>／<code>were</code>／<code>be</code> 等仍各自成詞幹）。</div>
         <div><b>Tokens / term</b>　平均每個 term 出現幾次，是最直接的「型／例比」倒數：A ${f2(byKey.A.tokens / byKey.A.vocabulary, 1)} → D ${f2(byKey.D.tokens / byKey.D.vocabulary, 1)}，前處理的效果就是用更少的 term 承接同樣多（或更少）的 token。</div>
       </div>
     </div>`;
@@ -258,8 +260,8 @@
       <h3 class="rp-h">IDF 疊在 CF × rank 上　<small class="muted">鑑別力的兩個因子 · condition ${c.key}</small></h3>
       <div id="rp-idf"></div>
       <p class="hint">同一條 rank 軸：CF 走左軸（log），每個詞的 <code>IDF = log<sub>10</sub>(N / DF)</code> 走右軸（線性），實線是 IDF 的移動中位數。CF 沿 rank 單調下降、IDF 大致單調上升，兩者相乘的 <code>CF × IDF</code> 就是中間凸起的鑑別力曲線——有效詞是「CF 還夠大、IDF 也已經夠高」的交會區。</p>
-      <h3 class="rp-h">A → D：有效詞分布怎麼移動　<small class="muted">四個條件各自的 Auto 截斷線 · 粗線 / 表格反白 = 目前條件</small></h3>
-      <div id="rp-shift"><span class="muted">Computing the four conditions…</span></div>
+      <h3 class="rp-h">A → E：有效詞分布怎麼移動　<small class="muted">各條件自己的 Auto 截斷線 · 粗線 / 表格反白 = 目前條件</small></h3>
+      <div id="rp-shift"><span class="muted">Computing all conditions…</span></div>
       <p class="hint">細線是各條件的 CF（左軸，log），粗線是同一條件的鑑別力移動中位數（右軸）。圖上方的橫條是該條件的有效詞區間，圓點是鑑別力峰值所在的 rank。</p>
       <div id="rp-shift-table" class="scroll"></div>
       <div id="rp-shift-notes" class="qa"></div>
@@ -272,9 +274,9 @@
       </tbody></table></div>
       <p class="hint" style="margin-top:8px">若 k = 1，<code>r × CF</code> 應近似常數。</p></div>`;
 
-    h += `<div class="card"><h2>Effect of pre-processing — conditions A / B / C / D</h2>
-      <table class="grid num"><thead><tr><th>Condition</th><th>Tokens</th><th>Vocabulary</th><th>Avg tokens / doc</th><th>Hapax share</th><th>Top-10 share</th><th>Zipf exponent k</th><th>R²</th><th>RMSE</th><th>k (middle)</th><th>Top 8 terms</th></tr></thead><tbody>
-      ${z.conditions.map((x, i) => `<tr class="${x.key === zs.cond ? 'sel' : ''}"><td><i class="key" style="background:${SERIES[i]}"></i><b>${x.key}</b> ${esc(x.name)}</td><td>${fmt(x.tokens)}</td><td>${fmt(x.vocabulary)}</td><td>${fmt(x.avg_tokens)}</td><td>${pct(x.hapax_share)}</td><td>${pct(x.top10_share)}</td><td><b>${f2(x.fit.exponent)}</b></td><td>${f2(x.fit.r2)}</td><td>${f2(x.fit.rmse)}</td><td>${f2(x.segments[1].exponent)}</td><td class="t">${x.top.slice(0, 8).map(t => `<code>${esc(t[0])}</code>`).join(' ')}</td></tr>`).join('')}
+    h += `<div class="card"><h2>Effect of pre-processing — conditions A / B / C / D / E</h2>
+      <table class="grid num"><thead><tr><th>Condition</th><th>Tokens</th><th>Vocabulary</th><th>Avg tokens / doc</th><th>Hapax share</th><th>Top-10 share</th><th>Zipf exponent k</th><th>R²</th><th>RMSE</th><th>k (middle)</th><th>Top 6 terms</th></tr></thead><tbody>
+      ${z.conditions.map((x, i) => `<tr class="${x.key === zs.cond ? 'sel' : ''}"><td><i class="key" style="background:${SERIES[i]}"></i><b>${x.key}</b> ${esc(x.name)}</td><td>${fmt(x.tokens)}</td><td>${fmt(x.vocabulary)}</td><td>${fmt(x.avg_tokens)}</td><td>${pct(x.hapax_share)}</td><td>${pct(x.top10_share)}</td><td><b>${f2(x.fit.exponent)}</b></td><td>${f2(x.fit.r2)}</td><td>${f2(x.fit.rmse)}</td><td>${f2(x.segments[1].exponent)}</td><td class="t">${x.top.slice(0, 6).map(t => `<code>${esc(t[0])}</code>`).join(' ')}</td></tr>`).join('')}
       </tbody></table>
       <div class="two" style="margin-top:14px"><div id="zp-overlay"></div>
       <div class="qa">
@@ -282,7 +284,8 @@
           B→C：停用詞只有 ${fmt(byKey.B.vocabulary - byKey.C.vocabulary)} 個詞型，詞彙幾乎不變，但 token 少了 ${pct(1 - byKey.C.tokens / byKey.B.tokens)}。C→D：Porter stemming 把詞形變化合併，詞彙再降到 ${fmt(byKey.D.vocabulary)}（−${pct(1 - byKey.D.vocabulary / byKey.C.vocabulary)}）。</div>
         <div><b>High-frequency terms</b>　A、B 的榜首是 the / of / and 等功能詞（前 10 名佔全部 token 的 ${pct(byKey.B.top10_share)}）；移除停用詞後，榜首換成主題詞（glp、receptor、weight、obesity…），前 10 名只佔 ${pct(byKey.C.top10_share)}；stemming 後同一詞幹的變形頻率相加（patient + patients → patient），高頻詞的 CF 進一步升高。</div>
         <div><b>Zipf exponent</b>　整體 k：${z.conditions.map(x => `${x.key} = ${f2(x.fit.exponent, 2)}`).join('、')}。A 最接近 1，是因為黏著標點的詞製造了大量只出現一次的詞型，拉長了尾巴；去標點後尾巴變短、斜率變陡。移除停用詞砍掉曲線最高的頭部，頭段更平（高頻段 k：B = ${f2(byKey.B.segments[0].exponent, 2)} → C = ${f2(byKey.C.segments[0].exponent, 2)}）。Stemming 縮短尾巴並抬高中段，整體 k 上升。</div>
-        <div><b>Shape</b>　四條曲線的中段近乎平行；差異集中在頭部（停用詞移除後變平、出現「肩膀」）與尾部（詞彙越小，曲線越早觸底）。前處理改變的是截距與頭尾，不改變「少數詞極常見、多數詞極罕見」的長尾本質。</div>
+        <div><b>E = B + stemming（不去停用詞）</b>　E 的頭部與 B 相同（the / of / and 仍在榜首，前 10 名佔 ${pct(byKey.E.top10_share)}），但尾巴和 D 一樣被 stemming 縮短，詞彙 ${fmt(byKey.E.vocabulary)}、整體 k = ${f2(byKey.E.fit.exponent, 2)}（B ${f2(byKey.B.fit.exponent, 2)}、D ${f2(byKey.D.fit.exponent, 2)}）。把 E 和 D 疊在一起看，差別全在頭部，這正是停用詞對 Zipf 曲線的獨立效果；把 E 和 B 疊在一起看，差別全在尾部，是 stemming 的獨立效果。</div>
+        <div><b>Shape</b>　五條曲線的中段近乎平行；差異集中在頭部（停用詞移除後變平、出現「肩膀」）與尾部（詞彙越小，曲線越早觸底）。前處理改變的是截距與頭尾，不改變「少數詞極常見、多數詞極罕見」的長尾本質。</div>
       </div></div></div>`;
 
     const st = z.stemming;
@@ -335,7 +338,7 @@
       series: [{ name: 'Observed CF', color, pts, mode: 'line' }, { name: `Regression line (k = ${f2(c.fit.exponent)})`, color: 'var(--ink)', pts: fitLine(c), mode: 'fit', tip: false }],
       vlines: c.segments.slice(1).map(sg => ({ x: sg.from })), bands: c.segments.map(sg => ({ from: sg.from, to: sg.to, label: sg.name })),
       tipX: v => 'rank ' + fmt(v), tipY: v => 'CF ' + fmt(Math.round(v)) });
-    plot($('#zp-overlay'), { title: 'Rank-frequency curves of the four conditions', xlog: true, ylog: true, xlabel: 'Rank r (log scale)', ylabel: 'CF (log scale)', height: 360,
+    plot($('#zp-overlay'), { title: 'Rank-frequency curves of the conditions', xlog: true, ylog: true, xlabel: 'Rank r (log scale)', ylabel: 'CF (log scale)', height: 360,
       series: z.conditions.map((x, i) => ({ name: `${x.key} · ${x.name}`, color: SERIES[i], pts: x.points, mode: 'line' })),
       tipX: v => 'near rank ' + fmt(v), tipY: v => 'CF ' + fmt(v) });
   }
@@ -448,7 +451,7 @@
     const conds = zs.data.conditions.filter(x => all[x.key] && all[x.key].vocabulary), R = k => all[k];
     if (!conds.length) return;
     const colorOf = x => SERIES[zs.data.conditions.indexOf(x)], keep = t => !zs.nonum || !/^\d+$/.test(t);
-    plot(box, { title: 'Rank-frequency curves and resolving power of the four conditions', width: 1100, height: 400, xlog: true, ylog: true,
+    plot(box, { title: 'Rank-frequency curves and resolving power of the conditions', width: 1100, height: 400, xlog: true, ylog: true,
       xlabel: 'Rank r (log scale)', ylabel: 'CF (log scale)', y2: { zero: true, label: 'Resolving power (running median)' },
       series: conds.map(x => ({ name: `${x.key} CF`, legend: false, color: colorOf(x), pts: x.points, mode: 'line', width: 1.2, opacity: 0.55, tipY: v => 'CF ' + fmt(v) }))
         .concat(conds.map(x => ({ name: `${x.key} · ${x.name}`, color: colorOf(x), pts: R(x.key).curve, mode: 'line', axis: 'r', width: x.key === zs.cond ? 3.4 : 2.2, tipY: v => 'power ' + f2(v, 1) }))),
@@ -467,6 +470,7 @@
       <div><b>A → B（去標點）</b>　有效詞區間由 ${span('A')} 變成 ${span('B')}。黏著標點的詞型（<code>data,</code>、<code>data.</code>）合併後，同一個詞的 CF 集中，鑑別力峰值由 ${f2(by.A.peak.power, 1)} 變為 ${f2(by.B.peak.power, 1)}；區間以上有 ${fmt(by.B.zones[0].terms)} 個太常見的詞。</div>
       <div><b>B → C（去停用詞）</b>　區間變成 ${span('C')}，upper cut-off 以上的詞由 ${fmt(by.B.zones[0].terms)} 個變為 ${fmt(by.C.zones[0].terms)} 個。停用詞表做的事等於事先套用了 upper cut-off：曲線最左端被 idf ≈ 0 壓低的那一段先被拿掉了。</div>
       <div><b>C → D（Porter stemming）</b>　區間變成 ${span('D')}。同詞幹的變形頻率相加，詞彙由 ${fmt(by.C.vocabulary)} 降到 ${fmt(by.D.vocabulary)}，有效詞佔 token 的比例由 ${pct(by.C.zones[1].tokens_share)} 變為 ${pct(by.D.zones[1].tokens_share)}、佔總鑑別力由 ${pct(by.C.zones[1].power_share)} 變為 ${pct(by.D.zones[1].power_share)}。</div>
+      ${by.E ? `<div><b>B → E（不去停用詞、直接 stemming）</b>　區間變成 ${span('E')}，upper cut-off 以上仍有 ${fmt(by.E.zones[0].terms)} 個太常見的詞（D 是 ${fmt(by.D.zones[0].terms)} 個）：stemming 不會動到 the / of / and，所以曲線左端被 idf ≈ 0 壓低的那段還在；有效詞佔總鑑別力 ${pct(by.E.zones[1].power_share)}（B ${pct(by.B.zones[1].power_share)}、D ${pct(by.D.zones[1].power_share)}）。</div>` : ''}
       <div><b>注意 rank 不能直接跨條件對照</b>　每個條件都重新排名：C、D 少了停用詞，同一個詞的 rank 會比在 B 裡靠前。要比較的是區間相對於各自曲線的位置與寬度，而不是 rank 數字本身。</div>`;
   }
 

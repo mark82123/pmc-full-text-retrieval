@@ -18,6 +18,7 @@ Conditions
     B  punctuation  tokens are runs of letters/digits (punctuation removed)
     C  stop words   B + stop-word removal
     D  stemming     C + Porter stemming
+    E  stem only    B + Porter stemming, stop words kept (D without step C)
 
 Resolving power of significant words (Luhn, 1958)
     Luhn's qualitative curve says the words that discriminate best between
@@ -46,6 +47,7 @@ CONDITIONS = [
     ("B", "Punctuation removed", "A + punctuation handling (tokens = runs of letters/digits)"),
     ("C", "Stop words removed", "B + stop-word removal"),
     ("D", "Stemming", "C + Porter stemming"),
+    ("E", "Stemming, stop words kept", "B + Porter stemming (stop words kept)"),
 ]
 SEGMENTS = ("high", "middle", "low")
 ZONES = ("common", "significant", "rare")       # above the upper cut-off / between / below the lower cut-off
@@ -71,6 +73,8 @@ def terms_for(text: str, condition: str) -> list[str]:
     toks = TOKEN_RE.findall(text)
     if condition == "B":
         return toks
+    if condition == "E":
+        return [_stem(t) for t in toks]
     toks = [t for t in toks if t not in STOP_WORDS]
     if condition == "C":
         return toks
