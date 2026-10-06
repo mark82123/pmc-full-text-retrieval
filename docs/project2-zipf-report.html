@@ -31,6 +31,7 @@ table.t td:not(:first-child):not(.tt),table.t th:not(:first-child){text-align:ri
 table.t td.tt{text-align:left}
 table.t tr.sel td{background:var(--soft);font-weight:600}
 table.compact{font-size:8.5pt}table.compact td{padding:1.5px 5px}
+table.def{table-layout:fixed}table.def td,table.def th{text-align:left!important;font-size:8.6pt}table.def th:first-child{width:24%}table.def th:last-child{width:21%}table.def td:last-child{color:var(--muted)}
 table.kv{width:auto}table.kv th{background:none;border-bottom:1px solid var(--line);text-align:left;font-weight:500;color:var(--muted);padding-right:16px}table.kv td{text-align:right}
 .cols2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.two>*{min-width:0}
@@ -209,10 +210,45 @@ figure svg{width:100%;height:auto;display:block;font-family:var(--sans)}
 <p><b>倒排索引。</b>字典（dictionary）的大小隨詞彙成長，而長尾表示字典被罕見詞主導：35% 的詞是 hapax（只出現一次）。因此字典很大但每個項目都很短，適合 front coding 與分塊儲存。Postings list 則是相反的輪廓：它的長度跟著 DF 分布走，少數幾條極長（<code>and</code> 有 999 筆 posting），絕大多數只有一兩筆。索引的總大小由那幾條長串決定，壓縮的效益也集中在那裡：長串裡相鄰文件 ID 的間距很小，用 variable-byte 或 gamma 編碼只要一兩個 byte。查詢處理同樣利用這種偏斜：先掃短串再與長串做交集，成本最低。</p>
 <p><b>TF-IDF。</b>IDF = log<sub>10</sub>(N / DF) 直接取決於一個詞在 Zipf 曲線上的位置。<code>and</code> 的 IDF 是 0.0004；<code>semaglutide</code>（DF = 237）是 0.63；<code>retinopathy</code>（DF = 10）是 2.0。這個加權把分布的頭部壓平——否則原始詞頻會主導每一個分數——並抬高 Luhn 所說有效詞所在的中段。我們的鑑別力量測證實了這一點：在條件 C，rank 1–112 的 112 個詞佔 32% 的 token，也有最高的平均 CF × IDF；13,083 個罕見詞單獨看都很弱，但合計仍佔 88% 的權重。這就是為什麼長尾要留在索引裡、交給 IDF 處理，而不是用 lower cut-off 切掉。</p>
 <p>總結：Zipf 定律告訴系統設計者資訊在哪裡——不在頭部（那是雜訊），也不在任何單一的尾部詞，而在中間那一段；停用詞表、索引壓縮與 TF-IDF 都是為了把這一段分離出來而設計的。</p></div>
-<h2>附錄　再現性</h2>
+</div><footer><span>人工智慧資訊檢索 · Project #2 · Zipf 定律</span><span>15</span></footer></section>
+<section class="page "><div class="inner">
+<h2>附錄 A　各量測的定義與公式</h2>
+<p>符號：語料有 N 篇文件（N = 1,000）；t 為一個 term；d 為一篇文件；V 為某條件下的 vocabulary 大小；r 為依 CF 由大到小排序後的名次（rank）。所有對數以 10 為底。</p>
+<table class="t def"><thead><tr><th>量測</th><th>定義與公式</th><th>本報告中的用途</th></tr></thead><tbody>
+<tr><td><b>Token</b></td><td>依該條件斷詞後文本裡的每一次出現（occurrence）。Total tokens = Σ<sub>t</sub> CF(t)。</td><td>1.3 表；語料規模</td></tr>
+<tr><td><b>Term</b>（type）</td><td>去重後不同的字串；Unique terms = |V|。Hapax = CF(t) = 1 的 term 數；hapax share = hapax / |V|。</td><td>1.3 表；尾部長度</td></tr>
+<tr><td><b>TF</b>（term frequency）</td><td>tf(t, d) = t 在文件 d 中出現的次數。</td><td>CF 與 TF-IDF 的基礎</td></tr>
+<tr><td><b>CF</b>（collection frequency）</td><td>CF(t) = Σ<sub>d</sub> tf(t, d)，t 在整個語料出現的總次數。</td><td>排名、Zipf 曲線的 y 軸</td></tr>
+<tr><td><b>DF</b>（document frequency）</td><td>DF(t) = |{d : tf(t, d) &gt; 0}|，含有 t 的文件數；DF / N 為分布比例。</td><td>IDF、CF–DF 圖的 x 軸</td></tr>
+<tr><td><b>CF / DF</b>（burstiness）</td><td>CF(t) / DF(t) = 含有 t 的文件裡 t 的平均出現次數；= 1 表示每篇最多一次。</td><td>Part VII 表、CF–DF 散佈圖離對角線的距離</td></tr>
+<tr><td><b>IDF</b>（inverse document frequency）</td><td>idf(t) = log<sub>10</sub>(N / DF(t))；範圍 0（DF = N）到 log<sub>10</sub> N = 3.00（DF = 1）。</td><td>Part VIII 表；鑑別力的第二因子</td></tr>
+<tr><td><b>TF-IDF</b></td><td>w(t, d) = tf(t, d) × idf(t)。一個詞在全語料的 TF-IDF 總和 Σ<sub>d</sub> tf(t, d) · idf(t) = CF(t) · idf(t)。</td><td>7.1 的鑑別力即此總和</td></tr>
+<tr><td><b>Rank</b> r</td><td>依 CF 由大到小排序的名次，CF 相同時依字母序；每個條件各自排名。</td><td>Zipf 曲線的 x 軸</td></tr>
+<tr><td><b>Zipf 定律</b></td><td>f(r) ∝ 1 / r<sup>k</sup>，即 log f(r) = log C − k · log r；理想情形 k ≈ 1。</td><td>Part V</td></tr>
+<tr><td><b>線性迴歸</b>（OLS）</td><td>以 x<sub>i</sub> = log r<sub>i</sub>、y<sub>i</sub> = log CF(r<sub>i</sub>) 做最小平方：b = Σ(x<sub>i</sub>−x̄)(y<sub>i</sub>−ȳ) / Σ(x<sub>i</sub>−x̄)²，a = ȳ − b·x̄；配適線 ŷ = a + b·x。每個 term 一個資料點，不加權。</td><td>實驗二</td></tr>
+<tr><td><b>Slope / Intercept</b></td><td>斜率 b（為負）、截距 a = log C（r = 1 時的預測 log 頻率）。</td><td>迴歸表</td></tr>
+<tr><td><b>Zipf exponent</b> k</td><td>k = −b。</td><td>Q2、Part VI</td></tr>
+<tr><td><b>R²</b></td><td>R² = 1 − SSE / SST，SSE = Σ(y<sub>i</sub> − ŷ<sub>i</sub>)²，SST = Σ(y<sub>i</sub> − ȳ)²。在 log-log 空間計算。</td><td>Q3</td></tr>
+<tr><td><b>RMSE</b></td><td>RMSE = √(SSE / n)，單位是 log<sub>10</sub>；0.115 表示實際頻率平均偏離配適線 10<sup>0.115</sup> ≈ 1.30 倍。</td><td>迴歸表</td></tr>
+</tbody></table>
+</div><footer><span>人工智慧資訊檢索 · Project #2 · Zipf 定律</span><span>16</span></footer></section>
+<section class="page "><div class="inner">
+<h2>附錄 A　各量測的定義與公式（續）</h2>
+<table class="t def"><thead><tr><th>量測</th><th>定義與公式</th><th>本報告中的用途</th></tr></thead><tbody>
+<tr><td><b>高／中／低頻段</b></td><td>把 log-rank 軸等分成三段：邊界 a = round(V<sup>1/3</sup>)、b = round(V<sup>2/3</sup>)；高頻 1…a−1、中頻 a…b−1、低頻 b…V。每段各自做 OLS 得到分段 k、R²、RMSE。</td><td>Q4、分段迴歸表</td></tr>
+<tr><td><b>平均殘差</b>（mean residual）</td><td>某段內 y<sub>i</sub> − ŷ<sub>i</sub>（相對整條曲線的迴歸線）的平均；負值表示該段實際頻率低於直線預測。</td><td>分段迴歸表、Q1</td></tr>
+<tr><td><b>Top-10 share</b></td><td>CF 最高 10 個 term 的 CF 總和 / total tokens。</td><td>Part VI 表</td></tr>
+<tr><td><b>r × CF</b></td><td>名次乘以頻率；若 k = 1 應近似常數 C。</td><td>Top-50 表</td></tr>
+<tr><td><b>Resolving power</b>（鑑別力）</td><td>power(t) = CF(t) × idf(t)。沿 rank 軸取移動中位數，視窗為 [r / 10<sup>0.15</sup>, r × 10<sup>0.15</sup>] 且前後至少各 4 名。</td><td>7.1 圖 5、圖 6</td></tr>
+<tr><td><b>Upper / lower cut-off</b></td><td>自動值：平滑曲線由峰值向左右延伸、仍 ≥ 峰值一半（半高寬）的最左與最右 rank；兩線之間為有效詞（significant words），以上為太常見、以下為太罕見。</td><td>7.1、7.2</td></tr>
+<tr><td><b>Zone shares</b></td><td>某區的 % tokens = Σ CF / total tokens；% power = Σ power / Σ<sub>全部</sub> power；mean IDF = 區內 idf 平均。</td><td>7.1 表</td></tr>
+<tr><td><b>Poisson 參考 DF</b></td><td>若 t 的 CF 次出現隨機落在文件上，預期 DF* = N (1 − e<sup>−CF/N</sup>)；DF* / DF &gt; 1 表示比隨機更集中（bursty）。</td><td>CF–DF 圖的解讀（工具的 CF–DF map）</td></tr>
+<tr><td><b>Stemming reduction</b></td><td>1 − |stems| / |words|：Porter stemming 把 C 的詞彙合併後減少的比例。</td><td>第 5 節</td></tr>
+</tbody></table>
+<h2>附錄 B　再現性</h2>
 <ul class="tight">
 <li>程式：專案 repo 的 <code>ir/zipf.py</code>（五個條件、CF/DF、OLS 迴歸、分段、鑑別力）、<code>ir/porter.py</code>、<code>ir/stopwords.py</code>；網頁介面的 <b>Zipf</b> 分頁；CLI <code>python3 cli.py zipf</code>／<code>resolving</code>。</li>
 <li>語料：<code>data/pubmed_glp1.jsonl</code>，1,000 篇摘要，PubMed 查詢詞 <i>GLP-1</i>，以 PMID 為 ID。</li>
 <li>所有圖表都是工具自己繪製的 SVG（座標軸與圖例沿用介面的英文標籤）；所有數字於 2026-10-06 讀自 <code>/api/zipf</code>、<code>/api/zipf/terms</code>、<code>/api/zipf/resolving</code>。</li>
 </ul>
-</div><footer><span>人工智慧資訊檢索 · Project #2 · Zipf 定律</span><span>15</span></footer></section>
+</div><footer><span>人工智慧資訊檢索 · Project #2 · Zipf 定律</span><span>17</span></footer></section>
