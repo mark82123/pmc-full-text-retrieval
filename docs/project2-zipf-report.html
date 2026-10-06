@@ -29,6 +29,7 @@ table.t th{text-align:left;background:var(--soft);padding:3px 6px;border-bottom:
 table.t td{padding:2.5px 6px;border-bottom:1px solid var(--line);vertical-align:top}
 table.t td:not(:first-child):not(.tt),table.t th:not(:first-child){text-align:right}
 table.t td.tt{text-align:left}
+table.t tr.sel td{background:var(--soft);font-weight:600}
 table.compact{font-size:8.5pt}table.compact td{padding:1.5px 5px}
 table.kv{width:auto}table.kv th{background:none;border-bottom:1px solid var(--line);text-align:left;font-weight:500;color:var(--muted);padding-right:16px}table.kv td{text-align:right}
 .cols2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
@@ -121,6 +122,15 @@ figure svg{width:100%;height:auto;display:block;font-family:var(--sans)}
 <p><b>近似符合，但不是嚴格的單一冪次律。</b> log-log 圖上 13,323 個點大致落在一條直線附近（R² = 0.966），「少數詞極常見、多數詞極罕見」的長尾形狀非常明確。但曲線有系統性的彎曲：頭部（rank 1–23）在直線下方，平均殘差 -1.04，也就是最高頻的詞比直線預測少一個數量級；尾部則因頻率只能是整數 1、2、3… 而呈階梯狀並向下彎。</p>
 <h3>Q2　估計出的 Zipf exponent 是多少？</h3>
 <p>整條曲線 k = <b>1.419</b>（condition B）。分段估計差異很大：高頻 0.82、中頻 0.86、低頻 1.60。四個條件的整體 k 為 A 1.10、B 1.42、C 1.37、D 1.48。整體 k 偏高（> 1）的原因是 12,762 個低頻詞（佔詞彙 95.8%）在未加權的 OLS 中佔了絕大多數的資料點，把斜率拉向尾部較陡的斜率。</p>
+<p><b>為什麼以條件 B 為準，而不是 C 或 D？</b>　B 是 spec 必做的三個步驟（斷詞、小寫、標點）做完、尚未加入變因（停用詞、stemming）的狀態，term 仍等於「詞」、曲線頭部完整，是檢驗「語料本身符不符合定律」的對象。C、D 是為了檢索而做的處理，動到的正好是定律描述的兩端：</p>
+<table class="t compact"><thead><tr><th>條件</th><th>整體 k</th><th>R²</th><th>RMSE</th><th>高頻段 k</th><th>中頻段 k</th><th>低頻段 k</th></tr></thead><tbody>
+<tr><td><i class="sw s1"></i><b>A</b> Basic</td><td>1.098</td><td>0.958</td><td>0.100</td><td>0.89</td><td>0.89</td><td>1.10</td></tr><tr class=sel><td><i class="sw s2"></i><b>B</b> Punctuation removed</td><td>1.419</td><td>0.966</td><td>0.115</td><td>0.82</td><td>0.86</td><td>1.60</td></tr><tr><td><i class="sw s3"></i><b>C</b> Stop words removed</td><td>1.370</td><td>0.960</td><td>0.122</td><td>0.56</td><td>0.77</td><td>1.57</td></tr><tr><td><i class="sw s4"></i><b>D</b> Stemming</td><td>1.482</td><td>0.959</td><td>0.133</td><td>0.48</td><td>0.79</td><td>1.71</td></tr>
+</tbody></table>
+<ul class="tight">
+<li><b>C（去停用詞）砍掉的就是曲線的頭部。</b>rank 1–10、佔 26.0% token 的點整段消失，glp、receptor 遞補成 rank 1、2，但彼此的落差遠小於原本的頭部，高頻段 k 由 0.82 降到 0.56，頭部出現「肩膀」，離直線更遠。</li>
+<li><b>D（stemming）改變了「詞」的定義。</b>patient + patients、obesity + obese 合併後中高頻的 CF 被加總、尾巴縮短，整體 k 升到 1.48，高頻段 k 只剩 0.48，R²、RMSE 是四者中最差的；此時單位已是詞幹，不再是原本以詞為單位的問題。</li>
+<li>若課堂慣例是「跑完整條 pipeline 再估」，可改報 D 的 k = 1.48（或 C 的 1.37），但結論要跟著改為「頭部明顯偏離、擬合較差」。本報告把 B 當基準回答 Q1–Q4，C、D 的變化留在第 5 節說明。</li>
+</ul>
 <h3>Q3　R² 足以證明分布符合 Zipf 定律嗎？</h3>
 <p><b>不夠。</b>理由有三：(1) R² 只量「相對於平均值解釋了多少變異」，在 log-log 空間裡任何單調遞減的長尾（log-normal、stretched exponential、Zipf–Mandelbrot）都能得到 0.95 以上的 R²，它分不出這些模型。(2) 殘差不是隨機散布：三段相對整體迴歸線的平均殘差是 -1.04 / -0.19 / +0.01，而且分段斜率 0.82 / 0.86 / 1.60 彼此差異明顯——系統性的彎曲代表單一冪次律並不完全成立。(3) OLS 把每個 term 當成一個點，等權重地被數量龐大的 hapax（35.3% 的詞）主導，所以 R² 主要反映尾部。要「證明」需要殘差圖、分段斜率、以 MLE 估計 k 並用 KS 檢定或 likelihood ratio 與替代模型比較。</p>
 <h3>Q4　Rank–frequency 曲線的哪一段最符合 Zipf 定律？</h3>
