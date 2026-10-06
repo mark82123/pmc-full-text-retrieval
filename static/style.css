@@ -255,3 +255,8 @@ table.num .down{color:var(--ok)}
 .cond-card .row{margin:0}
 .cm-list{margin-bottom:10px}.cm-list>div{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.cm-list .chip small{color:var(--muted);margin-left:3px}
 .tiles .tile b i.key{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:1px}
+.cm-rules td{vertical-align:top}.cm-rules tr[data-zone]{cursor:default}.cm-rules tr[data-zone]:hover{background:color-mix(in srgb,var(--zc) 14%,transparent)}
+.cm-rules em.var{font-style:normal;font-family:ui-monospace,Menlo,monospace;font-size:12px;padding:1px 6px;border-radius:5px;background:var(--code);border:1px solid var(--line)}
+.cm-rules em.v1{color:var(--s1)}.cm-rules em.v2{color:var(--s2)}.cm-rules em.v3{color:var(--s5)}
+.cm-list{border-left:3px solid transparent;padding-left:8px;margin-left:-11px}.cm-list:hover{border-left-color:var(--zc)}
+table.cm-rules th,table.cm-rules td{text-align:left;white-space:normal}table.cm-rules td:nth-child(2),table.cm-rules td:nth-child(3),table.cm-rules th:nth-child(2),table.cm-rules th:nth-child(3){text-align:right;white-space:nowrap}table.cm-rules td:nth-child(4),table.cm-rules td:nth-child(5){white-space:nowrap}table.cm-rules th{cursor:default}

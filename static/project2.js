@@ -23,6 +23,12 @@
   }
   const short = v => { const a = Math.abs(v); return a >= 1e6 ? v / 1e6 + 'M' : a >= 1e3 ? v / 1e3 + 'k' : String(+v.toPrecision(3)); };
 
+  let plotSeq = 0;
+  // highlight one rule region of a plot (and the series with the same id); id = null clears
+  function showRegion(el, id) {
+    $$('.region', el).forEach(p => p.setAttribute('visibility', p.dataset.region === id ? 'visible' : 'hidden'));
+    $$('.series', el).forEach(g => { g.style.opacity = (id === null || !g.dataset.series || g.dataset.series === id) ? '' : '0.12'; });
+  }
   function plot(el, cfg) {
     const y2 = cfg.y2 || {}, strips = cfg.strips || [];
     const W = cfg.width || 640, H = cfg.height || 340, P = { l: 58, r: cfg.y2 ? 58 : 18, t: 16 + strips.length * 10, b: 44 };
@@ -78,14 +84,24 @@
     (cfg.bands || []).forEach(b => {
       s += `<text x="${(sx(b.from) + sx(b.to)) / 2}" y="${P.t + 12}" font-size="11" text-anchor="middle" fill="var(--muted)">${esc(b.label)}</text>`;
     });
+    if (cfg.regions && cfg.regions.length) {              // rule regions, shown on demand (see showRegion); clipped to the plot area
+      const cid = 'clip' + (++plotSeq);
+      s += `<defs><clipPath id="${cid}"><rect x="${P.l}" y="${P.t}" width="${W - P.l - P.r}" height="${H - P.t - P.b}"/></clipPath></defs>`;
+      cfg.regions.forEach(rg => {
+        const pts = rg.pts.map(p => `${sx(p[0]).toFixed(1)},${sy(p[1]).toFixed(1)}`).join(' ');
+        s += `<polygon class="region" data-region="${esc(rg.id)}" points="${pts}" fill="${rg.color}" fill-opacity="0.16" stroke="${rg.color}" stroke-width="1.5" stroke-dasharray="5 3" clip-path="url(#${cid})" visibility="hidden"/>`;
+      });
+    }
     cfg.series.forEach(se => {
       const sy = syOf(se);
+      s += `<g class="series" data-series="${esc(se.id || '')}">`;
       if (se.mode === 'dots') {
         s += se.pts.map(p => `<circle cx="${sx(p[0]).toFixed(1)}" cy="${sy(p[1]).toFixed(1)}" r="${se.r || 3}" fill="${se.color}" fill-opacity="${se.opacity || 0.75}"/>`).join('');
       } else {
         const d = se.pts.map((p, i) => (i ? 'L' : 'M') + sx(p[0]).toFixed(1) + ' ' + sy(p[1]).toFixed(1)).join('');
         s += `<path d="${d}" fill="none" stroke="${se.color}" stroke-width="${se.width || (se.mode === 'fit' ? 1.5 : 2)}" stroke-opacity="${se.opacity || 1}" ${se.mode === 'fit' ? 'stroke-dasharray="6 4"' : ''} stroke-linejoin="round"/>`;
       }
+      s += '</g>';
     });
     if (cfg.labels) {                                    // point labels, skipping the ones that would collide
       const boxes = [];
@@ -314,7 +330,7 @@
       <p><code>CF / DF</code> 是「含該詞的文件裡平均出現幾次」（burstiness），<code>DF / N</code> 是「分布在多少比例的文件」。兩個比例把詞彙分成：<b>功能詞</b>（幾乎每篇都有）、<b>樣板詞</b>（分布廣但每篇只出現一次：results、methods）、<b>建庫依據詞</b>（分布中等又反覆出現：語料在講什麼）、<b>文件關鍵詞</b>（少數文件裡反覆出現）、<b>數字殘渣</b>。
         虛線是 Poisson 參考線 <code>DF* = N(1 − e<sup>−CF/N</sup>)</code>：詞若隨機散布，DF 會落在線上；點越在線的左邊（DF 遠小於 DF*），越是主題性的詞。</p>
       <div class="row rp-ctl" id="cm-ctl">${MAP_THR.map(([k, lab, lo, hi, st]) => `<label>${lab}<input type="range" data-thr="${k}" min="${lo}" max="${hi}" step="${st}"><b data-thr-v="${k}"></b></label>`).join('')}<button id="cm-reset">預設值</button></div>
-      <div id="cm-tiles" class="tiles"><span class="muted">Computing the CF–DF map…</span></div>
+      <div id="cm-tiles" class="scroll" style="margin-bottom:10px"><span class="muted">Computing the CF–DF map…</span></div>
       <div class="two"><div><div id="cm-plot"></div><p class="hint">每個點是一個詞（CF 最高的 1,500 個加上所有文件關鍵詞）。對角線 CF = DF：每篇最多出現一次。</p></div><div id="cm-lists"></div></div>
       <div id="cm-notes" class="qa"></div></div>`;
 
@@ -532,19 +548,41 @@
     if (!r || !box || r.condition !== zs.cond || !r.vocabulary) return;
     const thr = r.thresholds, N = r.documents, Z = Object.fromEntries(r.zones.map(z => [z.name, z]));
     MAP_THR.forEach(([k]) => { const inp = $(`#cm-ctl [data-thr=${k}]`); if (inp && +inp.value !== thr[k]) inp.value = thr[k]; $(`#cm-ctl [data-thr-v=${k}]`).textContent = thr[k]; });
-    box.innerHTML = r.zones.map(z => `<div class="tile${z.name === 'other' ? '' : ' accent'}"><b><i class="key" style="background:${MAP_ZONES[z.name][0]}"></i>${fmt(z.terms)}</b><span>${MAP_ZONES[z.name][1]} ${z.name} · ${pct(z.tokens_share)} of tokens · mean IDF ${f2(z.mean_idf, 2)}</span></div>`).join('');
+    // one row per zone: which of the two variables define it, the thresholds in force, and the range they select on the plot
+    const v = { spread: '<em class="var v1">DF / N</em>', burst: '<em class="var v2">CF / DF</em>' };
+    const dfAt = a => fmt(Math.ceil(a * N));
+    const RULES = {
+      function: [[v.spread], `${v.spread} ≥ ${thr.common_df}`, `DF ≥ ${dfAt(thr.common_df)}：圖上 x ≥ ${dfAt(thr.common_df)} 的直帶（任何 CF）`],
+      boilerplate: [[v.spread, v.burst], `${v.spread} ≥ ${thr.boiler_df}　且　${v.burst} &lt; ${thr.boiler_burst}`, `DF ≥ ${dfAt(thr.boiler_df)} 且 CF &lt; ${thr.boiler_burst}·DF：對角線 CF = DF 與其上方 ${f2(Math.log10(thr.boiler_burst), 2)} 個 log 單位的平行線之間的窄帶`],
+      topic: [[v.spread, v.burst], `${thr.topic_df} ≤ ${v.spread} &lt; ${thr.common_df}　且　${v.burst} ≥ ${thr.topic_burst}`, `${dfAt(thr.topic_df)} ≤ DF &lt; ${dfAt(thr.common_df)} 且 CF ≥ ${thr.topic_burst}·DF：中間直帶裡、平行線以上的部分`],
+      keyword: [[v.spread, v.burst], `${v.spread} &lt; ${thr.key_df}　且　${v.burst} ≥ ${thr.key_burst}　且 DF ≥ 2`, `2 ≤ DF &lt; ${dfAt(thr.key_df)} 且 CF ≥ ${thr.key_burst}·DF：左側直帶裡、離對角線 ${f2(Math.log10(thr.key_burst), 2)} 個 log 單位以上的部分`],
+      number: [['<em class="var v3">token 本身</em>'], '純數字 token（與位置無關）', '沒有固定範圍：散在各處，hover 只會把這些點突顯出來'],
+      other: [[], '以上皆非', '圖上其餘的點（含長尾）'],
+    };
+    box.innerHTML = `<table class="grid cm-rules"><thead><tr><th>區</th><th>詞數</th><th>Token</th><th>由哪些變數決定</th><th>規則（目前門檻）</th><th>在圖上圈選的範圍 · hover 可看</th></tr></thead><tbody>` +
+      r.zones.map(z => { const [vars, rule, range] = RULES[z.name]; return `<tr data-zone="${z.name}" style="--zc:${MAP_ZONES[z.name][0]}"><td><i class="key" style="background:${MAP_ZONES[z.name][0]}"></i><b>${MAP_ZONES[z.name][1]}</b> <small class="muted">${z.name}</small></td><td>${fmt(z.terms)}</td><td>${pct(z.tokens_share)}</td><td>${vars.join(' + ') || '—'}</td><td>${rule}</td><td class="muted">${range}</td></tr>`; }).join('') +
+      '</tbody></table>';
 
     // points: [df, cf, label, emphasised, term, zone, burst, poisson ratio]
     const pt = ([t, cf, df, z]) => [df, cf, '', false, t, z, cf / df, N * (1 - Math.exp(-cf / N)) / df];
     const byZone = Object.fromEntries(Object.keys(MAP_ZONES).map(z => [z, []]));
     r.points.forEach(p => byZone[p[3]].push(pt(p)));
-    plot($('#cm-plot'), { title: 'CF-DF map', xlog: true, ylog: true, xlabel: 'Document frequency DF (log scale)', ylabel: 'Collection frequency CF (log scale)', height: 400, hover: 'nearest',
+    // the rule of each zone as a polygon in (DF, CF) space: vertical bands from DF/N, lines CF = b * DF from CF/DF
+    const X1 = N * 1.2, Y1 = Math.max(...r.points.map(p => p[1])) * 1.5, lo = 0.8;
+    const band = (xa, xb, bLo, bHi) => [[xa, bLo ? bLo * xa : lo], [xa, bHi ? bHi * xa : Y1], [xb, bHi ? bHi * xb : Y1], [xb, bLo ? bLo * xb : lo]];
+    const regions = [
+      { id: 'function', color: MAP_ZONES.function[0], pts: band(thr.common_df * N, X1, 1, null) },
+      { id: 'boilerplate', color: MAP_ZONES.boilerplate[0], pts: band(thr.boiler_df * N, thr.common_df * N, 1, thr.boiler_burst) },
+      { id: 'topic', color: MAP_ZONES.topic[0], pts: band(thr.topic_df * N, thr.common_df * N, thr.topic_burst, null) },
+      { id: 'keyword', color: MAP_ZONES.keyword[0], pts: band(2, thr.key_df * N, thr.key_burst, null) },
+    ];
+    plot($('#cm-plot'), { title: 'CF-DF map', xlog: true, ylog: true, xlabel: 'Document frequency DF (log scale)', ylabel: 'Collection frequency CF (log scale)', height: 400, hover: 'nearest', regions,
       series: [{ name: 'CF = DF', color: 'var(--line)', mode: 'line', pts: [[1, 1], [N, N]], tip: false, legend: false, width: 1 },
         { name: 'Poisson DF* (random scatter)', color: 'var(--ink)', mode: 'fit', pts: r.poisson.map(([cf, df]) => [df, cf]), tip: false }]
-        .concat(['other', 'number', 'keyword', 'topic', 'boilerplate', 'function'].map(z => ({ name: `${MAP_ZONES[z][1]} ${z}`, color: MAP_ZONES[z][0], mode: 'dots', r: z === 'other' ? 2.2 : 3.2, opacity: z === 'other' ? 0.3 : 0.85, pts: byZone[z] }))),
+        .concat(['other', 'number', 'keyword', 'topic', 'boilerplate', 'function'].map(z => ({ id: z, name: `${MAP_ZONES[z][1]} ${z}`, color: MAP_ZONES[z][0], mode: 'dots', r: z === 'other' ? 2.2 : 3.2, opacity: z === 'other' ? 0.3 : 0.85, pts: byZone[z] }))),
       tipRows: (p, se) => (p.length < 5 ? [[se.color, se.name, '']] : [[se.color, String(p[4]), MAP_ZONES[p[5]][1]], [null, fmt(p[1]), 'CF'], [null, fmt(p[0]), 'DF'], [null, f2(p[6], 2), 'CF / DF'], [null, pct(p[0] / N), 'DF / N'], [null, f2(p[7], 2) + '×', 'burstier than random (DF* / DF)'], [null, f2(Math.log10(N / p[0])), 'IDF']]) });
 
-    const chips = (names, n, title, why) => { const xs = names.flatMap(z => Z[z].examples).slice(0, n); return `<div class="cm-list"><b>${title}</b> <small class="muted">${why}</small><div>${xs.map(x => `<span class="chip" title="CF ${fmt(x.cf)} · DF ${fmt(x.df)} · CF/DF ${f2(x.burst, 2)} · ${f2(x.poisson, 2)}× burstier than random · IDF ${f2(x.idf)}">${esc(x.term)} <small>${fmt(x.cf)}/${fmt(x.df)}</small></span>`).join('') || '<span class="muted">—</span>'}</div></div>`; };
+    const chips = (names, n, title, why) => { const xs = names.flatMap(z => Z[z].examples).slice(0, n); return `<div class="cm-list" data-zone="${names[0]}" style="--zc:${MAP_ZONES[names[0]][0]}"><b>${title}</b> <small class="muted">${why}</small><div>${xs.map(x => `<span class="chip" title="CF ${fmt(x.cf)} · DF ${fmt(x.df)} · CF/DF ${f2(x.burst, 2)} · ${f2(x.poisson, 2)}× burstier than random · IDF ${f2(x.idf)}">${esc(x.term)} <small>${fmt(x.cf)}/${fmt(x.df)}</small></span>`).join('') || '<span class="muted">—</span>'}</div></div>`; };
     $('#cm-lists').innerHTML =
       chips(['function', 'boilerplate'], 24, '潛在移除詞（領域停用詞候選）', `功能詞 ${fmt(Z.function.terms)} + 樣板詞 ${fmt(Z.boilerplate.terms)}：到處都有，IDF ≈ 0 或每篇只出現一次`) +
       chips(['number'], 18, '數字殘渣', `${fmt(Z.number.terms)} 個純數字 token，佔 ${pct(Z.number.tokens_share)} 的 token`) +
@@ -556,6 +594,12 @@
       <div><b>TF 是離對角線的距離</b>　CF / DF 越大，該詞在含它的文件裡 tf 越高。文件關鍵詞兩個因子都大（平均 IDF ${f2(Z.keyword.mean_idf, 2)}、CF/DF ≥ ${thr.key_burst}），是 TF-IDF 最高的一群，適合自動關鍵詞、文件摘要與分群特徵。</div>
       <div><b>樣板詞是 Snowball 表沒有的停用詞</b>　${Z.boilerplate.examples.slice(0, 6).map(x => `<code>${esc(x.term)}</code>`).join(' ')} 每篇恰好出現一次（CF/DF ≈ 1）、貼著 Poisson 線：它們是結構化摘要的小標題，對檢索沒有鑑別力，是領域停用詞表的第一批候選。</div>
       <div><b>這張圖分不出的東西</b>　${stopLike.length ? `建庫依據詞區裡混著 ${stopLike.slice(0, 6).map(t => `<code>${esc(t)}</code>`).join(' ')}：它們的 CF/DF 與 DF/N 和 weight、patients 幾乎一樣，` : '功能詞與主題詞的 CF/DF、DF/N 可以長得一樣，'}純靠統計量分不出「功能詞」與「主題詞」，這正是停用詞表提供的語言知識。切到條件 C 可以看到去掉停用詞後這一區只剩內容詞。</div>`;
+    // hovering a rule row (or a list) shows the region its thresholds select and dims the other zones
+    const plotEl = $('#cm-plot');
+    $$('#cm-tiles tr[data-zone], #cm-lists .cm-list[data-zone]').forEach(el => {
+      el.addEventListener('mouseenter', () => showRegion(plotEl, el.dataset.zone));
+      el.addEventListener('mouseleave', () => showRegion(plotEl, null));
+    });
     release('cm-tiles', 'cm-plot', 'cm-lists', 'cm-notes');
   }
 
