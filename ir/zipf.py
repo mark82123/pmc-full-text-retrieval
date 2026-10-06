@@ -31,11 +31,30 @@ Resolving power of significant words (Luhn, 1958)
     (its total TF-IDF weight in the collection).  The curve is smoothed with
     a running median over the rank axis; the default upper / lower cut-offs
     are where the smoothed curve falls to half of its maximum.
+
+CF-DF map
+    CF / DF is the mean term frequency inside the documents that contain the
+    term ("burstiness", Church & Gale 1995) and DF / N how widely it is
+    spread.  Together they sort the vocabulary into zones:
+
+        function     spread over almost every document, several times each
+        boilerplate  spread widely but about once per document (section
+                     headings such as "methods", "results")
+        topic        moderately spread and bursty: what the collection is about
+        keyword      rare but bursty: document-specific key terms
+        number       numeric tokens (statistics, units, drug names split by
+                     the tokeniser)
+        other        the rest (mostly the long tail)
+
+    The Poisson reference DF* = N (1 - exp(-CF / N)) is the document frequency
+    a term would have if its occurrences were scattered at random; DF* / DF
+    measures how much burstier than random the term is.
 """
 
 from __future__ import annotations
 
 import math
+import re
 from collections import Counter, defaultdict
 
 from .porter import PorterStemmer
@@ -51,6 +70,10 @@ CONDITIONS = [
 ]
 SEGMENTS = ("high", "middle", "low")
 ZONES = ("common", "significant", "rare")       # above the upper cut-off / between / below the lower cut-off
+MAP_ZONES = ("function", "boilerplate", "topic", "keyword", "number", "other")
+MAP_DEFAULTS = {"common_df": 0.85, "boiler_df": 0.25, "boiler_burst": 1.3,   # CF-DF map thresholds (DF / N and CF / DF)
+                "topic_df": 0.15, "topic_burst": 1.3, "key_df": 0.05, "key_burst": 3.0}
+_NUMBER_RE = re.compile(r"^\d+$")
 SMOOTH_SPAN = 10 ** 0.15                        # running-median window: rank / span .. rank * span
 SMOOTH_MIN = 4                                  # ... and at least this many ranks on each side
 
@@ -215,6 +238,53 @@ class Collection:
         """(term, cf, df) of the most frequent terms for a CF-vs-DF scatter plot."""
         return [[t, c, self.df[t]] for t, c in self.ranked[:limit]]
 
+
+    # ---- CF-DF map --------------------------------------------------------- #
+    def poisson_df(self, cf: int) -> float:
+        """DF a term with collection frequency cf would have if its occurrences
+        fell on documents at random (occurrences ~ Poisson per document)."""
+        return self.n_docs * (1 - math.exp(-cf / self.n_docs)) if self.n_docs else 0.0
+
+    def map_zone(self, term: str, thr: dict) -> str:
+        cf, df = self.cf[term], self.df[term]
+        spread, burst = df / self.n_docs, cf / df
+        if _NUMBER_RE.match(term):
+            return "number"
+        if spread >= thr["common_df"]:
+            return "function"
+        if spread >= thr["boiler_df"] and burst < thr["boiler_burst"]:
+            return "boilerplate"
+        if spread < thr["key_df"] and burst >= thr["key_burst"] and df >= 2:
+            return "keyword"
+        if thr["topic_df"] <= spread < thr["common_df"] and burst >= thr["topic_burst"]:
+            return "topic"
+        return "other"
+
+    def cfdf_map(self, limit: int = 1500, examples: int = 40, **thr) -> dict:
+        """Every term sorted into a CF-DF zone (see the module docstring).
+        points: [term, cf, df, zone] for the *limit* most frequent terms plus
+        every keyword-zone term, for the scatter plot."""
+        thr = {**MAP_DEFAULTS, **{k: v for k, v in thr.items() if v is not None}}
+        N, V, T = self.n_docs, len(self.ranked), max(self.n_tokens, 1)
+        out = {"condition": self.key, "documents": N, "vocabulary": V, "tokens": self.n_tokens, "thresholds": thr}
+        if not V:
+            return {**out, "zones": [], "points": [], "poisson": []}
+        zone_of = {t: self.map_zone(t, thr) for t, _ in self.ranked}
+        row = lambda t: {**self.row(t), "burst": round(self.cf[t] / self.df[t], 2),       # noqa: E731
+                         "poisson": round(self.poisson_df(self.cf[t]) / self.df[t], 2)}
+        zones = []
+        for name in MAP_ZONES:
+            terms = [t for t, _ in self.ranked if zone_of[t] == name]
+            cf = sum(self.cf[t] for t in terms)
+            zones.append({"name": name, "terms": len(terms), "vocab_share": round(len(terms) / V, 4),
+                          "tokens_share": round(cf / T, 4),
+                          "mean_idf": round(sum(self.idf(t) for t in terms) / len(terms), 4) if terms else 0,
+                          "examples": [row(t) for t in terms[:examples]]})      # ranked = most frequent first
+        shown = {t for t, _ in self.ranked[:limit]} | {t for t in zone_of if zone_of[t] == "keyword"}
+        points = [[t, c, self.df[t], zone_of[t]] for t, c in self.ranked if t in shown]
+        cfs = sorted({max(1, int(round(10 ** (i / 20)))) for i in range(0, int(20 * math.log10(max(self.freqs[0], 1))) + 2)})
+        return {**out, "zones": zones, "points": points,
+                "poisson": [[c, round(self.poisson_df(c), 2)] for c in cfs if c <= self.freqs[0] * 1.05]}
 
     # ---- resolving power of significant words (Luhn) -------------------- #
     def powers(self) -> list[float]:

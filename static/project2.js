@@ -148,10 +148,14 @@
   /* ================================================================== *
    * Zipf tab
    * ================================================================== */
-  const zs = { data: null, cond: 'B', scale: 'logy', terms: '', table: null, res: null, resAll: null, upper: null, lower: null, nonum: false };
+  const zs = { data: null, cond: 'B', scale: 'logy', terms: '', table: null, res: null, resAll: null, upper: null, lower: null, nonum: false, map: null, mapThr: {} };
   const SEG_ZH = { high: '高頻', middle: '中頻', low: '低頻' };
   const ZONE_ZH = { common: '太常見', significant: '有效詞', rare: '太罕見' };
-  const HOLD_IDS = ['rp-tiles', 'rp-freq', 'rp-power', 'rp-idf', 'rp-zones', 'rp-shift', 'rp-shift-table', 'rp-shift-notes', 'rp-top', 'rp-notes', 'zp-table', 'zp-scatter'];
+  const HOLD_IDS = ['rp-tiles', 'rp-freq', 'rp-power', 'rp-idf', 'rp-zones', 'rp-shift', 'rp-shift-table', 'rp-shift-notes', 'rp-top', 'rp-notes', 'zp-table', 'zp-scatter', 'cm-tiles', 'cm-plot', 'cm-lists', 'cm-notes'];
+  // CF-DF map zones: colour, label, which list they feed
+  const MAP_ZONES = { function: ['var(--s2)', '功能詞'], boilerplate: ['var(--s4)', '樣板詞'], topic: ['var(--s3)', '建庫依據詞'], keyword: ['var(--s1)', '文件關鍵詞'], number: ['var(--s5)', '數字殘渣'], other: ['var(--muted)', '其他'] };
+  const MAP_THR = [['common_df', 'Function：DF/N ≥', 0.5, 1, 0.01], ['boiler_df', 'Boilerplate：DF/N ≥', 0.05, 0.6, 0.01], ['boiler_burst', 'Boilerplate：CF/DF <', 1, 2, 0.05],
+    ['topic_df', 'Topic：DF/N ≥', 0.02, 0.5, 0.01], ['key_df', 'Keyword：DF/N <', 0.005, 0.2, 0.005], ['key_burst', 'Keyword：CF/DF ≥', 1.5, 6, 0.1]];
   const release = (...ids) => ids.forEach(id => { const e = $('#' + id); if (e) e.style.minHeight = ''; });
 
   async function loadZipf(force) {
@@ -164,6 +168,7 @@
       loadTerms();
       loadResolving();
       loadResolvingAll();
+      loadMap();
     } catch (e) { $('#zipf').innerHTML = `<div class="card">${esc(e.message)}</div>`; }
   }
 
@@ -305,6 +310,14 @@
           IDF 正好以 log 尺度抵銷這個冪次律的頭部，讓落在中、低頻段的內容詞得到較高權重——TF-IDF 等於是依 Zipf 曲線上的位置重新加權。</div>
       </div></div>`;
 
+    h += `<div class="card"><h2>CF–DF map　<small class="muted">condition ${c.key} · 從 CF / DF 與 DF / N 把詞彙分區</small></h2>
+      <p><code>CF / DF</code> 是「含該詞的文件裡平均出現幾次」（burstiness），<code>DF / N</code> 是「分布在多少比例的文件」。兩個比例把詞彙分成：<b>功能詞</b>（幾乎每篇都有）、<b>樣板詞</b>（分布廣但每篇只出現一次：results、methods）、<b>建庫依據詞</b>（分布中等又反覆出現：語料在講什麼）、<b>文件關鍵詞</b>（少數文件裡反覆出現）、<b>數字殘渣</b>。
+        虛線是 Poisson 參考線 <code>DF* = N(1 − e<sup>−CF/N</sup>)</code>：詞若隨機散布，DF 會落在線上；點越在線的左邊（DF 遠小於 DF*），越是主題性的詞。</p>
+      <div class="row rp-ctl" id="cm-ctl">${MAP_THR.map(([k, lab, lo, hi, st]) => `<label>${lab}<input type="range" data-thr="${k}" min="${lo}" max="${hi}" step="${st}"><b data-thr-v="${k}"></b></label>`).join('')}<button id="cm-reset">預設值</button></div>
+      <div id="cm-tiles" class="tiles"><span class="muted">Computing the CF–DF map…</span></div>
+      <div class="two"><div><div id="cm-plot"></div><p class="hint">每個點是一個詞（CF 最高的 1,500 個加上所有文件關鍵詞）。對角線 CF = DF：每篇最多出現一次。</p></div><div id="cm-lists"></div></div>
+      <div id="cm-notes" class="qa"></div></div>`;
+
     // re-rendering must not make the page jump: the sections that are filled in asynchronously keep their previous
     // height (released once their new content is in) and the scroll position is restored
     const held = HOLD_IDS.map(id => [id, $('#' + id) ? $('#' + id).offsetHeight : 0]), y = window.scrollY;
@@ -313,9 +326,9 @@
     window.scrollTo(0, y);
     $$('#zipf [data-cond]').forEach(b => b.addEventListener('click', () => {
       zs.cond = b.dataset.cond; zs.upper = zs.lower = null; zs.res = null;
-      renderZipf(); loadTerms(); loadResolving(); renderShift();
+      renderZipf(); loadTerms(); loadResolving(); renderShift(); loadMap();
     }));
-    $$('#zipf [data-scale]').forEach(b => b.addEventListener('click', () => { zs.scale = b.dataset.scale; renderZipf(); renderTerms(); renderResolving(); renderShift(); }));
+    $$('#zipf [data-scale]').forEach(b => b.addEventListener('click', () => { zs.scale = b.dataset.scale; renderZipf(); renderTerms(); renderResolving(); renderShift(); renderMap(); }));
     const toRank = v => sliderRank(v, c.vocabulary);
     const cutMoved = which => {
       zs.upper = toRank(+$('#rp-upper').value); zs.lower = toRank(+$('#rp-lower').value);
@@ -328,6 +341,9 @@
     $('#rp-auto').addEventListener('click', () => { zs.upper = zs.lower = null; loadResolving(); });
     $('#rp-nonum').addEventListener('change', e => { zs.nonum = e.target.checked; renderResolving(); renderShift(); });
     $('#zp-terms-btn').addEventListener('click', () => { zs.terms = $('#zp-terms').value; loadTerms(); });
+    $$('#cm-ctl [data-thr]').forEach(inp => inp.addEventListener('input', () => { zs.mapThr[inp.dataset.thr] = +inp.value; $(`#cm-ctl [data-thr-v=${inp.dataset.thr}]`).textContent = inp.value; loadMap(); }));
+    $('#cm-reset').addEventListener('click', () => { zs.mapThr = {}; loadMap(); });
+    renderMap();
     $('#zp-terms').addEventListener('keydown', e => { if (e.key === 'Enter') { zs.terms = $('#zp-terms').value; loadTerms(); } });
 
     const idx = z.conditions.indexOf(c), color = SERIES[idx];
@@ -496,6 +512,51 @@
         { name: 'Compared terms', color: 'var(--s2)', mode: 'dots', r: 4.5, opacity: 1, pts: picked }],
       tipRows: (p, se) => [[se.color === 'var(--muted)' ? null : se.color, String(p[2] || p[4] || ''), ''], [null, fmt(p[1]), 'CF'], [null, fmt(p[0]), 'DF'], [null, f2(p[1] / p[0], 2), 'CF / DF'], [null, f2(Math.log10(t.documents / p[0])), 'IDF']] });
     release('zp-table', 'zp-scatter');
+  }
+
+  // ---- CF-DF map ------------------------------------------------------- //
+  let mapTimer = null, mapSeq = 0;
+  function loadMap() {
+    clearTimeout(mapTimer);
+    mapTimer = setTimeout(async () => {
+      const seq = ++mapSeq;
+      try {
+        const r = await api('/api/zipf/cfdf?' + new URLSearchParams({ cond: zs.cond, ...zs.mapThr }));
+        if (seq !== mapSeq) return;
+        zs.map = r; renderMap();
+      } catch (e) { const t = $('#cm-tiles'); if (t) t.textContent = e.message; }
+    }, 150);
+  }
+  function renderMap() {
+    const r = zs.map, box = $('#cm-tiles');
+    if (!r || !box || r.condition !== zs.cond || !r.vocabulary) return;
+    const thr = r.thresholds, N = r.documents, Z = Object.fromEntries(r.zones.map(z => [z.name, z]));
+    MAP_THR.forEach(([k]) => { const inp = $(`#cm-ctl [data-thr=${k}]`); if (inp && +inp.value !== thr[k]) inp.value = thr[k]; $(`#cm-ctl [data-thr-v=${k}]`).textContent = thr[k]; });
+    box.innerHTML = r.zones.map(z => `<div class="tile${z.name === 'other' ? '' : ' accent'}"><b><i class="key" style="background:${MAP_ZONES[z.name][0]}"></i>${fmt(z.terms)}</b><span>${MAP_ZONES[z.name][1]} ${z.name} · ${pct(z.tokens_share)} of tokens · mean IDF ${f2(z.mean_idf, 2)}</span></div>`).join('');
+
+    // points: [df, cf, label, emphasised, term, zone, burst, poisson ratio]
+    const pt = ([t, cf, df, z]) => [df, cf, '', false, t, z, cf / df, N * (1 - Math.exp(-cf / N)) / df];
+    const byZone = Object.fromEntries(Object.keys(MAP_ZONES).map(z => [z, []]));
+    r.points.forEach(p => byZone[p[3]].push(pt(p)));
+    plot($('#cm-plot'), { title: 'CF-DF map', xlog: true, ylog: true, xlabel: 'Document frequency DF (log scale)', ylabel: 'Collection frequency CF (log scale)', height: 400, hover: 'nearest',
+      series: [{ name: 'CF = DF', color: 'var(--line)', mode: 'line', pts: [[1, 1], [N, N]], tip: false, legend: false, width: 1 },
+        { name: 'Poisson DF* (random scatter)', color: 'var(--ink)', mode: 'fit', pts: r.poisson.map(([cf, df]) => [df, cf]), tip: false }]
+        .concat(['other', 'number', 'keyword', 'topic', 'boilerplate', 'function'].map(z => ({ name: `${MAP_ZONES[z][1]} ${z}`, color: MAP_ZONES[z][0], mode: 'dots', r: z === 'other' ? 2.2 : 3.2, opacity: z === 'other' ? 0.3 : 0.85, pts: byZone[z] }))),
+      tipRows: (p, se) => (p.length < 5 ? [[se.color, se.name, '']] : [[se.color, String(p[4]), MAP_ZONES[p[5]][1]], [null, fmt(p[1]), 'CF'], [null, fmt(p[0]), 'DF'], [null, f2(p[6], 2), 'CF / DF'], [null, pct(p[0] / N), 'DF / N'], [null, f2(p[7], 2) + '×', 'burstier than random (DF* / DF)'], [null, f2(Math.log10(N / p[0])), 'IDF']]) });
+
+    const chips = (names, n, title, why) => { const xs = names.flatMap(z => Z[z].examples).slice(0, n); return `<div class="cm-list"><b>${title}</b> <small class="muted">${why}</small><div>${xs.map(x => `<span class="chip" title="CF ${fmt(x.cf)} · DF ${fmt(x.df)} · CF/DF ${f2(x.burst, 2)} · ${f2(x.poisson, 2)}× burstier than random · IDF ${f2(x.idf)}">${esc(x.term)} <small>${fmt(x.cf)}/${fmt(x.df)}</small></span>`).join('') || '<span class="muted">—</span>'}</div></div>`; };
+    $('#cm-lists').innerHTML =
+      chips(['function', 'boilerplate'], 24, '潛在移除詞（領域停用詞候選）', `功能詞 ${fmt(Z.function.terms)} + 樣板詞 ${fmt(Z.boilerplate.terms)}：到處都有，IDF ≈ 0 或每篇只出現一次`) +
+      chips(['number'], 18, '數字殘渣', `${fmt(Z.number.terms)} 個純數字 token，佔 ${pct(Z.number.tokens_share)} 的 token`) +
+      chips(['topic'], 24, '建庫依據詞', `${fmt(Z.topic.terms)} 個：分布中等又反覆出現，描述語料主題`) +
+      chips(['keyword'], 24, '文件關鍵詞', `${fmt(Z.keyword.terms)} 個：集中在少數文件裡反覆出現，TF-IDF 高`);
+    const stopLike = Z.topic.examples.filter(x => zs.data && /^(were|was|is|are|be|been|this|that|these|those|as|or|on|by|from|at|an|it|its|we|our|not|than|which|has|have|had|also|may|can|both|between|after|among|more|most|other|such|all|their|its)$/.test(x.term)).map(x => x.term);
+    $('#cm-notes').innerHTML = `
+      <div><b>IDF 就在 x 軸上</b>　idf = log<sub>10</sub>(N / DF)：越靠左 IDF 越高。功能詞與樣板詞都擠在最右邊，IDF 不需要停用詞表就把它們一起壓平——功能詞區的平均 IDF 只有 ${f2(Z.function.mean_idf, 3)}。</div>
+      <div><b>TF 是離對角線的距離</b>　CF / DF 越大，該詞在含它的文件裡 tf 越高。文件關鍵詞兩個因子都大（平均 IDF ${f2(Z.keyword.mean_idf, 2)}、CF/DF ≥ ${thr.key_burst}），是 TF-IDF 最高的一群，適合自動關鍵詞、文件摘要與分群特徵。</div>
+      <div><b>樣板詞是 Snowball 表沒有的停用詞</b>　${Z.boilerplate.examples.slice(0, 6).map(x => `<code>${esc(x.term)}</code>`).join(' ')} 每篇恰好出現一次（CF/DF ≈ 1）、貼著 Poisson 線：它們是結構化摘要的小標題，對檢索沒有鑑別力，是領域停用詞表的第一批候選。</div>
+      <div><b>這張圖分不出的東西</b>　${stopLike.length ? `建庫依據詞區裡混著 ${stopLike.slice(0, 6).map(t => `<code>${esc(t)}</code>`).join(' ')}：它們的 CF/DF 與 DF/N 和 weight、patients 幾乎一樣，` : '功能詞與主題詞的 CF/DF、DF/N 可以長得一樣，'}純靠統計量分不出「功能詞」與「主題詞」，這正是停用詞表提供的語言知識。切到條件 C 可以看到去掉停用詞後這一區只剩內容詞。</div>`;
+    release('cm-tiles', 'cm-plot', 'cm-lists', 'cm-notes');
   }
 
   /* ================================================================== *

@@ -253,3 +253,5 @@ table.num .up{color:var(--danger)}
 table.num .down{color:var(--ok)}
 .cond-card{position:sticky;top:8px;z-index:5;padding:10px 16px;box-shadow:0 4px 14px rgba(0,0,0,.12)}
 .cond-card .row{margin:0}
+.cm-list{margin-bottom:10px}.cm-list>div{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.cm-list .chip small{color:var(--muted);margin-left:3px}
+.tiles .tile b i.key{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:1px}

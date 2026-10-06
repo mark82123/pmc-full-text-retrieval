@@ -137,6 +137,25 @@ class CollectionEngineTests(unittest.TestCase):
         self.assertEqual(rows["weight"]["df"], 2)
         self.assertEqual(self.eng.zipf_terms("C", "zzz the")["missing"], ["zzz", "the"])
 
+    def test_cfdf_map(self):
+        # 'the' in every document (function), 'intro' once in 60% of the documents (boilerplate), 'alpha' bursty in half of the
+        # documents (topic), 'zz' three times in one of ten documents (keyword), numbers in their own zone
+        texts = [("the alpha alpha alpha 12" if i % 2 else "the beta 12") + (" intro" if i < 6 else "") + (" zz zz zz" if i < 2 else "") for i in range(10)]
+        col = zipf.Collection("B", texts)
+        m = col.cfdf_map(key_df=0.3)
+        zone = {x["term"]: z["name"] for z in m["zones"] for x in z["examples"]}
+        self.assertEqual(zone["the"], "function")
+        self.assertEqual(zone["intro"], "boilerplate")
+        self.assertEqual(zone["alpha"], "topic")
+        self.assertEqual(zone["zz"], "keyword")
+        self.assertEqual(zone["12"], "number")
+        self.assertEqual(sum(z["terms"] for z in m["zones"]), m["vocabulary"])
+        self.assertAlmostEqual(col.poisson_df(0), 0)
+        self.assertLess(col.poisson_df(30), 10)                           # never more than N documents
+        self.assertEqual({p[3] for p in m["points"]} <= set(zipf.MAP_ZONES), True)
+        api = self.eng.zipf_cfdf("B")
+        self.assertEqual([z["name"] for z in api["zones"]], list(zipf.MAP_ZONES))
+
     def test_resolving_power(self):
         # 'the' is in every document (idf 0) and each 'rare*' word occurs once: the middle words resolve best
         texts = [f"the alpha alpha alpha beta rare{i}" if i % 2 else f"the gamma gamma gamma beta rare{i}" for i in range(10)]

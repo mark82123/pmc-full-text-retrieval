@@ -14,6 +14,8 @@ Endpoints
     GET  /api/analyze?text=..    tokenise / lower-case / stop-word / stem a text; sentence split
     GET  /api/zipf               Zipf analysis of the abstract collection (4 pre-processing conditions)
     GET  /api/zipf/terms?cond=C&terms=a,b&scatter=1   CF / DF / IDF of chosen terms
+    GET  /api/zipf/cfdf?cond=B&common_df=&boiler_df=&boiler_burst=&topic_df=&topic_burst=&key_df=&key_burst=
+                                                      CF-DF map: function / boilerplate / topic / keyword / number zones
     GET  /api/edit?a=..&b=..     edit distance: DP table + alignment
     GET  /api/spell?word=..&k=2  vocabulary words within k edits
     GET  /api/w2v/status         word2vec model + training job
@@ -40,6 +42,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
+from ir import zipf  # noqa: E402
 from ir.engine import Engine  # noqa: E402
 from ir.porter import stem_trace  # noqa: E402
 from ir.sentence import naive_split, split_sentences  # noqa: E402
@@ -123,6 +126,9 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/zipf/resolving":
                 cut = lambda k: int(qs[k]) if qs.get(k, "").isdigit() else None  # noqa: E731
                 return self._json(engine.zipf_resolving(qs.get("cond", "C"), cut("upper"), cut("lower")))
+            if path == "/api/zipf/cfdf":
+                num = lambda k: float(qs[k]) if re.match(r"^\d*\.?\d+$", qs.get(k, "")) else None  # noqa: E731
+                return self._json(engine.zipf_cfdf(qs.get("cond", "B"), **{k: num(k) for k in zipf.MAP_DEFAULTS}))
             if path == "/api/edit":
                 a, b = qs.get("a", "").strip().lower()[:40], qs.get("b", "").strip().lower()[:40]
                 return self._json(edit_matrix(a, b, qs.get("transpose", "1") == "1"))

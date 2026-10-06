@@ -13,6 +13,7 @@
 Project #2
     python3 cli.py collect "GLP-1" -n 1000 --name glp1   build a PubMed abstract collection (data/pubmed_glp1.jsonl)
     python3 cli.py zipf [--cond B] [--top 50] [--svg report/]   Zipf analysis: vocabulary, CF/DF, regression, 4 conditions
+    python3 cli.py cfdf [--cond B]                       CF-DF map: function / boilerplate / topic / keyword / number zones
     python3 cli.py resolving [--cond C] [--upper R] [--lower R] Resolving power of significant words (Luhn cut-offs)
     python3 cli.py terms glp obesity nausea [--cond C]   CF / DF / IDF of chosen terms (default set if none given)
     python3 cli.py edit semaglutide samegluitde          edit distance with the DP table
@@ -61,6 +62,7 @@ def main() -> None:
     co = sub.add_parser("collect"); co.add_argument("term"); co.add_argument("-n", type=int, default=1000); co.add_argument("--name", default="")
     zp = sub.add_parser("zipf"); zp.add_argument("--cond", default="B", choices=["A", "B", "C", "D", "E"]); zp.add_argument("--top", type=int, default=50)
     zp.add_argument("--svg", help="directory to write the figures (SVG) to")
+    mp = sub.add_parser("cfdf"); mp.add_argument("--cond", default="B", choices=["A", "B", "C", "D", "E"]); mp.add_argument("--top", type=int, default=12)
     rp = sub.add_parser("resolving"); rp.add_argument("--cond", default="C", choices=["A", "B", "C", "D", "E"]); rp.add_argument("--top", type=int, default=30)
     rp.add_argument("--upper", type=int, help="upper cut-off rank (default: automatic)"); rp.add_argument("--lower", type=int, help="lower cut-off rank (default: automatic)")
     tm = sub.add_parser("terms"); tm.add_argument("words", nargs="*"); tm.add_argument("--cond", default="C", choices=["A", "B", "C", "D", "E"])
@@ -208,6 +210,15 @@ def main() -> None:
             for name, svg in figs.items():
                 (out / name).write_text(svg, encoding="utf-8")
             print(f"\nfigures written to {out}/: {', '.join(figs)}")
+    elif args.cmd == "cfdf":
+        r = eng.zipf_cfdf(args.cond)
+        t = r["thresholds"]
+        print(f"condition {r['condition']}, N = {r['documents']} documents, {r['vocabulary']} terms; burst = CF / DF, poisson = expected DF at random / DF")
+        print(f"thresholds: function DF/N >= {t['common_df']}; boilerplate DF/N >= {t['boiler_df']} & burst < {t['boiler_burst']}; "
+              f"topic DF/N >= {t['topic_df']} & burst >= {t['topic_burst']}; keyword DF/N < {t['key_df']} & burst >= {t['key_burst']}\n")
+        for z in r["zones"]:
+            print(f"{z['name']:<12}{z['terms']:>7} terms  {z['vocab_share']:>6.1%} of vocab  {z['tokens_share']:>6.1%} of tokens  mean idf {z['mean_idf']:.3f}")
+            print("             " + "  ".join(f"{x['term']}({x['cf']}/{x['df']})" for x in z["examples"][:args.top]))
     elif args.cmd == "resolving":
         r = eng.zipf_resolving(args.cond, args.upper, args.lower)
         print(f"condition {r['condition']}, N = {r['documents']} documents, {r['vocabulary']} terms; resolving power = CF * idf, idf = log10(N / df)")

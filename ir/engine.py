@@ -502,6 +502,12 @@ class Engine:
         cols = self._zipf_state()["cols"]
         return (cols.get(condition.upper()) or cols["C"]).resolving(upper, lower)
 
+    def zipf_cfdf(self, condition: str = "B", **thresholds) -> dict:
+        """CF-DF map: the vocabulary sorted into function / boilerplate /
+        topic / keyword / number zones, with the Poisson reference curve."""
+        cols = self._zipf_state()["cols"]
+        return (cols.get(condition.upper()) or cols["B"]).cfdf_map(**thresholds)
+
     # ---- word2vec ------------------------------------------------------ #
     def w2v_train(self, params: dict, block: bool = False) -> dict:
         """Train word2vec on the collection in a background thread."""
