@@ -129,7 +129,7 @@ figure svg{width:100%;height:auto;display:block;font-family:var(--sans)}
 <section class="page "><div class="inner">
 <h2>4. 必答分析（續）</h2>
 <h3>Q2 補充　為什麼以條件 B 為準，而不是 C 或 D？</h3>
-<p>B 是 spec 必做的三個步驟（斷詞、小寫、標點）做完、尚未加入變因（停用詞、stemming）的狀態，term 仍等於「詞」、曲線頭部完整，是檢驗「語料本身符不符合定律」的對象。C、D 是為了檢索而做的處理，動到的正好是定律描述的兩端（E = B + stemming、保留停用詞，用來把兩個效果拆開）：</p>
+<p>B 是 spec 必做的三個步驟（斷詞、小寫、標點）做完、尚未加入變因（停用詞、stemming）的狀態，term 仍等於「詞」、曲線頭部完整，是檢驗「語料本身符不符合定律」的對象。這也有歷史依據：Zipf（1935, 1949）的計數以書寫詞形為單位（Eldridge 的報紙詞表、Hanley 的 <i>Ulysses</i> 索引），未移除功能詞、未合併變化形——停用詞表（Luhn 1958）與 stemming（Lovins 1968、Porter 1980）都是後來為自動索引發展的——相當於本報告的條件 B。C、D 是為了檢索而做的處理，動到的正好是定律描述的兩端（E = B + stemming、保留停用詞，用來把兩個效果拆開）：</p>
 <table class="t compact"><thead><tr><th>條件</th><th>整體 k</th><th>R²</th><th>RMSE</th><th>高頻段 k</th><th>中頻段 k</th><th>低頻段 k</th></tr></thead><tbody>
 <tr><td><i class="sw s1"></i><b>A</b> Basic</td><td>1.098</td><td>0.958</td><td>0.100</td><td>0.89</td><td>0.89</td><td>1.10</td></tr><tr class=sel><td><i class="sw s2"></i><b>B</b> Punctuation removed</td><td>1.419</td><td>0.966</td><td>0.115</td><td>0.82</td><td>0.86</td><td>1.60</td></tr><tr><td><i class="sw s3"></i><b>C</b> Stop words removed</td><td>1.370</td><td>0.960</td><td>0.122</td><td>0.56</td><td>0.77</td><td>1.57</td></tr><tr><td><i class="sw s4"></i><b>D</b> Stemming</td><td>1.482</td><td>0.959</td><td>0.133</td><td>0.48</td><td>0.79</td><td>1.71</td></tr><tr><td><i class="sw s5"></i><b>E</b> Stemming, stop words kept</td><td>1.536</td><td>0.964</td><td>0.129</td><td>0.76</td><td>0.86</td><td>1.76</td></tr>
 </tbody></table>
