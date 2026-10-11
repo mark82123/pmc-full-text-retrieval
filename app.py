@@ -18,9 +18,18 @@ Endpoints
                                                       CF-DF map: function / boilerplate / topic / keyword / number zones
     GET  /api/edit?a=..&b=..     edit distance: DP table + alignment
     GET  /api/spell?word=..&k=2  vocabulary words within k edits
-    GET  /api/w2v/status         word2vec model + training job
-    GET  /api/w2v/similar?word=..&n=15      /api/w2v/analogy?a=..&b=..&c=..      /api/w2v/projection?words=..
-    POST /api/w2v/train          (body: JSON {model: sg|cbow, dim, window, negative, min_count, epochs})
+    GET  /api/w2v/status         trained models, active model, training jobs
+    GET  /api/w2v/vocab?min_count=5&stopwords=1      pre-processing + vocabulary statistics, training-example counts
+    GET  /api/w2v/examples?text=..&window=2&stopwords=1&centre=   skip-gram pairs / CBOW examples of one sentence
+    GET  /api/w2v/similar?word=..&n=15&model=        /api/w2v/analogy?a=..&b=..&c=..&model=
+    GET  /api/w2v/compare?words=a,b&models=m1,m2&n=5 nearest neighbours side by side + overlap
+    GET  /api/w2v/pairs?groups=a,b;c,d&model=        cosine matrix, within- / between-group means
+    GET  /api/w2v/projection?words=..&model=&method=pca|tsne&perplexity=15&iters=400&seed=0
+    GET  /api/w2v/eval?models=m1,m2&k=10             neighbourhood quality per frequency bucket
+    GET  /api/w2v/overlap?models=m1,m2&k=10          neighbour overlap between two models per frequency bucket
+    POST /api/w2v/train          (body: JSON {model: sg|cbow, dim, window, negative, min_count, epochs, seed,
+                                  remove_stopwords, name}) - queued; several jobs run one after another
+    POST /api/w2v/select?name=   make a model the active one      POST /api/w2v/delete?name=
     POST /api/collect            (body: JSON {term, n, name}) build a PubMed abstract collection
     POST /api/upload?filename=x.xml   (body: raw XML)  add a document to the index
     POST /api/fetch?replace=0|1  (body: JSON {"ids": "..."} or plain text)
@@ -142,11 +151,28 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/w2v/status":
                 return self._json(engine.w2v_status())
             if path == "/api/w2v/similar":
-                return self._json(engine.w2v_similar(qs.get("word", "").strip(), max(1, min(int(qs.get("n", 15)), 50))))
+                return self._json(engine.w2v_similar(qs.get("word", "").strip(), max(1, min(int(qs.get("n", 15)), 50)), qs.get("model") or None))
             if path == "/api/w2v/analogy":
-                return self._json(engine.w2v_analogy(*(qs.get(k, "").strip() for k in "abc")))
+                return self._json(engine.w2v_analogy(*(qs.get(k, "").strip() for k in "abc"), model=qs.get("model") or None))
             if path == "/api/w2v/projection":
-                return self._json(engine.w2v_projection(qs.get("words", ""), int(qs.get("n", 120))))
+                return self._json(engine.w2v_projection(qs.get("words", ""), int(qs.get("n", 120)), qs.get("model") or None,
+                                                        qs.get("method", "pca"), float(qs.get("perplexity", 15)),
+                                                        int(qs.get("iters", 400)), int(qs.get("seed", 0)),
+                                                        max(3, min(int(qs.get("neighbours", 12)), 40))))
+            if path == "/api/w2v/vocab":
+                return self._json(engine.w2v_vocab(int(qs.get("min_count", 5)), qs.get("stopwords", "1") != "0"))
+            if path == "/api/w2v/examples":
+                c = qs.get("centre", "")
+                return self._json(engine.w2v_examples(qs.get("text", ""), int(qs.get("window", 2)), qs.get("stopwords", "1") != "0",
+                                                      int(c) if c.isdigit() else None))
+            if path == "/api/w2v/compare":
+                return self._json(engine.w2v_compare(qs.get("words", ""), qs.get("models", ""), max(1, min(int(qs.get("n", 5)), 20))))
+            if path == "/api/w2v/pairs":
+                return self._json(engine.w2v_pairs(qs.get("groups", ""), qs.get("model") or None))
+            if path == "/api/w2v/eval":
+                return self._json(engine.w2v_eval(qs.get("models", ""), max(1, min(int(qs.get("k", 10)), 30))))
+            if path == "/api/w2v/overlap":
+                return self._json(engine.w2v_overlap(qs.get("models", ""), max(1, min(int(qs.get("k", 10)), 30)), qs.get("words", "")))
             if path == "/api/vocab":
                 return self._json(engine.vocabulary(qs.get("prefix", ""), int(qs.get("limit", 200))))
             self.send_error(404)
@@ -177,7 +203,13 @@ class Handler(BaseHTTPRequestHandler):
                                            replace=qs.get("replace", "0") == "1")
                 return self._json({"results": results, "documents": engine.index.n_docs})
             if url.path == "/api/w2v/train":
-                return self._json(engine.w2v_train(json.loads(body.decode("utf-8") or "{}")))
+                payload = json.loads(body.decode("utf-8") or "{}")
+                jobs = payload if isinstance(payload, list) else [payload]        # a list queues several jobs
+                return self._json({"jobs": [engine.w2v_train(j) for j in jobs[:24]]})
+            if url.path == "/api/w2v/select":
+                return self._json(engine.w2v_select(qs.get("name", "")))
+            if url.path == "/api/w2v/delete":
+                return self._json(engine.w2v_delete(qs.get("name", "")))
             if url.path == "/api/collect":
                 p = json.loads(body.decode("utf-8") or "{}")
                 if not str(p.get("term", "")).strip():

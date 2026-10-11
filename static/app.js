@@ -30,8 +30,13 @@
     if (name === 'corpus' && !state.corpus) loadCorpus();
     document.dispatchEvent(new CustomEvent('tab', { detail: name }));
     window.scrollTo(0, 0);
+    if ($('.tab[data-tab="' + name + '"]')) history.replaceState(null, '', '#' + name);   // deep link, e.g. /#w2v
   }
   $$('.tab').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  document.addEventListener('DOMContentLoaded', () => {        // after every script has registered its tab listeners
+    const h = location.hash.slice(1);
+    if (h && $('.tab[data-tab="' + h + '"]')) showTab(h);
+  });
 
   /* ---------------- charts (inline SVG) ---------------- */
   const PALETTE = ['#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626', '#0891b2', '#db2777', '#4b5563'];

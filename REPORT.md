@@ -237,23 +237,9 @@ In short, Zipf's law explains why stopword lists are short yet effective, why in
 
 ## 10. Word embedding（word2vec）
 
-- 實作：`ir/word2vec.py`，純 Python、無第三方套件；Skip-gram 與 CBOW 皆可選，以 negative sampling 訓練（dynamic window、高頻詞 subsampling、unigram^0.75 負樣本表、線性遞減學習率）。
-- 前處理：規則式斷句 → 斷詞（保留內部連字號，`glp-1`、`sglt2`）→ 小寫 → 移除停用詞；視窗不跨句。1,000 篇摘要得到 10,794 個句子、176,332 個詞；出現 ≥ 5 次的詞共 4,438 個。
-- 隨專案附上的模型（`data/word2vec.json`）：Skip-gram、50 維、window 5、5 個負樣本、10 epochs。
+詞嵌入的完整實驗與分析（前處理、詞彙表、訓練樣本、CBOW / Skip-gram 訓練記錄、14 個詞的近鄰比較、語意詞組的 cosine 矩陣、PCA 與 t-SNE、參數 / 低頻詞 / 穩定度的量化評估、RQ1–RQ5、比較表）另成一份報告：**[REPORT_w2v.md](REPORT_w2v.md)**。
 
-Skip-gram 模型的最近鄰（cosine similarity）範例：
-
-| 查詢詞 | 最相似的詞 |
-|---|---|
-| semaglutide | dulaglutide, exenatide, low-dose, once-weekly, cagrisema, ecnoglutide |
-| nausea | vomiting, diarrhea, constipation, injection-site, aes, gi |
-| mice | rats, dio, diet-induced, db, c57bl, high-fat, hfd-fed |
-| stroke | infarction, ischemic, hhf, all-cause, revascularization |
-| kidney | cardiovascular, renal, ckd, albuminuria, progression |
-
-類比運算 `v(b) − v(a) + v(c)` 的例子：kidney : ckd = liver : **masld**（其後為 non-alcoholic, mafld, steatotic, nafld）；obesity : weight = diabetes : **glycaemic**。語料只有 1,000 篇，類比並不總是成立，但器官—疾病這類在摘要中反覆出現的關係學得出來。
-
-模型學到的是語料中的分布相似性：藥名彼此相近、副作用彼此相近、動物模型相關詞彼此相近。網頁的 **Word2Vec** 分頁可重新訓練（選擇模型與超參數）、查最近鄰、做類比運算並以 PCA 畫出 2-D 分布圖。
+摘要：`ir/word2vec.py` 以純 Python 實作 Skip-gram 與 CBOW（negative sampling、dynamic window、subsampling），`ir/tsne.py` 實作 PCA 與 t-SNE；9 個模型（架構 × window 2 / 5 × 50 / 100 維 × min_count × seed）存在 `data/w2v/`。1,000 篇摘要能學到主題層級的語意（藥名、副作用、器官、動物模型各自成群，組內 cosine 0.68 對組間 0.35），但詞層級並不穩定：同設定換 seed，Skip-gram 的前 10 近鄰只有 49% 重疊、CBOW 37%；Skip-gram 對出現 5–49 次的詞明顯優於 CBOW（同詞幹變形命中率 6–16% 對 0–12%），CBOW 快 3 倍且 loss 較低但偏向句型相似。
 
 ## 11. Edit distance 與拼字校正
 

@@ -260,3 +260,48 @@ table.num .down{color:var(--ok)}
 .cm-rules em.v1{color:var(--s1)}.cm-rules em.v2{color:var(--s2)}.cm-rules em.v3{color:var(--s5)}
 .cm-list{border-left:3px solid transparent;padding-left:8px;margin-left:-11px}.cm-list:hover{border-left-color:var(--zc)}
 table.cm-rules th,table.cm-rules td{text-align:left;white-space:normal}table.cm-rules td:nth-child(2),table.cm-rules td:nth-child(3),table.cm-rules th:nth-child(2),table.cm-rules th:nth-child(3){text-align:right;white-space:nowrap}table.cm-rules td:nth-child(4),table.cm-rules td:nth-child(5){white-space:nowrap}table.cm-rules th{cursor:default}
+
+/* ---- word2vec tab ---- */
+.subnav{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;margin-top:8px}
+.subnav a{text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:2px 10px;background:var(--surface2)}
+.note-box{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:13.5px}
+.note-box h4{margin:0 0 6px}
+.model-picks{margin:8px 0}
+.model-picks label{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--surface2);font-size:13px;cursor:pointer}
+.model-picks label.on{border-color:var(--accent-line);background:var(--accent-soft)}
+select.model-select{max-width:230px}
+table.nn td{vertical-align:top;white-space:normal}
+table.nn .nb{display:inline-block;margin:1px 6px 1px 0;font-size:12.5px}
+table.nn .nb small{color:var(--muted)}
+table.nn .nb.shared{font-weight:700}
+table.nn td.oov{color:var(--muted);font-style:italic}
+table.heat{border-collapse:collapse;font-size:12px}
+table.heat th,table.heat td{padding:0;text-align:center;border:1px solid var(--card)}
+table.heat td{width:46px;height:30px;font-variant-numeric:tabular-nums}
+table.heat th.rh{text-align:right;padding-right:8px;white-space:nowrap}
+table.heat th.ch{height:84px;white-space:nowrap;vertical-align:bottom}
+table.heat th.ch span{display:inline-block;transform:rotate(-60deg) translate(6px,0);transform-origin:left bottom;width:16px;text-align:left}
+table.heat tr.gsep td,table.heat tr.gsep th{border-top:2px solid var(--ink)}
+table.heat td.gsep,table.heat th.gsep{border-left:2px solid var(--ink)}
+.pipe{font-size:13px;line-height:1.9}
+.pipe .tok{display:inline-block;border:1px solid var(--line);border-radius:4px;padding:0 5px;margin:1px 2px;background:var(--surface2)}
+.pipe .tok.drop{text-decoration:line-through;color:var(--muted);background:transparent}
+.pipe .tok.rare{border-style:dashed;color:var(--muted)}
+.pipe .lbl{display:inline-block;min-width:110px;color:var(--muted);font-size:12px}
+.ex-sent{font-size:15px;margin:8px 0}
+.ex-sent .w{display:inline-block;padding:2px 8px;border-radius:6px;border:1px solid var(--line);margin:2px;cursor:pointer}
+.ex-sent .w.centre{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ex-sent .w.ctx{background:var(--accent-soft);border-color:var(--accent-line)}
+.jobs{font-size:13px;margin:8px 0}
+.jobs .job{display:flex;gap:10px;align-items:center;padding:4px 0;border-bottom:1px dashed var(--line)}
+.jobs .job .bar{flex:1;height:8px;background:var(--track);border-radius:4px;overflow:hidden}
+.jobs .job .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.jobs .state-done{color:var(--ok)}.jobs .state-error{color:var(--danger)}.jobs .state-queued{color:var(--muted)}
+table.models td.act{text-align:center}
+table.cmp td,table.cmp th{white-space:normal;text-align:left;vertical-align:top}
+table.cmp td:first-child{font-weight:600;width:170px}
+.kv-tiles .tile b{font-size:17px}
+
+.hscroll{overflow-x:auto;max-width:100%}
+.try label input[type=number]{flex:0 0 auto;min-width:0}
+.try select{max-width:230px}

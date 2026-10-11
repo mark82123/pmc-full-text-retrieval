@@ -31,8 +31,10 @@ from collections import Counter
 from operator import mul
 from pathlib import Path
 
+from .porter import stem as porter_stem
 from .sentence import split_sentences
 from .stopwords import STOP_WORDS
+from .tsne import pca2
 
 # words may keep inner hyphens (glp-1, sglt2, long-term); pure numbers are dropped
 WORD_RE = re.compile(r"[A-Za-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*")
@@ -48,7 +50,9 @@ def sentences_from_texts(texts: list[str], remove_stopwords: bool = True) -> lis
     optional stop-word removal.  One list of words per sentence."""
     out = []
     for text in texts:
-        for sent in split_sentences(text):
+        # a line break separates the title from the abstract: the title is a
+        # sentence of its own even though it has no full stop
+        for sent in (s for line in text.split("\n") for s in split_sentences(line)):
             words = [w.lower() for w in WORD_RE.findall(sent)]
             if remove_stopwords:
                 words = [w for w in words if w not in STOP_WORDS and len(w) > 1]
@@ -59,9 +63,11 @@ def sentences_from_texts(texts: list[str], remove_stopwords: bool = True) -> lis
 
 class Word2Vec:
     def __init__(self, sg: bool = True, dim: int = 50, window: int = 5, negative: int = 5,
-                 min_count: int = 5, epochs: int = 5, alpha: float = 0.025, sample: float = 1e-3, seed: int = 1):
+                 min_count: int = 5, epochs: int = 5, alpha: float = 0.025, sample: float = 1e-3, seed: int = 1,
+                 remove_stopwords: bool = True):
         self.sg, self.dim, self.window, self.negative = sg, dim, window, negative
         self.min_count, self.epochs, self.alpha, self.sample, self.seed = min_count, epochs, alpha, sample, seed
+        self.remove_stopwords = remove_stopwords
         self.vocab: list[str] = []                 # index -> word, most frequent first
         self.counts: list[int] = []
         self.index: dict[str, int] = {}
@@ -75,7 +81,18 @@ class Word2Vec:
     def params(self) -> dict:
         return {"model": "skip-gram" if self.sg else "cbow", "dim": self.dim, "window": self.window,
                 "negative": self.negative, "min_count": self.min_count, "epochs": self.epochs,
-                "alpha": self.alpha, "sample": self.sample}
+                "alpha": self.alpha, "sample": self.sample, "seed": self.seed, "stopwords_removed": self.remove_stopwords}
+
+    def name(self) -> str:
+        """Short identifier built from the hyper-parameters, e.g. sg-d50-w5-m5-e10."""
+        n = f"{'sg' if self.sg else 'cbow'}-d{self.dim}-w{self.window}-m{self.min_count}-e{self.epochs}"
+        if self.negative != 5:
+            n += f"-n{self.negative}"
+        if not self.remove_stopwords:
+            n += "-sw"
+        if self.seed != 1:
+            n += f"-s{self.seed}"
+        return n
 
     def build_vocab(self, sentences: list[list[str]]) -> None:
         counts = Counter(w for s in sentences for w in s)
@@ -190,10 +207,11 @@ class Word2Vec:
     # ------------------------------------------------------------------ #
     def _normalised(self) -> list[list[float]]:
         if self._norm is None:
-            self._norm = []
+            norm = []                                    # built locally, then published: requests run in parallel threads
             for v in self.syn0:
                 n = math.sqrt(sum(x * x for x in v)) or 1.0
-                self._norm.append([x / n for x in v])
+                norm.append([x / n for x in v])
+            self._norm = norm
         return self._norm
 
     def __contains__(self, word: str) -> bool:
@@ -221,31 +239,84 @@ class Word2Vec:
         vec = [y - x + z for x, y, z in zip(nv[ia], nv[ib], nv[ic])]
         return self._nearest(vec, {ia, ib, ic}, topn)
 
+    def vectors(self, words: list[str]) -> tuple[list[str], list[list[float]]]:
+        """(words found in the vocabulary, their unit-length vectors)."""
+        nv = self._normalised()
+        found = [w for w in words if w in self.index]
+        return found, [nv[self.index[w]] for w in found]
+
     def projection(self, words: list[str]) -> list[dict]:
         """2-D PCA of the given words' vectors (power iteration)."""
-        idx = [self.index[w] for w in words if w in self.index]
-        if len(idx) < 3:
+        found, rows = self.vectors(words)
+        if len(found) < 3:
             return []
-        nv = self._normalised()
-        rows = [nv[i] for i in idx]
-        mean = [sum(col) / len(rows) for col in zip(*rows)]
-        X = [[x - m for x, m in zip(r, mean)] for r in rows]
-        rng = random.Random(0)
-        comps: list[list[float]] = []
-        for _ in range(2):
-            v = [rng.random() - 0.5 for _ in range(self.dim)]
-            for _ in range(60):
-                proj = [sum(map(mul, r, v)) for r in X]
-                v = [sum(p * r[d] for p, r in zip(proj, X)) for d in range(self.dim)]
-                for c in comps:                          # stay orthogonal to earlier components
-                    dot = sum(map(mul, v, c))
-                    v = [x - dot * y for x, y in zip(v, c)]
-                n = math.sqrt(sum(x * x for x in v)) or 1.0
-                v = [x / n for x in v]
-            comps.append(v)
-        return [{"word": self.vocab[i], "count": self.counts[i],
-                 "x": round(sum(map(mul, r, comps[0])), 4), "y": round(sum(map(mul, r, comps[1])), 4)}
-                for i, r in zip(idx, X)]
+        pts, _ = pca2(rows)
+        return [{"word": w, "count": self.counts[self.index[w]], "x": round(x, 4), "y": round(y, 4)}
+                for w, (x, y) in zip(found, pts)]
+
+    # ---- evaluation helpers ------------------------------------------- #
+    def frequency_bucket(self, word: str) -> str:
+        return bucket_of(self.counts[self.index[word]])
+
+    def stem_groups(self) -> dict[str, list[str]]:
+        """Vocabulary words that share a Porter stem (patient / patients,
+        treat / treated / treatment ...): morphological variants that a good
+        embedding should place close together."""
+        groups: dict[str, list[str]] = {}
+        for w in self.vocab:
+            groups.setdefault(porter_stem(w), []).append(w)
+        return {k: v for k, v in groups.items() if len(v) > 1}
+
+    def evaluate(self, k: int = 10, per_bucket: int = 120, seed: int = 0) -> dict:
+        """Intrinsic evaluation by word frequency, without any external resource.
+
+        For a sample of words in every frequency bucket:
+          sim_at_k        mean cosine similarity of the k nearest neighbours
+                          (how tight the neighbourhood is)
+          neighbour_count median collection frequency of the neighbours
+                          (do rare words get rare or frequent neighbours?)
+          variant_hit     share of words that have a morphological variant
+                          (same Porter stem) among their k nearest neighbours;
+                          only words that *have* a variant in the vocabulary
+                          count, and the result is given per bucket
+        """
+        rng = random.Random(seed)
+        groups = self.stem_groups()
+        partner = {w: set(g) - {w} for g in groups.values() for w in g}
+        by_bucket: dict[str, list[str]] = {}
+        for w in self.vocab:
+            by_bucket.setdefault(self.frequency_bucket(w), []).append(w)
+        out = []
+        for b in BUCKETS:
+            words = by_bucket.get(b["label"], [])
+            if not words:
+                continue
+            sample = words if len(words) <= per_bucket else rng.sample(words, per_bucket)
+            sims, med_counts, hits, has_variant, ranks = [], [], 0, 0, []
+            examples = []
+            for w in sample:
+                nb = self.most_similar(w, k)
+                sims.append(sum(s for _, s in nb) / len(nb))
+                cs = sorted(self.counts[self.index[x]] for x, _ in nb)
+                med_counts.append(cs[len(cs) // 2])
+                if partner.get(w):
+                    has_variant += 1
+                    rank = next((r for r, (x, _) in enumerate(nb, 1) if x in partner[w]), None)
+                    if rank:
+                        hits += 1
+                        ranks.append(1.0 / rank)
+                        if len(examples) < 4:
+                            examples.append({"word": w, "variant": nb[rank - 1][0], "rank": rank, "similarity": nb[rank - 1][1]})
+                    else:
+                        ranks.append(0.0)
+            out.append({"bucket": b["label"], "range": b["range"], "words": len(words), "sampled": len(sample),
+                        "sim_at_k": round(sum(sims) / len(sims), 4),
+                        "neighbour_count": sorted(med_counts)[len(med_counts) // 2],
+                        "with_variant": has_variant, "variant_hit": round(hits / has_variant, 4) if has_variant else None,
+                        "variant_mrr": round(sum(ranks) / len(ranks), 4) if ranks else None, "examples": examples})
+        return {"k": k, "buckets": out, "stem_groups": len(groups),
+                "words_with_variant": sum(len(g) for g in groups.values())}
+
 
     # ------------------------------------------------------------------ #
     def info(self) -> dict:
@@ -253,7 +324,7 @@ class Word2Vec:
                 "loss_history": self.loss_history, "train_seconds": self.train_seconds}
 
     def save(self, path: str | Path, extra: dict | None = None) -> None:
-        payload = {"params": {**self.params(), "seed": self.seed}, "vocab": self.vocab, "counts": self.counts,
+        payload = {"params": self.params(), "vocab": self.vocab, "counts": self.counts,
                    "loss_history": self.loss_history, "train_seconds": self.train_seconds,
                    "corpus_words": self.corpus_words, "extra": extra or {},
                    "vectors": [[round(x, 5) for x in v] for v in self.syn0]}
@@ -264,8 +335,96 @@ class Word2Vec:
         d = json.loads(Path(path).read_text(encoding="utf-8"))
         p = d["params"]
         m = cls(sg=p["model"] == "skip-gram", dim=p["dim"], window=p["window"], negative=p["negative"],
-                min_count=p["min_count"], epochs=p["epochs"], alpha=p["alpha"], sample=p["sample"], seed=p.get("seed", 1))
+                min_count=p["min_count"], epochs=p["epochs"], alpha=p["alpha"], sample=p["sample"], seed=p.get("seed", 1),
+                remove_stopwords=p.get("stopwords_removed", True))
         m.vocab, m.counts, m.syn0 = d["vocab"], d["counts"], d["vectors"]
         m.index = {w: i for i, w in enumerate(m.vocab)}
         m.loss_history, m.train_seconds, m.corpus_words = d.get("loss_history", []), d.get("train_seconds", 0), d.get("corpus_words", 0)
         return m, d.get("extra", {})
+
+
+BUCKETS = [{"label": "1-4", "range": (1, 4)}, {"label": "5-9", "range": (5, 9)}, {"label": "10-19", "range": (10, 19)},
+           {"label": "20-49", "range": (20, 49)}, {"label": "50-199", "range": (50, 199)}, {"label": "200+", "range": (200, 10 ** 9)}]
+
+
+def bucket_of(count: int) -> str:
+    for b in BUCKETS:
+        if b["range"][0] <= count <= b["range"][1]:
+            return b["label"]
+    return BUCKETS[-1]["label"]
+
+
+def neighbour_overlap(a: "Word2Vec", b: "Word2Vec", k: int = 10, per_bucket: int = 120, seed: int = 0,
+                      words: list[str] | None = None) -> dict:
+    """How similar are the neighbourhoods of two models?  For a sample of the
+    shared vocabulary (or the given words): Jaccard overlap of the k nearest
+    neighbours in model a and model b, averaged per frequency bucket (the
+    bucket is taken from model a's counts).  Used to compare architectures,
+    hyper-parameters and random seeds (stability)."""
+    rng = random.Random(seed)
+    shared = [w for w in a.vocab if w in b.index]
+    if words:
+        shared = [w for w in words if w in a.index and w in b.index]
+    by_bucket: dict[str, list[str]] = {}
+    for w in shared:
+        by_bucket.setdefault(a.frequency_bucket(w), []).append(w)
+    rows, details = [], []
+    for bk in BUCKETS:
+        ws = by_bucket.get(bk["label"], [])
+        if not ws:
+            continue
+        sample = ws if len(ws) <= per_bucket else rng.sample(ws, per_bucket)
+        vals = []
+        for w in sample:
+            na = {x for x, _ in a.most_similar(w, k)}
+            nb = {x for x, _ in b.most_similar(w, k)}
+            j = len(na & nb) / len(na | nb)
+            vals.append(j)
+            details.append((j, w, a.counts[a.index[w]], sorted(na & nb)))
+        rows.append({"bucket": bk["label"], "words": len(ws), "sampled": len(sample), "overlap": round(sum(vals) / len(vals), 4)})
+    details.sort()
+    fmt = lambda t: {"word": t[1], "count": t[2], "overlap": round(t[0], 3), "shared": t[3]}  # noqa: E731
+    total = [d[0] for d in details]
+    return {"k": k, "shared_vocabulary": len(shared), "overall": round(sum(total) / len(total), 4) if total else None,
+            "buckets": rows, "least_stable": [fmt(t) for t in details[:8]], "most_stable": [fmt(t) for t in details[-8:][::-1]]}
+
+
+def training_examples(words: list[str], window: int, centre: int | None = None) -> dict:
+    """The training examples one sentence yields with a *fixed* window of
+    size `window` (the trainer draws the effective window uniformly from
+    1..window for every position, so on average half of these are used).
+
+    Skip-gram: one (input = centre word, target = context word) pair per
+    context word.   CBOW: one (input = the context words, target = centre)
+    example per position."""
+    n = len(words)
+    sg, cbow = [], []
+    for pos, w in enumerate(words):
+        lo, hi = max(0, pos - window), min(n, pos + window + 1)
+        ctx = [(j, words[j]) for j in range(lo, hi) if j != pos]
+        if not ctx:
+            continue
+        if centre is not None and pos != centre:
+            continue
+        cbow.append({"position": pos, "centre": w, "context": [c for _, c in ctx], "offsets": [j - pos for j, _ in ctx]})
+        for j, c in ctx:
+            sg.append({"position": pos, "centre": w, "context": c, "offset": j - pos})
+    return {"window": window, "words": words, "skipgram": sg, "cbow": cbow,
+            "n_skipgram": len(sg), "n_cbow": len(cbow)}
+
+
+def count_training_examples(sentences: list[list[str]], window: int) -> dict:
+    """How many examples the whole corpus yields per epoch for a fixed
+    window, and the expectation under the dynamic window (b ~ U{1..window})."""
+    sg_fixed = sg_dyn = 0.0
+    cbow = 0
+    for s in sentences:
+        n = len(s)
+        if n < 2:
+            continue
+        cbow += n
+        for pos in range(n):
+            left, right = pos, n - 1 - pos
+            sg_fixed += min(left, window) + min(right, window)
+            sg_dyn += sum(min(left, b) + min(right, b) for b in range(1, window + 1)) / window
+    return {"window": window, "skipgram_fixed": int(sg_fixed), "skipgram_dynamic": round(sg_dyn), "cbow": cbow}

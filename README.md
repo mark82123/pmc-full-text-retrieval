@@ -8,9 +8,11 @@ Projects #1 and #2 for the AI Information Retrieval (人工智慧資訊檢索) c
   retrieval, result visualisation, document statistics and rule-based sentence (EOS) detection.
 * **Project #2** – a 1,000-abstract PubMed collection (query *GLP-1*), **Zipf's-law analysis**
   (CF / DF, rank-frequency plots, log-log regression, four pre-processing conditions, Porter
-  stemming comparison, IDF), **word2vec** (skip-gram and CBOW, written from scratch) and
-  **edit-distance spelling correction / fuzzy matching** in search. The written analysis is in
-  [REPORT.md](REPORT.md).
+  stemming comparison, IDF), **word embeddings** (skip-gram and CBOW written from scratch, several
+  models side by side, cosine-similarity analysis, PCA and t-SNE maps, frequency-bucket evaluation,
+  seed stability) and **edit-distance spelling correction / fuzzy matching** in search. The written
+  analyses are in [REPORT.md](REPORT.md) (Zipf) and [REPORT_w2v.md](REPORT_w2v.md) (word embedding,
+  RQ1–RQ5).
 
 Everything is implemented from scratch in **pure Python 3 (standard library only)**
 plus a small vanilla-JavaScript front-end. No packages need to be installed.
@@ -28,8 +30,13 @@ python3 cli.py terms --cond C                        # CF / DF / IDF table
 python3 cli.py resolving --cond B                    # resolving power of significant words (Luhn cut-offs)
 python3 cli.py edit semaglutide samegluitde          # edit distance (DP table)
 python3 cli.py spell diabtes                         # spelling suggestions
-python3 cli.py w2v train --model sg --epochs 10      # train word2vec (about 4.5 min in pure Python)
+python3 cli.py w2v train --model sg --epochs 10      # train word2vec (about 4 min in pure Python; cbow 1.5 min)
+python3 cli.py w2v list                              # every trained model in data/w2v/
 python3 cli.py w2v similar nausea mice
+python3 cli.py w2v compare semaglutide nausea cancer --models sg-d50-w5-m5-e10,cbow-d50-w5-m5-e10
+python3 cli.py w2v pairs "semaglutide,liraglutide;nausea,vomiting;mice,rats"   # cosine matrix
+python3 cli.py w2v map semaglutide nausea kidney mice --method tsne --svg report/
+python3 cli.py w2v eval ; python3 cli.py w2v overlap --models sg-d50-w5-m5-e10,sg-d50-w5-m5-e10-s2
 ```
 
 ## Features
@@ -55,7 +62,8 @@ python3 cli.py w2v similar nausea mice
 | CF vs DF vs IDF | table for any terms you type (CF, DF, CF/DF, DF/N, `idf = log10(N/df)`) and a CF-vs-DF scatter plot of the 1,500 most frequent terms |
 | CF–DF map | the vocabulary sorted by burstiness (CF / DF) and spread (DF / N) into function / boilerplate / topic / keyword / number zones with adjustable thresholds; scatter with the Poisson reference curve DF* = N(1 − e^(−CF/N)); lists of stop-word candidates, numeric artefacts, collection-defining and document-specific terms (`cli.py cfdf`, `/api/zipf/cfdf`) |
 | Resolving power | Luhn's significant words: `power(t) = CF × idf` (the term's total TF-IDF weight) plotted against rank, smoothed with a running median; upper / lower cut-off sliders (automatic default = where the smoothed curve falls to half of its peak); share of vocabulary, tokens and resolving power in the *too common* / *significant* / *too rare* zones; table of the most discriminating words; the smoothed curve is overlaid on the rank-frequency plot (right-hand axis), a second overlay shows the IDF of every term (and its running median) on the same rank axis, and an A → E chart overlays all conditions to show how the significant-word range shifts |
-| word2vec | pure-Python skip-gram and CBOW with negative sampling, dynamic window, sub-sampling, decaying learning rate; background training with a progress bar and loss curve; nearest neighbours, analogies, 2-D PCA map; the model is saved to `data/word2vec.json` |
+| word2vec | pure-Python skip-gram and CBOW with negative sampling, dynamic window, sub-sampling, decaying learning rate; a training queue with progress bars; every model is kept in `data/w2v/<name>.json` so architectures, hyper-parameters and seeds can be compared (9 models ship with the repo) |
+| Embedding analysis | pre-processing and vocabulary statistics (min-count coverage table, training examples per window), skip-gram / CBOW training-example generator for any sentence, nearest neighbours of ≥ 10 words side by side across models with Jaccard overlap, cosine matrix of word groups (within / between / random baseline), analogies, **PCA and t-SNE** (`ir/tsne.py`, with k-NN preservation of each map), intrinsic evaluation per frequency bucket (sim@k, neighbour frequency, same-stem variant hit@k / MRR) and neighbour overlap between two models (parameter effect, seed stability) |
 | Edit distance | dynamic-programming Levenshtein / Damerau distance with the full DP table and alignment shown |
 | Spelling correction | dictionary = surface words of the collection; character-bigram index to select candidates, banded DP to verify, ranking by (distance, collection frequency). Search shows *Did you mean* and automatically re-runs a query that matched nothing with the corrected words |
 | Fuzzy matching | `word~` / `word~2` expands to every vocabulary word within the edit distance |
@@ -80,14 +88,16 @@ ir/engine.py        glue: snippets, highlighting, match maps, document view
 ir/ncbi.py          PMID -> PMCID conversion, efetch download, PubMed search + bulk abstract download
 ir/zipf.py          Zipf analysis: conditions, CF / DF, log-log regression, segments, stemming groups
 ir/spell.py         edit distance (DP), bigram index, spelling suggestions
-ir/word2vec.py      skip-gram / CBOW with negative sampling, similarity, analogy, PCA
-ir/svgplot.py       static SVG figures for the report
-static/             index.html, style.css, app.js, project2.js (front-end)
+ir/word2vec.py      skip-gram / CBOW with negative sampling, similarity, analogy, training examples, evaluation
+ir/tsne.py          PCA (power iteration), t-SNE, k-NN preservation
+ir/svgplot.py       static SVG figures for the reports
+static/             index.html, style.css, app.js, project2.js, w2v.js (front-end)
 tests/test_ir.py    unit tests (stemmer, tokenizer, splitter, parser, index, search, engine)
 tests/test_project2.py   unit tests (Zipf, edit distance, spelling, fuzzy search, word2vec, collection)
-data/               PMC XML corpus, pubmed_*.jsonl abstract collections, word2vec.json
-report/             figures used in REPORT.md
+data/               PMC XML corpus, pubmed_*.jsonl abstract collections, w2v/<name>.json trained embeddings
+report/             figures used in the reports
 REPORT.md           Project #2 written analysis (Zipf questions, CF/DF, TF-IDF, IR implications)
+REPORT_w2v.md       Project #2 word-embedding report (pre-processing, vocabulary, training, similarity, PCA / t-SNE, RQ1–RQ5)
 ```
 
 ## Web UI
@@ -114,8 +124,11 @@ REPORT.md           Project #2 written analysis (Zipf questions, CF/DF, TF-IDF, 
 * **Zipf 分析** – choose a pre-processing condition; tiles, rank-frequency and log-log plots,
   regression report, answers to the analysis questions computed from the live numbers,
   top-50 table, comparison of the conditions, stemming groups, CF / DF / IDF table and scatter.
-* **Word2Vec** – train (model, dimensions, window, negatives, min count, epochs), then explore
-  neighbours, analogies and the PCA map.
+* **Word2Vec** – eight numbered sections that follow the assignment: pre-processing + vocabulary,
+  training-example generator, training queue + model registry with loss curves, CBOW vs skip-gram
+  table with measured values, nearest neighbours side by side, cosine matrix of word groups,
+  PCA and t-SNE maps with k-NN preservation, evaluation per frequency bucket and neighbour overlap
+  between models. Deep link: `/#w2v`.
 * **Edit Distance** – DP table and alignment for two strings; spelling suggestions for a word.
 * **Add Documents** – *Build a PubMed abstract collection* (query, size, name); paste a list of PMIDs / PMC IDs and press *Fetch & index*:
   PMIDs are converted to PMCIDs with the NCBI ID Converter, the JATS XML is

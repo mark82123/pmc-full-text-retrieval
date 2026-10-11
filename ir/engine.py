@@ -5,9 +5,11 @@ from __future__ import annotations
 import html
 import json
 import re
+import random
 import threading
 import time
 from collections import Counter
+from operator import mul
 from pathlib import Path
 
 from . import zipf
@@ -18,11 +20,15 @@ from .pmc_parser import Document, load_directory, load_jsonl, parse_file, parse_
 from .search import Node, Searcher, highlight_spans, parse_query
 from .sentence import split_sentences
 from .spell import SpellIndex
+from .stopwords import STOP_WORDS
 from .stats import corpus_stats, document_stats
 from .tokenizer import TOKEN_RE, Tokenizer
-from .word2vec import Word2Vec, sentences_from_texts
+from .tsne import knn_preservation, pca2, tsne
+from .word2vec import WORD_RE, Word2Vec, count_training_examples, neighbour_overlap, sentences_from_texts, training_examples
 
-W2V_FILE = "word2vec.json"
+W2V_FILE = "word2vec.json"                     # legacy single-model file
+W2V_DIR = "w2v"                                # data/w2v/<name>.json, one file per trained model
+W2V_DEFAULT = "sg-d50-w5-m5-e10"               # active model at start-up when it exists
 # query words that are expanded by the engine itself (prefix* / fuzzy~2) are not spell-checked
 _EXPANDED_WORD_RE = re.compile(r"\S*(?:\*|~[1-3]?)(?=[\s)]|$)")
 
@@ -55,9 +61,16 @@ class Engine:
         self.searcher.fuzzy = lambda word, k: [r["word"] for r in self.spell.within(word, k or None, limit=30)]
         self._version = 0                              # bumped whenever the index changes
         self._zipf: tuple[int, dict] | None = None     # cached Zipf analysis
-        self.w2v: Word2Vec | None = None
+        self.w2v: Word2Vec | None = None               # active model
         self.w2v_meta: dict = {}
-        self.w2v_job: dict = {"state": "idle"}
+        self.w2v_models: dict[str, tuple[Word2Vec, dict]] = {}
+        self.w2v_jobs: list[dict] = []                 # training jobs, oldest first
+        self._w2v_job_seq = 0
+        self._w2v_queue: list = []
+        self._w2v_worker: threading.Thread | None = None
+        self._w2v_lock = threading.Lock()
+        self._w2v_sent: dict = {}                      # cached pre-processed sentences
+        self._w2v_cache: dict = {}                     # projections, evaluations, vocabulary stats
 
     # ------------------------------------------------------------------ #
     def load(self) -> int:
@@ -68,12 +81,7 @@ class Engine:
         for d in docs:
             self._add(d)
         self.build_time = time.time() - t0
-        model = self.data_dir / W2V_FILE
-        if model.is_file():
-            try:
-                self.w2v, self.w2v_meta = Word2Vec.load(model)
-            except (ValueError, KeyError, OSError) as e:
-                print(f"[warn] could not load {model}: {e}")
+        self._load_w2v_models()
         return self.index.n_docs
 
     @staticmethod
@@ -509,90 +517,381 @@ class Engine:
         return (cols.get(condition.upper()) or cols["B"]).cfdf_map(**thresholds)
 
     # ---- word2vec ------------------------------------------------------ #
+    # Several trained models live side by side in data/w2v/<name>.json so
+    # that architectures (CBOW vs skip-gram), hyper-parameters and random
+    # seeds can be compared.  `self.w2v` is the *active* model (the one the
+    # simple endpoints use when no model name is given).
+    def _w2v_dir(self) -> Path:
+        return self.data_dir / W2V_DIR
+
+    def _load_w2v_models(self) -> None:
+        self.w2v_models = {}
+        paths = sorted(self._w2v_dir().glob("*.json")) if self._w2v_dir().is_dir() else []
+        legacy = self.data_dir / W2V_FILE
+        if legacy.is_file():
+            paths.append(legacy)
+        for path in paths:
+            try:
+                m, meta = Word2Vec.load(path)
+            except (ValueError, KeyError, OSError) as e:
+                print(f"[warn] could not load {path}: {e}")
+                continue
+            name = path.stem if path != legacy else m.name()
+            meta = {**meta, "name": name, "file": str(path.relative_to(self.data_dir))}
+            self.w2v_models.setdefault(name, (m, meta))
+        if self.w2v_models:
+            name = self.w2v_meta.get("name") if self.w2v_meta.get("name") in self.w2v_models else None
+            if name is None:                       # default: the baseline model, else the most recently trained
+                name = W2V_DEFAULT if W2V_DEFAULT in self.w2v_models else max(self.w2v_models, key=lambda n: self.w2v_models[n][1].get("trained", ""))
+            self.w2v, self.w2v_meta = self.w2v_models[name]
+        else:
+            self.w2v, self.w2v_meta = None, {}
+
+    def w2v_model(self, name: str | None = None) -> Word2Vec:
+        """The named model, or the active one."""
+        if name:
+            if name not in self.w2v_models:
+                raise ValueError(f"no model called '{name}' (available: {', '.join(sorted(self.w2v_models)) or 'none'})")
+            return self.w2v_models[name][0]
+        if not self.w2v:
+            raise ValueError("no word2vec model yet - train one first")
+        return self.w2v
+
+    def w2v_select(self, name: str) -> dict:
+        self.w2v_model(name)
+        self.w2v, self.w2v_meta = self.w2v_models[name]
+        return {"active": name}
+
+    def w2v_delete(self, name: str) -> dict:
+        self.w2v_model(name)
+        _, meta = self.w2v_models.pop(name)
+        try:
+            (self.data_dir / meta["file"]).unlink()
+        except OSError:
+            pass
+        if self.w2v_meta.get("name") == name:
+            self.w2v_meta = {}
+            self._load_w2v_models()
+        return {"deleted": name, "active": self.w2v_meta.get("name")}
+
+    def _w2v_sentences(self, remove_stopwords: bool = True) -> list[list[str]]:
+        key = (self._version, remove_stopwords)
+        if key not in self._w2v_sent:
+            self._w2v_sent.clear()
+            self._w2v_sent[key] = sentences_from_texts(self.collection_texts(), remove_stopwords)
+        return self._w2v_sent[key]
+
+    @staticmethod
+    def _w2v_params(params: dict) -> Word2Vec:
+        clamp = lambda k, lo, hi, d: max(lo, min(hi, int(params.get(k, d) or d)))  # noqa: E731
+        flag = lambda v: str(v).lower() not in ("0", "false", "no", "off", "")  # noqa: E731
+        return Word2Vec(sg=str(params.get("model", "sg")).lower() in ("sg", "skip-gram", "skipgram"),
+                        dim=clamp("dim", 10, 300, 50), window=clamp("window", 1, 15, 5),
+                        negative=clamp("negative", 1, 20, 5), min_count=clamp("min_count", 1, 100, 5),
+                        epochs=clamp("epochs", 1, 50, 5), seed=clamp("seed", 1, 10 ** 6, 1),
+                        remove_stopwords=flag(params.get("remove_stopwords", True)))
+
     def w2v_train(self, params: dict, block: bool = False) -> dict:
-        """Train word2vec on the collection in a background thread."""
-        if self.w2v_job.get("state") == "running":
-            raise ValueError("a training job is already running")
-        clamp = lambda k, lo, hi, d: max(lo, min(hi, int(params.get(k, d))))  # noqa: E731
-        model = Word2Vec(sg=str(params.get("model", "sg")).lower() in ("sg", "skip-gram", "skipgram"),
-                         dim=clamp("dim", 10, 200, 50), window=clamp("window", 1, 15, 5),
-                         negative=clamp("negative", 1, 20, 5), min_count=clamp("min_count", 1, 100, 5),
-                         epochs=clamp("epochs", 1, 50, 5))
-        name, docs = self.collection_docs()
-        texts = self.collection_texts()
-        job = {"state": "running", "progress": 0.0, "epoch": 0, "loss": None, "started": time.time(),
-               "params": model.params(), "documents": len(docs)}
-        self.w2v_job = job
+        """Queue a training job (several can be queued; they run one after
+        another in a background thread).  With *block* the job runs now."""
+        model = self._w2v_params(params)
+        name = re.sub(r"[^A-Za-z0-9._-]+", "-", str(params.get("name", "")).strip())[:60] or model.name()
+        name_, docs = self.collection_docs()
+        job = {"id": self._w2v_job_seq + 1, "name": name, "state": "queued", "progress": 0.0, "epoch": 0, "loss": None,
+               "params": model.params(), "documents": len(docs), "collection": name_}
+        self._w2v_job_seq += 1
+        self.w2v_jobs.append(job)
+        self.w2v_jobs[:] = self.w2v_jobs[-20:]
 
         def run() -> None:
+            job.update(state="running", started=time.time())
             try:
-                sentences = sentences_from_texts(texts)
+                sentences = self._w2v_sentences(model.remove_stopwords)
                 job["sentences"] = len(sentences)
 
                 def progress(frac: float, epoch: int, alpha: float, loss: float) -> None:
                     job.update(progress=round(frac, 4), epoch=epoch, loss=round(loss, 4), alpha=round(alpha, 5))
 
                 model.train(sentences, progress)
-                meta = {"collection": name, "documents": len(docs), "sentences": len(sentences)}
-                self.data_dir.mkdir(parents=True, exist_ok=True)
-                model.save(self.data_dir / W2V_FILE, meta)
+                meta = {"name": name, "collection": name_, "documents": len(docs), "sentences": len(sentences),
+                        "trained": time.strftime("%Y-%m-%d %H:%M:%S"), "file": f"{W2V_DIR}/{name}.json"}
+                self._w2v_dir().mkdir(parents=True, exist_ok=True)
+                model.save(self._w2v_dir() / f"{name}.json", {k: v for k, v in meta.items() if k != "file"})
+                self.w2v_models[name] = (model, meta)
                 self.w2v, self.w2v_meta = model, meta
-                job.update(state="done", progress=1.0)
+                self._w2v_cache.clear()
+                job.update(state="done", progress=1.0, finished=time.time())
             except Exception as e:  # reported to the UI
-                job.update(state="error", message=f"{type(e).__name__}: {e}")
+                job.update(state="error", message=f"{type(e).__name__}: {e}", finished=time.time())
 
         if block:
             run()
-        else:
-            threading.Thread(target=run, daemon=True).start()
+            return job
+        with self._w2v_lock:
+            self._w2v_queue.append(run)
+            if not self._w2v_worker or not self._w2v_worker.is_alive():
+                def worker() -> None:
+                    while True:
+                        with self._w2v_lock:
+                            if not self._w2v_queue:
+                                return
+                            fn = self._w2v_queue.pop(0)
+                        fn()
+                self._w2v_worker = threading.Thread(target=worker, daemon=True)
+                self._w2v_worker.start()
         return job
 
     def w2v_status(self) -> dict:
-        job = dict(self.w2v_job)
-        if job.get("started"):
-            job["elapsed"] = round(time.time() - job.pop("started"), 1)
-        out = {"job": job, "model": None, "collection": self.collection_docs()[0],
-               "documents": len(self.collection_docs()[1])}
+        jobs = []
+        for j in self.w2v_jobs:
+            j = dict(j)
+            if j.get("started"):
+                j["elapsed"] = round((j.get("finished") or time.time()) - j.pop("started"), 1)
+            j.pop("finished", None)
+            jobs.append(j)
+        running = next((j for j in jobs if j["state"] == "running"), None)
+        models = [{**m.info(), **meta, "final_loss": m.loss_history[-1] if m.loss_history else None,
+                   "pairs_per_epoch": self._w2v_pairs(m)}
+                  for name, (m, meta) in sorted(self.w2v_models.items())]
+        out = {"jobs": jobs, "job": running or (jobs[-1] if jobs else {"state": "idle"}),
+               "queued": sum(j["state"] == "queued" for j in jobs),
+               "models": models, "active": self.w2v_meta.get("name"), "model": None,
+               "collection": self.collection_docs()[0], "documents": len(self.collection_docs()[1])}
         if self.w2v:
             out["model"] = {**self.w2v.info(), **self.w2v_meta,
                             "top_words": list(zip(self.w2v.vocab[:40], self.w2v.counts[:40]))}
         return out
 
-    def _w2v_check(self, *words: str) -> None:
-        if not self.w2v:
-            raise ValueError("no word2vec model yet - train one first")
+    def _w2v_pairs(self, m: Word2Vec) -> int | None:
+        """Expected number of training examples per epoch (dynamic window)."""
+        key = ("pairs", m.window, m.remove_stopwords, m.min_count, self._version)
+        if key not in self._w2v_cache:
+            sentences = [[w for w in s if w in m.index] for s in self._w2v_sentences(m.remove_stopwords)]
+            c = count_training_examples(sentences, m.window)
+            self._w2v_cache[key] = c["skipgram_dynamic"] if m.sg else c["cbow"]
+        return self._w2v_cache[key]
+
+    def _w2v_check(self, m: Word2Vec, *words: str) -> None:
         for w in words:
-            if w not in self.w2v:
-                near = [r["word"] for r in self.spell.within(w.lower(), None) if r["word"] in self.w2v][:5]
+            if w not in m:
+                near = [r["word"] for r in self.spell.within(w.lower(), None) if r["word"] in m][:5]
                 hint = f" - did you mean: {', '.join(near)}?" if near else ""
                 raise ValueError(f"'{w}' is not in the model vocabulary{hint}")
 
-    def w2v_similar(self, word: str, topn: int = 15) -> dict:
-        self._w2v_check(word)
-        m = self.w2v
-        return {"word": word.lower(), "count": m.counts[m.index[word.lower()]],
+    def w2v_similar(self, word: str, topn: int = 15, model: str | None = None) -> dict:
+        m = self.w2v_model(model)
+        self._w2v_check(m, word)
+        return {"word": word.lower(), "count": m.counts[m.index[word.lower()]], "model": self._w2v_name(m),
                 "neighbours": [{"word": w, "similarity": s, "count": m.counts[m.index[w]]} for w, s in m.most_similar(word, topn)]}
 
-    def w2v_analogy(self, a: str, b: str, c: str, topn: int = 10) -> dict:
-        self._w2v_check(a, b, c)
-        return {"a": a, "b": b, "c": c, "results": [{"word": w, "similarity": s} for w, s in self.w2v.analogy(a, b, c, topn)]}
+    def _w2v_name(self, m: Word2Vec) -> str:
+        return next((n for n, (mm, _) in self.w2v_models.items() if mm is m), m.name())
 
-    def w2v_projection(self, words: str = "", n: int = 120) -> dict:
-        """2-D PCA map.  With *words*: each given word plus its nearest
-        neighbours (one colour group per seed); otherwise the n most frequent words."""
-        self._w2v_check()
-        m = self.w2v
-        seeds = [w.lower() for w in re.split(r"[\s,;]+", words.strip()) if w]
+    def w2v_analogy(self, a: str, b: str, c: str, topn: int = 10, model: str | None = None) -> dict:
+        m = self.w2v_model(model)
+        self._w2v_check(m, a, b, c)
+        return {"a": a, "b": b, "c": c, "model": self._w2v_name(m),
+                "results": [{"word": w, "similarity": s} for w, s in m.analogy(a, b, c, topn)]}
+
+    @staticmethod
+    def _words(text: str) -> list[str]:
+        seen: dict[str, None] = {}
+        for w in re.split(r"[\s,;]+", text.strip().lower()):
+            if w:
+                seen.setdefault(w, None)
+        return list(seen)
+
+    def w2v_compare(self, words: str, models: str = "", n: int = 5) -> dict:
+        """Nearest neighbours of each word in every model, side by side, with
+        the overlap of the neighbour sets between the models."""
+        names = [x for x in self._words(models) if x] or sorted(self.w2v_models)
+        ms = [(nm, self.w2v_model(nm)) for nm in names]
+        if not ms:
+            raise ValueError("no word2vec model yet - train one first")
+        rows = []
+        for w in self._words(words)[:40]:
+            per = {}
+            for nm, m in ms:
+                if w in m:
+                    per[nm] = {"count": m.counts[m.index[w]],
+                               "neighbours": [{"word": x, "similarity": s} for x, s in m.most_similar(w, n)]}
+                else:
+                    per[nm] = None
+            overlap = {}
+            for i in range(len(ms)):
+                for j in range(i + 1, len(ms)):
+                    a, b = per[ms[i][0]], per[ms[j][0]]
+                    if a and b:
+                        sa, sb = {x["word"] for x in a["neighbours"]}, {x["word"] for x in b["neighbours"]}
+                        overlap[f"{ms[i][0]}|{ms[j][0]}"] = {"shared": sorted(sa & sb), "jaccard": round(len(sa & sb) / len(sa | sb), 3)}
+            rows.append({"word": w, "models": per, "overlap": overlap})
+        return {"n": n, "models": [{"name": nm, **m.params()} for nm, m in ms], "words": rows}
+
+    def w2v_pairs(self, groups: str, model: str | None = None) -> dict:
+        """Cosine similarity between every pair of the given words, grouped
+        (groups separated by ';'), with the mean within-group and
+        between-group similarity: does the model keep related words together?"""
+        m = self.w2v_model(model)
+        parsed = [self._words(g) for g in groups.split(";") if g.strip()]
+        words, group_of, missing = [], {}, []
+        for gi, g in enumerate(parsed):
+            for w in g:
+                if w in m and w not in group_of:
+                    words.append(w)
+                    group_of[w] = gi
+                elif w not in m:
+                    missing.append(w)
+        if len(words) < 2:
+            raise ValueError("fewer than two of the words are in the model vocabulary" + (f" (missing: {', '.join(missing)})" if missing else ""))
+        _, vecs = m.vectors(words)
+        matrix = [[round(sum(map(mul, a, b)), 4) for b in vecs] for a in vecs]
+        within, between = [], []
+        pairs = []
+        for i in range(len(words)):
+            for j in range(i + 1, len(words)):
+                same = group_of[words[i]] == group_of[words[j]]
+                (within if same else between).append(matrix[i][j])
+                pairs.append({"a": words[i], "b": words[j], "similarity": matrix[i][j], "same_group": same})
+        pairs.sort(key=lambda p: -p["similarity"])
+        # the background: similarity of random vocabulary pairs
+        rng = random.Random(0)
+        base = [m.similarity(rng.choice(m.vocab), rng.choice(m.vocab)) for _ in range(400)]
+        per_group = []
+        for gi, g in enumerate(parsed):
+            ws = [w for w in words if group_of[w] == gi]
+            sims = [matrix[words.index(a)][words.index(b)] for a in ws for b in ws if a < b]
+            per_group.append({"words": ws, "mean_within": round(sum(sims) / len(sims), 4) if sims else None})
+        return {"model": self._w2v_name(m), "words": words, "group": [group_of[w] for w in words], "groups": per_group,
+                "counts": [m.counts[m.index[w]] for w in words], "matrix": matrix, "missing": missing,
+                "mean_within": round(sum(within) / len(within), 4) if within else None,
+                "mean_between": round(sum(between) / len(between), 4) if between else None,
+                "mean_random": round(sum(base) / len(base), 4), "pairs": pairs}
+
+    def w2v_projection(self, words: str = "", n: int = 120, model: str | None = None, method: str = "pca",
+                       perplexity: float = 15.0, iters: int = 400, seed: int = 0, neighbours: int = 12) -> dict:
+        """2-D map of word vectors by PCA or t-SNE.  With *words*: each given
+        word plus its nearest neighbours (one colour group per seed word);
+        otherwise the n most frequent words.  Also reports how well the map
+        preserves the high-dimensional neighbourhoods (k-NN preservation)."""
+        m = self.w2v_model(model)
+        seeds = self._words(words)
         if seeds:
-            self._w2v_check(*seeds)
+            self._w2v_check(m, *seeds)
             group: dict[str, str] = {}
             for s in seeds:
                 group.setdefault(s, s)
-                for w, _ in m.most_similar(s, 12):
+                for w, _ in m.most_similar(s, neighbours):
                     group.setdefault(w, s)
-            pts = m.projection(list(group))
-            for p in pts:
-                p["group"] = group[p["word"]]
-                p["seed"] = p["word"] in seeds
-            return {"points": pts, "groups": seeds}
-        return {"points": m.projection(m.vocab[:max(10, min(n, 400))]), "groups": []}
+            chosen = list(group)
+        else:
+            chosen = m.vocab[:max(10, min(n, 400))]
+            group = {}
+        found, rows = m.vectors(chosen)
+        if len(found) < 4:
+            raise ValueError("need at least 4 words")
+        method = method.lower()
+        key = ("proj", self._w2v_name(m), method, tuple(found), perplexity, iters, seed)
+        if key not in self._w2v_cache:
+            t0 = time.time()
+            if method == "tsne":
+                r = tsne(rows, perplexity=perplexity, iters=max(50, min(iters, 1000)), seed=seed)
+                pts, extra = r["points"], {"kl": r["kl"], "perplexity": r["perplexity"], "iters": r["iters"], "learning_rate": round(r["learning_rate"], 1)}
+            else:
+                pts, ratios = pca2(rows)
+                extra = {"explained_variance": ratios}
+            quality = knn_preservation(rows, pts)
+            self._w2v_cache[key] = (pts, extra, quality, round(time.time() - t0, 2))
+            if len(self._w2v_cache) > 60:
+                self._w2v_cache.pop(next(iter(self._w2v_cache)))
+        pts, extra, quality, secs = self._w2v_cache[key]
+        points = [{"word": w, "count": m.counts[m.index[w]], "x": round(x, 4), "y": round(y, 4),
+                   "group": group.get(w, ""), "seed": w in seeds, "knn": quality["per_point"][i]}
+                  for i, (w, (x, y)) in enumerate(zip(found, pts))]
+        return {"model": self._w2v_name(m), "method": method, "points": points, "groups": seeds, "seconds": secs,
+                "knn_preservation": {k: v for k, v in quality.items() if k != "per_point"}, **extra}
+
+    def w2v_vocab(self, min_count: int = 5, remove_stopwords: bool = True) -> dict:
+        """Pre-processing and vocabulary statistics of the training corpus:
+        documents, sentences, tokens, types, what a minimum count keeps,
+        the most frequent words and how many training examples a window
+        produces.  Also one sample document walked through the pipeline."""
+        min_count = max(1, min(int(min_count), 100))
+        key = ("vocab", self._version, min_count, remove_stopwords)
+        if key in self._w2v_cache:
+            return self._w2v_cache[key]
+        name, docs = self.collection_docs()
+        sentences = self._w2v_sentences(remove_stopwords)
+        counts = Counter(w for s in sentences for w in s)
+        tokens = sum(counts.values())
+        kept = {w: c for w, c in counts.items() if c >= min_count}
+        thresholds = []
+        for t in (1, 2, 3, 5, 10, 20, 50):
+            ks = sum(1 for c in counts.values() if c >= t)
+            thresholds.append({"min_count": t, "types": ks, "types_share": round(ks / len(counts), 4),
+                               "tokens": sum(c for c in counts.values() if c >= t),
+                               "token_share": round(sum(c for c in counts.values() if c >= t) / tokens, 4)})
+        top = counts.most_common(40)
+        hapax = sum(1 for c in counts.values() if c == 1)
+        # one document through the pipeline
+        sample = docs[0] if docs else None
+        walk = None
+        if sample:
+            sents = [s for line in (sample.title, sample.abstract_text()) for s in split_sentences(line)]
+            steps = []
+            for sent in sents[:3]:
+                raw = WORD_RE.findall(sent)
+                lower = [w.lower() for w in raw]
+                nostop = [w for w in lower if w not in STOP_WORDS and len(w) > 1]
+                steps.append({"sentence": sent, "tokens": raw, "lower": lower, "no_stopwords": nostop,
+                              "kept": [w for w in (nostop if remove_stopwords else [w for w in lower if len(w) > 1]) if counts.get(w, 0) >= min_count]})
+            walk = {"doc_id": sample.doc_id, "title": sample.title, "sentences": len(sents), "steps": steps}
+        kept_sent = [[w for w in s if w in kept] for s in sentences]
+        examples = [count_training_examples(kept_sent, w) for w in (2, 5, 10)]
+        out = {"collection": name, "documents": len(docs), "sentences": len(sentences), "tokens": tokens,
+               "types": len(counts), "hapax": hapax, "hapax_share": round(hapax / len(counts), 4),
+               "min_count": min_count, "stopwords_removed": remove_stopwords,
+               "vocabulary": len(kept), "vocabulary_tokens": sum(kept.values()),
+               "coverage": round(sum(kept.values()) / tokens, 4), "thresholds": thresholds,
+               "avg_sentence_length": round(tokens / len(sentences), 2) if sentences else 0,
+               "top_words": top, "examples": examples, "walk": walk,
+               "stopword_tokens": None}
+        if remove_stopwords:
+            all_tokens = sum(len(s) for s in self._w2v_sentences(False))
+            out["stopword_tokens"] = all_tokens - tokens
+            out["tokens_with_stopwords"] = all_tokens
+        self._w2v_cache[key] = out
+        return out
+
+    def w2v_examples(self, text: str, window: int = 2, remove_stopwords: bool = True, centre: int | None = None) -> dict:
+        """Training examples (skip-gram pairs and CBOW examples) generated
+        from one sentence of text, after the same pre-processing as training."""
+        window = max(1, min(int(window), 15))
+        sents = sentences_from_texts([text[:2000]], remove_stopwords) or [[]]
+        words = sents[0]
+        if len(words) < 2:
+            raise ValueError("the text has fewer than two words after pre-processing")
+        return {**training_examples(words, window, centre), "sentences": len(sents), "original": text[:2000]}
+
+    def w2v_eval(self, models: str = "", k: int = 10) -> dict:
+        names = self._words(models) or ([self.w2v_meta["name"]] if self.w2v_meta.get("name") else [])
+        out = []
+        for nm in names:
+            m = self.w2v_model(nm)
+            key = ("eval", nm, k)
+            if key not in self._w2v_cache:
+                self._w2v_cache[key] = m.evaluate(k)
+            out.append({"name": nm, **m.params(), "vocabulary": len(m.vocab), **self._w2v_cache[key]})
+        if not out:
+            raise ValueError("no word2vec model yet - train one first")
+        return {"k": k, "models": out}
+
+    def w2v_overlap(self, models: str, k: int = 10, words: str = "") -> dict:
+        names = self._words(models)
+        if len(names) != 2:
+            raise ValueError("give exactly two model names, e.g. models=sg-d50-w5-m5-e10,cbow-d50-w5-m5-e10")
+        a, b = self.w2v_model(names[0]), self.w2v_model(names[1])
+        ws = self._words(words) or None
+        key = ("overlap", names[0], names[1], k, tuple(ws or []))
+        if key not in self._w2v_cache:
+            self._w2v_cache[key] = neighbour_overlap(a, b, k, words=ws)
+        return {"a": names[0], "b": names[1], **self._w2v_cache[key]}

@@ -604,92 +604,6 @@
   }
 
   /* ================================================================== *
-   * word2vec tab
-   * ================================================================== */
-  let w2vTimer = null, w2vShown = '';        // w2vShown: which trained model the result panels belong to
-  async function w2vStatus() {
-    let s;
-    try { s = await api('/api/w2v/status'); } catch (e) { $('#w2v-info').textContent = e.message; return; }
-    const job = s.job, prog = $('#w2v-progress');
-    $('#w2v-train').disabled = job.state === 'running';
-    if (job.state === 'running') {
-      prog.classList.remove('hidden');
-      $('i', prog).style.width = (job.progress * 100).toFixed(1) + '%';
-      $('span', prog).textContent = `Training ${job.params.model} on ${fmt(job.documents)} documents… ${(job.progress * 100).toFixed(1)}% · epoch ${job.epoch || 1}/${job.params.epochs}` +
-        (job.loss != null ? ` · loss ${job.loss} · learning rate ${job.alpha}` : '') + ` · ${job.elapsed}s`;
-      clearTimeout(w2vTimer); w2vTimer = setTimeout(w2vStatus, 1000);
-    } else {
-      prog.classList.toggle('hidden', job.state !== 'error');
-      if (job.state === 'error') $('span', prog).textContent = 'Training failed: ' + job.message;
-    }
-    const m = s.model;
-    if (!m) {
-      $('#w2v-info').innerHTML = `<p class="muted">No model yet. Training corpus: ${esc(s.collection)} – ${fmt(s.documents)} documents. Press <b>Train</b> (pure Python: skip-gram needs roughly 25 s per epoch for 1,000 abstracts, CBOW about 8 s).</p>`;
-      return;
-    }
-    $('#w2v-info').innerHTML = `<div class="tiles">
-        <div class="tile accent"><b>${esc(m.model)}</b><span>Model · negative sampling (${m.negative})</span></div>
-        <div class="tile"><b>${fmt(m.vocabulary)}</b><span>Vocabulary (count ≥ ${m.min_count})</span></div>
-        <div class="tile"><b>${m.dim}</b><span>Vector dimensions</span></div>
-        <div class="tile"><b>±${m.window}</b><span>Window (dynamic)</span></div>
-        <div class="tile"><b>${fmt(m.documents || 0)}</b><span>Documents</span></div>
-        <div class="tile"><b>${fmt(m.sentences || 0)}</b><span>Sentences</span></div>
-        <div class="tile"><b>${fmt(m.corpus_words)}</b><span>Training words</span></div>
-        <div class="tile"><b>${m.epochs}</b><span>Epochs · ${fmt(m.train_seconds)} s</span></div>
-      </div>
-      <div class="two"><div><h4>Training loss per epoch</h4><div id="w2v-loss"></div></div>
-      <div><h4>Most frequent words in the model</h4><div class="chips">${m.top_words.map(([w, n]) => `<span class="chip term"><a href="#" data-w="${esc(w)}">${esc(w)}</a> <small>${fmt(n)}</small></span>`).join('')}</div></div></div>`;
-    plot($('#w2v-loss'), { title: 'Training loss', height: 220, xlabel: 'Epoch', ylabel: 'Mean loss per training pair',
-      series: [{ color: 'var(--s1)', mode: 'line', pts: m.loss_history.map((l, i) => [i + 1, l]) }], tipX: v => 'epoch ' + v, tipY: v => 'loss ' + v });
-    $$('#w2v-info a[data-w]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('#w2v-word').value = a.dataset.w; w2vSimilar(); }));
-    const key = [m.model, m.dim, m.window, m.epochs, m.train_seconds, m.vocabulary].join('|');
-    if (w2vShown !== key) { w2vShown = key; w2vSimilar(); w2vAnalogy(); w2vMap(); }
-  }
-
-  async function w2vSimilar() {
-    const w = $('#w2v-word').value.trim(), box = $('#w2v-sim');
-    if (!w) return;
-    try {
-      const r = await api('/api/w2v/similar?' + new URLSearchParams({ word: w, n: 15 }));
-      box.innerHTML = `<p class="muted"><code>${esc(r.word)}</code> occurs ${fmt(r.count)} times in the training corpus.</p>
-        <table class="grid num sim"><thead><tr><th>Word</th><th>Cosine similarity</th><th></th><th>Count</th><th></th></tr></thead><tbody>` +
-        r.neighbours.map(n => `<tr><td><a href="#" data-w="${esc(n.word)}">${esc(n.word)}</a></td><td>${f2(n.similarity)}</td><td class="barcell"><i style="width:${Math.max(1, n.similarity * 100)}%"></i></td><td>${fmt(n.count)}</td><td><a href="#" data-s="${esc(n.word)}">search</a></td></tr>`).join('') + '</tbody></table>';
-      $$('a[data-w]', box).forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('#w2v-word').value = a.dataset.w; w2vSimilar(); }));
-      $$('a[data-s]', box).forEach(a => a.addEventListener('click', e => { e.preventDefault(); showTab('search'); doSearch(`"${a.dataset.s}"`); }));
-    } catch (e) { box.innerHTML = `<p class="muted">${esc(e.message)}</p>`; }
-  }
-  async function w2vAnalogy() {
-    const box = $('#w2v-ana');
-    try {
-      const r = await api('/api/w2v/analogy?' + new URLSearchParams({ a: $('#w2v-a').value.trim(), b: $('#w2v-b').value.trim(), c: $('#w2v-c').value.trim() }));
-      box.innerHTML = `<table class="grid num sim"><thead><tr><th>${esc(r.a)} : ${esc(r.b)} = ${esc(r.c)} : ?</th><th>Cosine similarity</th><th></th></tr></thead><tbody>` +
-        r.results.map(n => `<tr><td>${esc(n.word)}</td><td>${f2(n.similarity)}</td><td class="barcell"><i style="width:${Math.max(1, n.similarity * 100)}%"></i></td></tr>`).join('') + '</tbody></table>';
-    } catch (e) { box.innerHTML = `<p class="muted">${esc(e.message)}</p>`; }
-  }
-  async function w2vMap() {
-    const box = $('#w2v-map'), seeds = $('#w2v-seeds').value.trim().split(/[\s,;]+/).filter(Boolean).slice(0, 4);
-    try {
-      const r = await api('/api/w2v/projection?' + new URLSearchParams({ words: seeds.join(' '), n: 150 }));
-      const groups = r.groups.length ? r.groups : [''];
-      const series = groups.map((g, i) => ({ name: g ? `${g} + nearest neighbours` : '', color: SERIES[i], mode: 'dots', r: 4, opacity: 0.9,
-        pts: r.points.filter(p => (p.group || '') === g).map(p => [p.x, p.y, p.word, !!p.seed, p.count]) }));
-      plot(box, { title: 'word2vec embedding map', series, height: 460, width: 900, hover: 'nearest', labels: true, xlabel: 'Principal component 1', ylabel: 'Principal component 2',
-        tipRows: (p, se) => [[se.color, p[2], ''], [null, fmt(p[4]), 'occurrences']] });
-    } catch (e) { box.innerHTML = `<p class="muted">${esc(e.message)}</p>`; }
-  }
-  $('#w2v-train').addEventListener('click', async () => {
-    const body = { model: $('#w2v-model').value, dim: +$('#w2v-dim').value, window: +$('#w2v-window').value, negative: +$('#w2v-negative').value, min_count: +$('#w2v-min').value, epochs: +$('#w2v-epochs').value };
-    try { await api('/api/w2v/train', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
-    catch (e) { alert(e.message); }
-    w2vStatus();
-  });
-  $('#w2v-sim-btn').addEventListener('click', w2vSimilar);
-  $('#w2v-word').addEventListener('keydown', e => { if (e.key === 'Enter') w2vSimilar(); });
-  $('#w2v-ana-btn').addEventListener('click', w2vAnalogy);
-  $('#w2v-map-btn').addEventListener('click', w2vMap);
-  $('#w2v-seeds').addEventListener('keydown', e => { if (e.key === 'Enter') w2vMap(); });
-
-  /* ================================================================== *
    * edit distance / spelling tab
    * ================================================================== */
   const OP_LABEL = { match: '相同', substitute: '取代', insert: '插入', delete: '刪除', transpose: '對調' };
@@ -749,9 +663,9 @@
 
   /* ---------------- tab activation ---------------- */
   let spellInit = false;
+  window.IR.plot = plot;
   document.addEventListener('tab', e => {
     if (e.detail === 'zipf') loadZipf();
-    if (e.detail === 'w2v') w2vStatus();
     if (e.detail === 'spell' && !spellInit) { spellInit = true; runEdit(); runSpell(); }
   });
 })();

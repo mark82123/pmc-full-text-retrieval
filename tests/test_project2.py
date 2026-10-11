@@ -270,3 +270,114 @@ class PubmedRecordTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class EmbeddingAnalysisTests(unittest.TestCase):
+    """Project #2 word-embedding additions: t-SNE / PCA, training examples,
+    frequency-bucket evaluation, neighbour overlap and the model registry."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.toy = Word2VecTests._toy(None)
+        cls.sg = Word2Vec(sg=True, dim=12, window=3, negative=5, min_count=1, epochs=6, sample=0, alpha=0.05, seed=1).train(cls.toy)
+        cls.cbow = Word2Vec(sg=False, dim=12, window=3, negative=5, min_count=1, epochs=6, sample=0, alpha=0.05, seed=1).train(cls.toy)
+
+    def test_names_and_params(self):
+        self.assertEqual(self.sg.name(), "sg-d12-w3-m1-e6")
+        self.assertEqual(Word2Vec(sg=False, seed=2, remove_stopwords=False).name(), "cbow-d50-w5-m5-e5-sw-s2")
+        self.assertTrue(self.sg.params()["stopwords_removed"])
+
+    def test_title_is_its_own_sentence(self):
+        s = sentences_from_texts(["Semaglutide in heart failure\nHeart failure is common. Weight fell."])
+        self.assertEqual(s, [["semaglutide", "heart", "failure"], ["heart", "failure", "common"], ["weight", "fell"]])
+
+    def test_training_examples(self):
+        from ir.word2vec import count_training_examples, training_examples
+        ex = training_examples(["a", "b", "c", "d"], 1)
+        self.assertEqual(ex["n_skipgram"], 6)                      # 1 + 2 + 2 + 1 context words
+        self.assertEqual(ex["n_cbow"], 4)
+        self.assertEqual(ex["skipgram"][0], {"position": 0, "centre": "a", "context": "b", "offset": 1})
+        self.assertEqual(ex["cbow"][1]["context"], ["a", "c"])
+        only = training_examples(["a", "b", "c", "d"], 2, centre=1)
+        self.assertEqual([e["context"] for e in only["skipgram"]], ["a", "c", "d"])
+        c = count_training_examples([["a", "b", "c", "d"], ["x"]], 2)
+        self.assertEqual((c["skipgram_fixed"], c["cbow"]), (10, 4))   # fixed ±2: 2+3+3+2; the one-word sentence yields nothing
+        self.assertEqual(c["skipgram_dynamic"], 8)                 # b=1 gives 6, b=2 gives 10 -> mean 8
+
+    def test_pca_and_tsne(self):
+        from ir.tsne import knn_preservation, pca2, tsne
+        words, rows = self.sg.vectors(self.sg.vocab)
+        pts, ratios = pca2(rows)
+        self.assertEqual(len(pts), 16)
+        self.assertTrue(0 < ratios[1] <= ratios[0] <= 1)
+        r = tsne(rows, perplexity=4, iters=120, seed=0)
+        self.assertEqual(len(r["points"]), 16)
+        self.assertLess(r["kl"][-1], r["kl"][0] + 1e-9)            # the KL divergence does not go up
+        q = knn_preservation(rows, r["points"])
+        self.assertTrue(0 <= q["k5"] <= 1 and len(q["per_point"]) == 16)
+        with self.assertRaises(ValueError):
+            tsne(rows[:3])
+
+    def test_evaluation_and_overlap(self):
+        from ir.word2vec import bucket_of, neighbour_overlap
+        self.assertEqual([bucket_of(c) for c in (1, 5, 10, 20, 50, 200, 5000)], ["1-4", "5-9", "10-19", "20-49", "50-199", "200+", "200+"])
+        ev = self.sg.evaluate(k=3)
+        self.assertEqual(ev["stem_groups"], 0)                      # the toy vocabulary has no two words with the same stem
+        self.assertTrue(all(0 <= b["sim_at_k"] <= 1 and b["variant_hit"] is None for b in ev["buckets"]))
+        m = Word2Vec(dim=8, min_count=1, epochs=2, sample=0).train([["treat", "treated", "mice"], ["treated", "treat", "rats"]] * 20)
+        self.assertEqual(m.stem_groups(), {"treat": ["treat", "treated"]})
+        self.assertEqual(m.evaluate(k=2)["words_with_variant"], 2)
+        ov = neighbour_overlap(self.sg, self.sg, k=3)
+        self.assertEqual(ov["overall"], 1.0)                        # a model agrees with itself
+        ov2 = neighbour_overlap(self.sg, self.cbow, k=3)
+        self.assertTrue(0 <= ov2["overall"] <= 1 and ov2["shared_vocabulary"] == 16)
+
+
+class EmbeddingEngineTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        path = Path(self.tmp.name) / "pubmed_test.jsonl"
+        path.write_text("".join(json.dumps(r) + "\n" for r in _records()), encoding="utf-8")
+        self.eng = Engine(self.tmp.name)
+        self.eng.load()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_registry_compare_pairs_projection(self):
+        a = self.eng.w2v_train({"model": "cbow", "dim": 10, "epochs": 2, "min_count": 1}, block=True)
+        b = self.eng.w2v_train({"model": "sg", "dim": 10, "epochs": 2, "min_count": 1, "seed": 2, "name": "second"}, block=True)
+        self.assertEqual((a["state"], a["name"], b["name"]), ("done", "cbow-d10-w5-m1-e2", "second"))
+        st = self.eng.w2v_status()
+        self.assertEqual(sorted(m["name"] for m in st["models"]), ["cbow-d10-w5-m1-e2", "second"])
+        self.assertEqual(st["active"], "second")
+        self.assertTrue((Path(self.tmp.name) / "w2v" / "second.json").is_file())
+        self.eng.w2v_select("cbow-d10-w5-m1-e2")
+        self.assertEqual(self.eng.w2v_similar("mice", 2)["model"], "cbow-d10-w5-m1-e2")
+        self.assertEqual(self.eng.w2v_similar("mice", 2, "second")["model"], "second")
+        cmp_ = self.eng.w2v_compare("mice weight notaword", "", 3)
+        self.assertEqual(len(cmp_["words"]), 3)
+        self.assertIsNone(cmp_["words"][2]["models"]["second"])
+        self.assertIn("cbow-d10-w5-m1-e2|second", cmp_["words"][0]["overlap"])
+        pr = self.eng.w2v_pairs("mice,glucose;weight,obesity,zzz")
+        self.assertEqual((len(pr["matrix"]), pr["missing"]), (4, ["zzz"]))
+        for method in ("pca", "tsne"):
+            r = self.eng.w2v_projection("", 10, None, method, iters=60)
+            self.assertEqual((r["method"], len(r["points"])), (method, 10))
+            self.assertIn("k5", r["knn_preservation"])
+        v = self.eng.w2v_vocab(1)
+        self.assertEqual((v["documents"], v["vocabulary"]), (3, v["types"]))
+        self.assertEqual(v["examples"][0]["window"], 2)
+        ex = self.eng.w2v_examples("GLP-1 increased insulin secretion in mice", 1)
+        self.assertEqual(ex["words"], ["glp-1", "increased", "insulin", "secretion", "mice"])
+        ev = self.eng.w2v_eval("second,cbow-d10-w5-m1-e2", 3)
+        self.assertEqual([m["name"] for m in ev["models"]], ["second", "cbow-d10-w5-m1-e2"])
+        ov = self.eng.w2v_overlap("second,cbow-d10-w5-m1-e2", 3)
+        self.assertEqual(ov["shared_vocabulary"], len(self.eng.w2v.vocab))
+        # reload from disk, delete one
+        e2 = Engine(self.tmp.name); e2.load()
+        self.assertEqual(sorted(e2.w2v_models), ["cbow-d10-w5-m1-e2", "second"])
+        self.assertEqual(e2.w2v_delete("second")["deleted"], "second")
+        self.assertFalse((Path(self.tmp.name) / "w2v" / "second.json").exists())
+        with self.assertRaises(ValueError):
+            e2.w2v_model("second")

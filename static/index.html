@@ -107,41 +107,128 @@
   <!-- ============ WORD2VEC ============ -->
   <section id="tab-w2v" class="panel">
     <div class="card help">
-      <h2>Word2Vec — 詞嵌入訓練</h2>
-      <p>以同一主題的 PubMed 摘要語料訓練 word2vec（<code>ir/word2vec.py</code>，純 Python 自行實作，negative sampling）。
-        前處理：規則式斷句 → 斷詞（保留連字號，如 <code>glp-1</code>、<code>sglt2</code>）→ 小寫 → 移除停用詞；視窗不跨越句子。
-        <b>Skip-gram</b> 用中心詞預測視窗內的每個周圍詞；<b>CBOW</b> 用視窗內詞向量的平均預測中心詞。</p>
+      <h2>Word Embedding — CBOW 與 Skip-gram（word2vec）</h2>
+      <p>以 1,000 篇 PubMed 摘要（<i>GLP-1</i>）訓練詞嵌入：<code>ir/word2vec.py</code> 純 Python 自行實作，negative sampling、dynamic window、高頻詞 subsampling、線性遞減學習率；
+        <code>ir/tsne.py</code> 實作 PCA（power iteration）與 t-SNE。<b>Skip-gram</b> 以中心詞預測視窗內的每個周圍詞；<b>CBOW</b> 以視窗內詞向量的平均預測中心詞。
+        下方依作業流程排列：前處理與詞彙表 → 訓練樣本 → 訓練（多組模型並存）→ 相似度分析 → PCA / t-SNE 視覺化 → 參數、低頻詞與穩定度。</p>
+      <nav class="subnav" id="w2v-nav">
+        <a href="#w2v-s1">1 前處理 / 詞彙表</a><a href="#w2v-s2">2 訓練樣本</a><a href="#w2v-s3">3 訓練模型</a><a href="#w2v-s4">4 CBOW vs Skip-gram</a>
+        <a href="#w2v-s5">5 近鄰比較</a><a href="#w2v-s6">6 語意配對</a><a href="#w2v-s7">7 PCA / t-SNE</a><a href="#w2v-s8">8 參數 · 低頻詞 · 穩定度</a>
+      </nav>
+    </div>
+
+    <!-- 1 pre-processing + vocabulary -->
+    <div class="card" id="w2v-s1">
+      <h2>1. 文字前處理與詞彙表</h2>
+      <p class="hint">規則式斷句（標題自成一句）→ 斷詞（<code>[A-Za-z][A-Za-z0-9]*(-[A-Za-z0-9]+)*</code>：保留內部連字號如 <code>glp-1</code>，純數字丟棄）→ 小寫 → 停用詞（可選）→ 最低詞頻 <code>min_count</code>。視窗不跨句。</p>
+      <div class="row">
+        <label>Min count <input id="vb-min" type="number" min="1" max="100" value="5" style="width:70px"></label>
+        <label class="check"><input id="vb-stop" type="checkbox" checked> 移除停用詞（Snowball + 生醫補充）</label>
+        <button id="vb-go" class="primary small">Recompute</button>
+      </div>
+      <div id="vb-out"><p class="muted">loading…</p></div>
+    </div>
+
+    <!-- 2 training examples -->
+    <div class="card" id="w2v-s2">
+      <h2>2. 產生訓練樣本（context window）</h2>
+      <p class="hint">同一個句子，固定視窗 ±w 時 Skip-gram 產生「(中心詞 → 每個周圍詞)」配對，CBOW 產生「(周圍詞集合 → 中心詞)」樣本。訓練時實際視窗 b 由 1..w 均勻抽出（dynamic window），所以近的詞被取用的機率較高。點句中的詞只看該位置的樣本。</p>
+      <div class="try"><input id="ex-text" value="GLP-1 receptor agonists reduce body weight in adults with obesity"><label>Window <input id="ex-win" type="number" min="1" max="10" value="2" style="width:60px"></label>
+        <label class="check"><input id="ex-stop" type="checkbox" checked> 移除停用詞</label><button id="ex-go" class="primary">Generate</button></div>
+      <div id="ex-out"></div>
+    </div>
+
+    <!-- 3 training -->
+    <div class="card" id="w2v-s3">
+      <h2>3. 訓練詞嵌入模型</h2>
+      <p class="hint">每組設定存成 <code>data/w2v/&lt;name&gt;.json</code>，可同時保留多個模型互相比較。工作排入佇列後逐一在背景訓練（純 Python：Skip-gram 50 維 10 epochs 約 4–5 分鐘，CBOW 約 1.5 分鐘）。</p>
       <div class="row w2v-form">
         <label>Model <select id="w2v-model"><option value="sg">Skip-gram</option><option value="cbow">CBOW</option></select></label>
-        <label>Dimensions <input id="w2v-dim" type="number" min="10" max="200" value="50"></label>
+        <label>Dimensions <input id="w2v-dim" type="number" min="10" max="300" value="50"></label>
         <label>Window <input id="w2v-window" type="number" min="1" max="15" value="5"></label>
-        <label>Negative samples <input id="w2v-negative" type="number" min="1" max="20" value="5"></label>
+        <label>Negative <input id="w2v-negative" type="number" min="1" max="20" value="5"></label>
         <label>Min count <input id="w2v-min" type="number" min="1" max="100" value="5"></label>
         <label>Epochs <input id="w2v-epochs" type="number" min="1" max="50" value="10"></label>
+        <label>Seed <input id="w2v-seed" type="number" min="1" max="999999" value="1"></label>
+        <label class="check"><input id="w2v-stop" type="checkbox" checked> 移除停用詞</label>
+        <label>Name <input id="w2v-name" placeholder="(auto)" style="width:150px"></label>
         <button id="w2v-train" class="primary">Train</button>
+        <button id="w2v-sweep" class="ghost" title="CBOW / Skip-gram × window 2 / 5 × dim 50 / 100 + min_count 2 + second seed">Queue comparison set</button>
       </div>
-      <div id="w2v-progress" class="hidden"><div class="scorebar big"><i style="width:0%"></i></div><span class="muted"></span></div>
+      <div id="w2v-jobs"></div>
       <div id="w2v-info"></div>
+    </div>
+
+    <!-- 4 comparison table -->
+    <div class="card" id="w2v-s4">
+      <h2>4. CBOW vs Skip-gram</h2>
+      <div id="cmp-table"></div>
+      <div class="two">
+        <div class="note-box"><h4>為什麼 Skip-gram 對罕見詞 / 專業術語特別有用？</h4>
+          <p>Skip-gram 把每一次出現都拆成 2b 個獨立的訓練配對，罕見詞<b>自己的向量</b>每出現一次就被更新 2b 次（每次還帶 k 個負樣本的梯度）；CBOW 把視窗內的詞<b>平均</b>後才預測中心詞，罕見詞的向量只分到平均梯度的 1/2b，而且它的訊號被同視窗的高頻詞稀釋。
+            因此在同樣的語料下，Skip-gram 對出現 5–20 次的專有名詞（藥名、基因、量表縮寫）通常學得比較穩，代價是訓練配對數多、速度慢；CBOW 對高頻詞的統計更平滑，訓練快，適合大語料。下方第 8 節用「同詞幹變形是否互為近鄰」與「兩個 seed 的近鄰重疊率」實際量測。</p></div>
+        <div class="note-box"><h4>目前兩個基準模型（50 維、window 5）的量測</h4><div id="cmp-measured"><p class="muted">需要 <code>sg-d50-w5-m5-e10</code> 與 <code>cbow-d50-w5-m5-e10</code> 兩個模型。</p></div></div>
+      </div>
+    </div>
+
+    <!-- 5 nearest neighbours, side by side -->
+    <div class="card" id="w2v-s5">
+      <h2>5. 詞彙相似度：各模型最相近的前 N 個詞</h2>
+      <p class="hint">餘弦相似度 cos(u, v) = u·v / (|u||v|)。預設 14 個詞（藥名、副作用、疾病、器官、動物模型、一般詞），逐模型列出前 5 名；<b>粗體</b> = 所有勾選模型都找到的共同近鄰，Jaccard = 近鄰集合的交集 / 聯集。</p>
+      <div class="try"><input id="nn-words" value="semaglutide tirzepatide liraglutide nausea obesity weight diabetes insulin kidney cardiovascular mice cancer treatment diagnosis"><label>Top <input id="nn-n" type="number" min="1" max="15" value="5" style="width:60px"></label><button id="nn-go" class="primary">Compare</button></div>
+      <div class="chips model-picks" id="nn-models"></div>
+      <div id="nn-out"></div>
     </div>
     <div class="two">
       <div class="card">
-        <h2>Most similar words</h2>
-        <p class="hint">餘弦相似度（cosine similarity）最高的鄰近詞。點鄰近詞可繼續查，按「search」以該詞檢索文件。</p>
-        <div class="try"><input id="w2v-word" value="semaglutide" placeholder="word"><button id="w2v-sim-btn" class="primary">Neighbours</button></div>
+        <h2>Most similar words（單一模型）</h2>
+        <div class="try"><input id="w2v-word" value="semaglutide" placeholder="word"><select class="model-select" id="sim-model"></select><button id="w2v-sim-btn" class="primary">Neighbours</button></div>
         <div id="w2v-sim"></div>
       </div>
       <div class="card">
         <h2>Analogy  a : b = c : ?</h2>
         <p class="hint">向量運算 <code>v(b) − v(a) + v(c)</code> 後找最接近的詞。</p>
-        <div class="try analogy"><input id="w2v-a" value="kidney" placeholder="a"><span>:</span><input id="w2v-b" value="ckd" placeholder="b"><span>=</span><input id="w2v-c" value="liver" placeholder="c"><span>: ?</span><button id="w2v-ana-btn" class="primary">Solve</button></div>
+        <div class="try analogy"><input id="w2v-a" value="kidney" placeholder="a"><span>:</span><input id="w2v-b" value="ckd" placeholder="b"><span>=</span><input id="w2v-c" value="liver" placeholder="c"><span>: ?</span><select class="model-select" id="ana-model"></select><button id="w2v-ana-btn" class="primary">Solve</button></div>
         <div id="w2v-ana"></div>
       </div>
     </div>
-    <div class="card">
-      <h2>Embedding map (PCA → 2-D)</h2>
-      <p class="hint">輸入 1–4 個種子詞（空白分隔）：畫出每個種子詞與其最近鄰，顏色代表所屬種子；留空則畫出最常見的詞。主成分以 power iteration 計算。</p>
-      <div class="try"><input id="w2v-seeds" value="semaglutide nausea kidney mice" placeholder="seed words, e.g. semaglutide nausea kidney"><button id="w2v-map-btn" class="primary">Draw map</button></div>
-      <div id="w2v-map"></div>
+
+    <!-- 6 semantic pairs -->
+    <div class="card" id="w2v-s6">
+      <h2>6. 詞嵌入是否具有語意？相關詞組的餘弦相似度矩陣</h2>
+      <p class="hint">以分號分組、逗號分詞。若模型學到語意，<b>組內</b>平均相似度應明顯高於<b>組間</b>；「隨機詞對」是整個詞彙表中任抽 400 對的平均，當作基準線（小語料的向量空間常有共同方向，隨機詞對的 cosine 不會接近 0）。</p>
+      <div class="try"><input id="pr-groups" value="semaglutide,liraglutide,dulaglutide,tirzepatide; nausea,vomiting,diarrhea,constipation; obesity,overweight,bmi; diabetes,hba1c,glucose,insulin; kidney,renal,ckd,egfr; mice,rats,mouse"><select class="model-select" id="pr-model"></select><button id="pr-go" class="primary">Compute</button></div>
+      <div id="pr-out"></div>
+    </div>
+
+    <!-- 7 visualisation -->
+    <div class="card" id="w2v-s7">
+      <h2>7. 視覺化：PCA 與 t-SNE 降到二維</h2>
+      <p class="hint">同一組詞、同一個模型，左 PCA（線性：前兩個主成分）、右 t-SNE（非線性：保留鄰域機率分布）。輸入 1–6 個種子詞會畫出每個種子與其最近鄰（顏色 = 所屬種子）；留空則畫最常見的 N 個詞。
+        <b>k-NN 保留率</b>：每個點在原始 50 維空間的 k 個最近鄰，有多少仍是它在二維圖上的 k 個最近鄰——圖上看起來成群不等於模型語意好，這個數字衡量的是「圖」有多忠於向量空間。</p>
+      <div class="try"><input id="map-seeds" value="semaglutide nausea kidney mice" placeholder="seed words (blank = most frequent words)"><select class="model-select" id="map-model"></select>
+        <label>N <input id="map-n" type="number" min="20" max="300" value="120" style="width:64px"></label>
+        <label>Neighbours / seed <input id="map-k" type="number" min="3" max="40" value="12" style="width:60px"></label>
+        <label>Perplexity <input id="map-perp" type="number" min="2" max="60" value="15" style="width:60px"></label>
+        <label>Iterations <input id="map-iters" type="number" min="100" max="1000" step="50" value="400" style="width:70px"></label>
+        <label>t-SNE seed <input id="map-seed" type="number" min="0" max="99" value="0" style="width:56px"></label>
+        <button id="map-go" class="primary">Draw</button></div>
+      <div class="two"><div id="map-pca"></div><div id="map-tsne"></div></div>
+      <div id="map-notes"></div>
+    </div>
+
+    <!-- 8 parameters, rare words, stability -->
+    <div class="card" id="w2v-s8">
+      <h2>8. 參數影響、低頻詞表現與穩定度</h2>
+      <p class="hint">沒有外部標準答案時的內在評估：把詞彙依出現次數分桶，對每桶抽樣 120 個詞，計算
+        <b>sim@k</b>（前 k 個近鄰的平均 cosine，越高表示鄰域越緊）、<b>近鄰頻次中位數</b>（罕見詞的鄰居是罕見詞還是常見詞）、
+        <b>變形命中率</b>（同一個 Porter 詞幹的其他詞形——patient / patients、treat / treated——是否出現在前 k 名；只計算有變形存在的詞）；
+        <b>近鄰重疊率</b>（兩個模型對同一個詞的前 k 近鄰的 Jaccard）用來比較架構、參數，或同設定不同 seed 的穩定度。</p>
+      <div class="row"><span class="muted">評估模型：</span><div class="chips model-picks" id="ev-models"></div><label>k <input id="ev-k" type="number" min="3" max="30" value="10" style="width:56px"></label><button id="ev-go" class="primary small">Evaluate</button></div>
+      <div id="ev-out"></div>
+      <h3 class="sub-h">近鄰重疊率（兩個模型）</h3>
+      <div class="row"><select class="model-select" id="ov-a"></select><span>vs</span><select class="model-select" id="ov-b"></select><button id="ov-go" class="primary small">Overlap</button></div>
+      <div id="ov-out"></div>
     </div>
   </section>
 
@@ -354,5 +441,6 @@
 <footer>Standard-library Python back-end · vanilla JS front-end · no external dependencies</footer>
 <script src="/static/app.js"></script>
 <script src="/static/project2.js"></script>
+<script src="/static/w2v.js"></script>
 </body>
 </html>

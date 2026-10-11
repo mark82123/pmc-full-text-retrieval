@@ -18,8 +18,17 @@ Project #2
     python3 cli.py terms glp obesity nausea [--cond C]   CF / DF / IDF of chosen terms (default set if none given)
     python3 cli.py edit semaglutide samegluitde          edit distance with the DP table
     python3 cli.py spell diabtes                         spelling suggestions from the collection vocabulary
-    python3 cli.py w2v train [--model sg|cbow] [--dim 50] [--window 5] [--epochs 10]
-    python3 cli.py w2v similar semaglutide   |   python3 cli.py w2v analogy kidney ckd liver
+    python3 cli.py w2v train [--model sg|cbow] [--dim 50] [--window 5] [--epochs 10] [--min-count 5] [--seed 1] [--keep-stopwords] [--name X]
+    python3 cli.py w2v list                              trained models (data/w2v/*.json) and the active one
+    python3 cli.py w2v use NAME  |  w2v delete NAME      choose / remove a model
+    python3 cli.py w2v vocab [--min-count 5]             pre-processing + vocabulary statistics, training-example counts
+    python3 cli.py w2v examples "GLP-1 receptor agonists reduce body weight" [--window 2]   skip-gram pairs / CBOW examples
+    python3 cli.py w2v similar semaglutide [--use NAME]  |  w2v analogy kidney ckd liver
+    python3 cli.py w2v compare semaglutide nausea kidney --models sg-d50-w5-m5-e10,cbow-d50-w5-m5-e10 [-n 5]
+    python3 cli.py w2v pairs "semaglutide,liraglutide;nausea,vomiting" [--use NAME]      cosine matrix within / between groups
+    python3 cli.py w2v map semaglutide nausea kidney mice [--method pca|tsne] [--svg report/]   2-D map (+ k-NN preservation)
+    python3 cli.py w2v eval [--models a,b] [-k 10]       neighbourhood quality per frequency bucket (rare-word behaviour)
+    python3 cli.py w2v overlap --models a,b [-k 10]      neighbour overlap between two models per frequency bucket
 """
 
 from __future__ import annotations
@@ -68,10 +77,16 @@ def main() -> None:
     tm = sub.add_parser("terms"); tm.add_argument("words", nargs="*"); tm.add_argument("--cond", default="C", choices=["A", "B", "C", "D", "E"])
     ed = sub.add_parser("edit"); ed.add_argument("a"); ed.add_argument("b")
     sp = sub.add_parser("spell"); sp.add_argument("word"); sp.add_argument("-k", type=int)
-    wv = sub.add_parser("w2v"); wv.add_argument("action", choices=["train", "similar", "analogy"]); wv.add_argument("words", nargs="*")
+    wv = sub.add_parser("w2v"); wv.add_argument("action", choices=["train", "list", "use", "delete", "vocab", "examples", "similar", "analogy",
+                                                                     "compare", "pairs", "map", "eval", "overlap"]); wv.add_argument("words", nargs="*")
     wv.add_argument("--model", default="sg", choices=["sg", "cbow"]); wv.add_argument("--dim", type=int, default=50)
     wv.add_argument("--window", type=int, default=5); wv.add_argument("--negative", type=int, default=5)
     wv.add_argument("--min-count", type=int, default=5); wv.add_argument("--epochs", type=int, default=10)
+    wv.add_argument("--seed", type=int, default=1); wv.add_argument("--keep-stopwords", action="store_true"); wv.add_argument("--name", default="")
+    wv.add_argument("--use", default="", help="model name (default: the active model)"); wv.add_argument("--models", default="", help="comma-separated model names")
+    wv.add_argument("-n", type=int, default=5); wv.add_argument("-k", type=int, default=10)
+    wv.add_argument("--method", default="pca", choices=["pca", "tsne"]); wv.add_argument("--perplexity", type=float, default=15)
+    wv.add_argument("--svg", help="directory to write the map (SVG) to")
     args = ap.parse_args()
 
     if args.cmd == "analyze":
@@ -248,36 +263,122 @@ def main() -> None:
         for r in eng.spell.suggest(w, 10, args.k):
             print(f"  {r['word']:<24}distance={r['distance']}  cf={r['cf']}")
     elif args.cmd == "w2v":
-        if args.action == "train":
-            job = eng.w2v_job
-            import threading
-            import time
-            params = {"model": args.model, "dim": args.dim, "window": args.window, "negative": args.negative,
-                      "min_count": args.min_count, "epochs": args.epochs}
-            t = threading.Thread(target=lambda: eng.w2v_train(params, block=True)); t.start()
-            while t.is_alive():
-                time.sleep(5)
-                job = eng.w2v_job
-                if job.get("state") == "running" and job.get("epoch"):
-                    print(f"  {job['progress']:.0%}  epoch {job['epoch']}  loss {job['loss']}", flush=True)
-            job = eng.w2v_job
-            if job.get("state") != "done":
-                print("training failed:", job.get("message")); return
-            m = eng.w2v.info()
-            print(f"{m['model']}: vocabulary {m['vocabulary']}, {m['corpus_words']} training words, {m['train_seconds']}s, "
-                  f"loss per epoch {m['loss_history']}\nsaved to {args.data}/word2vec.json")
-        elif args.action == "similar":
-            for w in args.words:
-                r = eng.w2v_similar(w)
-                print(f"{r['word']} (count {r['count']}):")
-                for nb in r["neighbours"]:
-                    print(f"    {nb['word']:<28}{nb['similarity']:.3f}   count {nb['count']}")
-        else:
-            if len(args.words) != 3:
-                print("usage: w2v analogy a b c   (a is to b as c is to ?)"); return
-            for x in eng.w2v_analogy(*args.words)["results"]:
-                print(f"    {x['word']:<28}{x['similarity']:.3f}")
+        _w2v(eng, args)
 
+
+def _w2v(eng: Engine, args) -> None:
+    import threading
+    import time
+    a = args.action
+    if a == "train":
+        params = {"model": args.model, "dim": args.dim, "window": args.window, "negative": args.negative, "min_count": args.min_count,
+                  "epochs": args.epochs, "seed": args.seed, "remove_stopwords": not args.keep_stopwords, "name": args.name}
+        job = eng.w2v_train(params)                       # queued; the engine's worker thread trains it
+        while job["state"] in ("queued", "running"):
+            time.sleep(5)
+            if job.get("epoch"):
+                print(f"  {job['progress']:.0%}  epoch {job['epoch']}  loss {job['loss']}", flush=True)
+        if job["state"] != "done":
+            print("training failed:", job.get("message")); return
+        m = eng.w2v.info()
+        print(f"{job['name']}: vocabulary {m['vocabulary']}, {m['corpus_words']} training words, {m['train_seconds']}s, "
+              f"loss per epoch {m['loss_history']}\nsaved to {args.data}/w2v/{job['name']}.json")
+    elif a == "list":
+        st = eng.w2v_status()
+        print(f"{'name':<28}{'model':<10}{'dim':>4}{'win':>4}{'min':>4}{'ep':>4}{'vocab':>7}{'loss':>8}{'secs':>7}  trained")
+        for m in st["models"]:
+            print(f"{m['name']:<28}{m['model']:<10}{m['dim']:>4}{m['window']:>4}{m['min_count']:>4}{m['epochs']:>4}{m['vocabulary']:>7}"
+                  f"{(m['final_loss'] or 0):>8.4f}{m['train_seconds']:>7}  {m.get('trained', '')}{'   <- active' if m['name'] == st['active'] else ''}")
+        if not st["models"]:
+            print("no models yet - python3 cli.py w2v train")
+    elif a in ("use", "delete"):
+        if len(args.words) != 1:
+            print(f"usage: w2v {a} NAME"); return
+        print(eng.w2v_select(args.words[0]) if a == "use" else eng.w2v_delete(args.words[0]))
+    elif a == "vocab":
+        v = eng.w2v_vocab(args.min_count, not args.keep_stopwords)
+        print(f"{v['collection']}\ndocuments {v['documents']}, sentences {v['sentences']}, tokens {v['tokens']}"
+              + (f" (+{v['stopword_tokens']} stop-word tokens removed)" if v['stopword_tokens'] is not None else "")
+              + f"\ntypes {v['types']} (hapax {v['hapax']} = {v['hapax_share']:.1%}); min_count {v['min_count']} keeps {v['vocabulary']} types "
+              f"covering {v['coverage']:.1%} of the tokens; {v['avg_sentence_length']} tokens per sentence")
+        print("\nmin_count   types  share   tokens  share")
+        for t in v["thresholds"]:
+            print(f"{t['min_count']:>9}{t['types']:>8}{t['types_share']:>7.1%}{t['tokens']:>9}{t['token_share']:>7.1%}")
+        print("\ntraining examples per epoch (fixed window / dynamic window expectation / CBOW):")
+        for e in v["examples"]:
+            print(f"  window {e['window']:>2}: skip-gram {e['skipgram_fixed']:>9} / {e['skipgram_dynamic']:>9}   CBOW {e['cbow']:>7}")
+        print("\ntop words: " + ", ".join(f"{w} {c}" for w, c in v["top_words"][:30]))
+        if v["walk"]:
+            st = v["walk"]["steps"][0]
+            print(f"\nexample ({v['walk']['doc_id']}): {st['sentence']}\n  tokens      {st['tokens']}\n  lower-case  {st['lower']}\n  no stopword {st['no_stopwords']}\n  kept        {st['kept']}")
+    elif a == "examples":
+        r = eng.w2v_examples(" ".join(args.words), args.window, not args.keep_stopwords)
+        print(f"sentence after pre-processing: {r['words']}\nwindow {r['window']}: {r['n_skipgram']} skip-gram pairs, {r['n_cbow']} CBOW examples\n")
+        print("skip-gram (input centre -> target context)")
+        for e in r["skipgram"]:
+            print(f"  {e['centre']:<20} -> {e['context']:<20} (offset {e['offset']:+d})")
+        print("CBOW (input context words -> target centre)")
+        for e in r["cbow"]:
+            print(f"  {' '.join(e['context']):<50} -> {e['centre']}")
+    elif a == "similar":
+        for w in args.words:
+            r = eng.w2v_similar(w, 15, args.use or None)
+            print(f"{r['word']} (count {r['count']}, model {r['model']}):")
+            for nb in r["neighbours"]:
+                print(f"    {nb['word']:<28}{nb['similarity']:.3f}   count {nb['count']}")
+    elif a == "analogy":
+        if len(args.words) != 3:
+            print("usage: w2v analogy a b c   (a is to b as c is to ?)"); return
+        for x in eng.w2v_analogy(*args.words, model=args.use or None)["results"]:
+            print(f"    {x['word']:<28}{x['similarity']:.3f}")
+    elif a == "compare":
+        r = eng.w2v_compare(" ".join(args.words), args.models, args.n)
+        names = [m["name"] for m in r["models"]]
+        for row in r["words"]:
+            print(f"\n{row['word']}")
+            for nm in names:
+                m = row["models"][nm]
+                print(f"  {nm:<26} " + ("(not in vocabulary)" if not m else ", ".join(f"{x['word']} {x['similarity']:.2f}" for x in m["neighbours"])))
+            for k, o in row["overlap"].items():
+                print(f"  overlap {k}: {o['jaccard']:.2f}  shared: {', '.join(o['shared']) or '-'}")
+    elif a == "pairs":
+        r = eng.w2v_pairs(" ".join(args.words), args.use or None)
+        w = max(len(x) for x in r["words"]) + 1
+        print(" " * w + "".join(f"{x[:7]:>8}" for x in r["words"]))
+        for x, row in zip(r["words"], r["matrix"]):
+            print(f"{x:<{w}}" + "".join(f"{v:>8.2f}" for v in row))
+        print(f"\nmean within groups {r['mean_within']}, between groups {r['mean_between']}, random pairs {r['mean_random']}")
+        if r["missing"]:
+            print("not in vocabulary:", ", ".join(r["missing"]))
+    elif a == "map":
+        r = eng.w2v_projection(" ".join(args.words), 120, args.use or None, args.method, args.perplexity)
+        print(f"{r['method']} map of {len(r['points'])} words ({r['seconds']}s); k-NN preservation {r['knn_preservation']}"
+              + (f"; explained variance {r['explained_variance']}" if r.get("explained_variance") else f"; KL {r['kl']}"))
+        for p in sorted(r["points"], key=lambda p: (p["group"], -p["count"])):
+            print(f"  {p['group']:<14}{p['word']:<24}{p['x']:>8.3f}{p['y']:>8.3f}")
+        if args.svg:
+            from ir.svgplot import scatter_plot
+            out = Path(args.svg); out.mkdir(parents=True, exist_ok=True)
+            path = out / f"w2v_{r['method']}_{r['model']}.svg"
+            path.write_text(scatter_plot(r["points"], f"{r['method'].upper()} map - {r['model']}"), encoding="utf-8")
+            print("saved", path)
+    elif a == "eval":
+        r = eng.w2v_eval(args.models, args.k)
+        for m in r["models"]:
+            print(f"\n{m['name']}  (vocabulary {m['vocabulary']}, {m['stem_groups']} stem groups)")
+            print(f"  {'count':<8}{'words':>7}{'sim@k':>8}{'nb.count':>10}{'variant hit':>13}{'MRR':>7}  example")
+            for b in m["buckets"]:
+                ex = b["examples"][0] if b["examples"] else None
+                print(f"  {b['bucket']:<8}{b['words']:>7}{b['sim_at_k']:>8.3f}{b['neighbour_count']:>10}"
+                      f"{(b['variant_hit'] if b['variant_hit'] is not None else float('nan')):>13.2f}{(b['variant_mrr'] or 0):>7.2f}  "
+                      + (f"{ex['word']} -> {ex['variant']} (rank {ex['rank']})" if ex else ""))
+    elif a == "overlap":
+        r = eng.w2v_overlap(args.models, args.k)
+        print(f"neighbour overlap (Jaccard of top-{r['k']}) between {r['a']} and {r['b']}: overall {r['overall']}")
+        for b in r["buckets"]:
+            print(f"  count {b['bucket']:<8}{b['words']:>6} words   overlap {b['overlap']:.3f}")
+        print("most stable:  " + ", ".join(f"{x['word']} {x['overlap']:.2f}" for x in r["most_stable"]))
+        print("least stable: " + ", ".join(f"{x['word']} {x['overlap']:.2f}" for x in r["least_stable"]))
 
 if __name__ == "__main__":
     try:
