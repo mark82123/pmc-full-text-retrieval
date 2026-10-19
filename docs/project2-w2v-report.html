@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Word Embedding on 1,000 GLP-1 Abstracts — CBOW vs Skip-gram</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--paper:#fff;--desk:#e9ebef;--ink:#1d2333;--muted:#5f6778;--line:#d9dde6;--rule:#1d2333;--accent:#1f5fbf;--soft:#eef3fb;--code:#f1f3f7;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;--sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace,"Noto Sans TC"}
+*{box-sizing:border-box}
+body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--sans);font-size:7.2pt;line-height:1.27;padding:24px 16px}
+.page{background:var(--paper);width:210mm;min-height:297mm;max-width:100%;margin:0 auto;box-shadow:0 2px 12px rgba(20,30,60,.12);display:flex;flex-direction:column}
+.inner{padding:6.5mm 10mm 2mm;flex:1;min-width:0}
+footer{display:flex;justify-content:space-between;gap:12px;padding:0 10mm 4mm;font-size:6.5pt;color:var(--muted);font-family:var(--mono);line-height:1.3}
+h1{font-family:var(--serif);font-size:15pt;line-height:1.25;margin:2px 0 3px}
+h2{font-family:var(--serif);font-size:9.2pt;margin:0 0 3px;padding-bottom:1px;border-bottom:1.5px solid var(--rule)}
+h2 span{font-family:var(--mono);font-weight:500;color:var(--accent);font-size:7.8pt;margin-right:6px}
+p{margin:0 0 2px}
+.eyebrow{font-family:var(--mono);font-size:6.8pt;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
+.meta{font-size:7pt;color:var(--muted);margin:0 0 4px;line-height:1.35}
+.facts{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:4px 0 6px}
+.facts div{background:var(--soft);border-radius:4px;padding:1px 7px}
+.facts b{display:block;font-family:var(--mono);font-size:9.5pt;font-weight:500;color:var(--accent);line-height:1.2}
+.facts small{font-size:6.5pt;color:var(--muted);line-height:1.2;display:block}
+section{margin-bottom:4px;min-width:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 6mm;align-items:start}.two>*{min-width:0}
+.three{display:grid;grid-template-columns:60mm 60mm 1fr;gap:0 4mm;align-items:start}.three>*{min-width:0}
+code{font-family:var(--mono);font-size:.92em;background:var(--code);padding:0 2px;border-radius:2px}
+table.t{border-collapse:collapse;width:100%;font-size:6.7pt;margin:2px 0 3px;font-variant-numeric:tabular-nums;line-height:1.3}
+table.t th{text-align:left;background:var(--soft);padding:1.5px 4px;border-bottom:1px solid var(--line);font-weight:600;vertical-align:bottom}
+table.t td{padding:1.5px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t td.k{font-weight:600;white-space:nowrap}
+table.num td:not(:first-child),table.num th:not(:first-child){text-align:right;white-space:nowrap}
+table.t .n{text-align:right;white-space:nowrap;font-family:var(--mono);font-size:6.6pt}
+table.t tr.sel td{background:var(--soft)}
+ul{padding-left:12px;margin:0 0 2px}li{margin-bottom:1px}
+.verdict{background:var(--soft);border-left:3px solid var(--accent);padding:2px 6px;margin:2px 0 2px;font-size:7pt}
+.verdict b{color:var(--accent)}
+figure{margin:0;min-width:0}figure svg{width:100%;height:auto;display:block;border:1px solid var(--line)}figcaption{font-size:6.5pt;color:var(--muted);line-height:1.3;margin-top:1px}
+.kv{font-size:6.9pt;line-height:1.33}.kv p{margin:0 0 2px}.kv b.h{color:var(--accent)}
+.cols{columns:2;column-gap:6mm}
+.muted{color:var(--muted)}
+@media (max-width:640px){.two,.three,.facts{grid-template-columns:1fr 1fr}.cols{columns:1}.page{min-height:0}.inner{padding:6mm 5mm}}
+@media print{body{background:none;padding:0}.page{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:0;overflow:hidden}@page{size:A4 portrait;margin:0}}
+</style>
+</head>
+<body>
+<section class="page"><div class="inner">
+
+<p class="eyebrow">AI Information Retrieval（人工智慧資訊檢索）· Project #2 Word Embedding · 一頁式報告</p>
+<h1>1,000 篇 GLP-1 摘要能學到怎樣的詞嵌入？CBOW 與 Skip-gram 的五個問題</h1>
+<p class="meta">作者 胡元楨（P77141105）· 語料：1,000 篇 PubMed 摘要（查詢 <i>GLP-1</i>）· 前處理：標題＋摘要、規則式斷句（視窗不跨句）、保留連字號、全小寫、去停用詞（30% token）、不做詞幹、min_count 5 · 實作：純 Python word2vec（negative sampling k=5、subsampling 10⁻³、dynamic window、10 epochs）與自寫 PCA / t-SNE · 9 個模型，基準 50 維、window ±5 · 所有數字的出處與完整分析：<code>REPORT_w2v.md</code></p>
+
+<div class="facts">
+  <div><b>1,000</b><small>文件（標題＋摘要）</small></div>
+  <div><b>11,802</b><small>句子，平均 14.9 token</small></div>
+  <div><b>176,332</b><small>token（去停用詞後）</small></div>
+  <div><b>14,517</b><small>詞型；41% 只出現一次</small></div>
+  <div><b>4,438</b><small>詞彙（≥5 次）涵蓋 90.4% token</small></div>
+  <div><b>9</b><small>模型：架構 × window × dim × min_count × seed</small></div>
+</div>
+
+<section>
+<h2><span>RQ1</span>CBOW 與 Skip-gram 有何差異？</h2>
+<table class="t">
+<tr><th style="width:11%">面向</th><th style="width:44%">CBOW（基準 cbow-d50-w5-m5-e10）</th><th>Skip-gram（基準 sg-d50-w5-m5-e10）</th></tr>
+<tr><td class="k">訓練方式</td><td>視窗內 2b 個周圍詞向量的<b>平均</b> → 預測中心詞；每個位置 1 個樣本，<span class="n">159,405</span>/epoch（= token 數）；10 epochs <span class="n">82.5 s</span></td><td><b>一個中心詞</b> → 分別預測每個周圍詞；每個位置 2b 個配對，<span class="n">791,811</span>/epoch（5 倍）；10 epochs <span class="n">254.7 s</span>（約 3 倍時間）</td></tr>
+<tr><td class="k">訓練損失</td><td>epoch 1→10：<span class="n">3.78 → 1.985</span>。起點高、終點低：「平均視窗→中心詞」較容易預測</td><td>epoch 1→10：<span class="n">3.17 → 2.062</span>。第 1 epoch 就降得多（樣本 5 倍）。兩者皆於 10 epochs 內收斂（末兩 epoch 差 &lt; 0.02），但任務不同，<b>loss 絕對值不可跨架構比較</b></td></tr>
+<tr><td class="k">近鄰詞彙</td><td>cosine 偏高（0.85–0.95），偏<b>句型</b>相似：nausea → vomiting, hcc, thromboembolic；cancer → ischemic, neuropathy, macular（併發症）</td><td>cosine 較低（0.6–0.85），偏<b>主題</b>相似：nausea → vomiting, diarrhea, constipation, aes；cancer → breast, pdac, colorectal, crc（癌症種類）</td></tr>
+<tr><td class="k">低頻詞<br><span class="muted" style="font-weight:400">5–9 次，1,766 詞</span></td><td>同詞幹變形 hit@10 <span class="n">0.0%</span>、換 seed 近鄰重疊 <span class="n">16.6%</span>（200+ 高頻詞：30.5%、59.8%）。罕見詞只分到平均梯度的 1/2b，且被同視窗高頻詞稀釋</td><td>變形 hit@10 <span class="n">6.1%</span>、換 seed 重疊 <span class="n">41.7%</span>（200+：28.1%、53.9%，兩者相當）。每出現一次自身向量更新 2b 次，且須獨自解釋整個視窗</td></tr>
+</table>
+<p class="verdict"><b>結論</b>　兩架構對同一個詞的前 10 近鄰只有 <b>14%</b> 重疊：同一語料學到不同的「相似」定義。Skip-gram 以 3 倍訓練時間換得小語料、罕見詞與專有名詞上較好的表現；CBOW 快、對高頻詞穩定，與 Mikolov 等（2013）的結論一致。</p>
+</section>
+
+<div class="two">
+<section>
+<h2><span>RQ2</span>詞嵌入是否具有語意意義？</h2>
+<table class="t num">
+<tr><th>6 組 22 詞的 cosine</th><th>組內</th><th>組間</th><th>隨機 400 對</th><th>藥名</th><th>副作用</th><th>體重</th><th>血糖</th><th>腎臟</th><th>動物</th></tr>
+<tr><td class="k">Skip-gram</td><td><b>0.680</b></td><td>0.350</td><td>0.474</td><td>.75</td><td>.95</td><td>.57</td><td>.43</td><td>.61</td><td>.74</td></tr>
+<tr><td class="k">CBOW</td><td><b>0.702</b></td><td>0.348</td><td>0.633</td><td>.90</td><td>.95</td><td>.65</td><td>.37</td><td>.59</td><td>.75</td></tr>
+</table>
+<table class="t">
+<tr><th style="width:34%">詞對</th><th class="n" style="text-align:right">SG / CBOW</th><th>Skip-gram 近鄰</th></tr>
+<tr><td><b>semaglutide</b>–liraglutide</td><td class="n">.74 / .92</td><td>dulaglutide, liraglutide, tirzepatide</td></tr>
+<tr><td><b>nausea</b>–vomiting</td><td class="n">.97 / .98</td><td>vomiting, diarrhea, constipation, aes</td></tr>
+<tr><td><b>diagnosis</b>–diagnosed</td><td class="n">.77 / .93</td><td>codes, residents, classified（一般詞最差）</td></tr>
+<tr><td><b>treatment</b>–therapy</td><td class="n">.54 / .63</td><td>discontinuation, treatments</td></tr>
+<tr><td><b>cancer</b>–tumor</td><td class="n">.37 / .27</td><td>breast, pdac, colorectal, crc</td></tr>
+<tr><td><b>diabetes</b>–insulin</td><td class="n">.30 / —</td><td>prediabetes, mellitus, t2dm</td></tr>
+</table>
+<p>類比 v(ckd) − v(kidney) + v(liver) = <b>masld / mafld</b>（脂肪肝）只在 Skip-gram 成立；CBOW 給 pwh、comorbidities。</p>
+<p class="verdict"><b>判斷：有，但是「主題層級」的語意。</b>每一組的組內平均都高於組間（0.68 ≫ 0.35），組間甚至低於隨機詞對：藥名 / 副作用 / 動物模型各自成群，不是巧合。限制：(1) word2vec 學的是「可互換」而非「有關」：diabetes–insulin 僅 0.30；(2) 隨機詞對 cosine 高達 0.47–0.63，空間各向異性（CBOW 更甚），<b>cosine 只能看相對排序</b>；(3) tumor 僅 19 次，學不穩。</p>
+</section>
+
+<section>
+<h2><span>RQ4</span>模型參數會如何影響結果？</h2>
+<table class="t">
+<tr><th>比較（前 10 近鄰 Jaccard 重疊）</th><th class="n" style="text-align:right">整體</th><th class="n" style="text-align:right">5–9 次</th><th class="n" style="text-align:right">200+</th></tr>
+<tr class="sel"><td class="k">SG window 5 vs window 2</td><td class="n">24.4%</td><td class="n">14.5%</td><td class="n">36.7%</td></tr>
+<tr><td class="k">CBOW window 5 vs window 2</td><td class="n">21.6%</td><td class="n">7.0%</td><td class="n">43.2%</td></tr>
+<tr><td class="k">SG 50 維 vs 100 維</td><td class="n">50.3%</td><td class="n">44.0%</td><td class="n">58.1%</td></tr>
+<tr><td class="k">CBOW 50 維 vs 100 維</td><td class="n">36.6%</td><td class="n">16.1%</td><td class="n">61.0%</td></tr>
+<tr><td class="k">SG min_count 5 vs 2</td><td class="n">36.3%</td><td class="n">18.1%</td><td class="n">49.6%</td></tr>
+<tr><td class="k muted">參照：SG 同設定、只換 seed</td><td class="n">48.6%</td><td class="n">41.7%</td><td class="n">53.9%</td></tr>
+</table>
+<ul>
+<li><b>視窗（影響最大）</b>：window 2 的近鄰更「句法」：weight → hair, antipsychotic-induced, body-weight（緊鄰詞）；window 5 → loss, achieve, attributable（主題）。semaglutide 在 window 2 得到更多藥名（survodutide, ecnoglutide），因藥名多在「A vs B」的緊鄰位置；t-SNE 中 window 2 的藥名群更純，window 5 混入 once-weekly, low-dose。window 2 的 loss 也較低（2.005 vs 2.062）：近的詞較好預測。</li>
+<li><b>維度（影響最小）</b>：100 維的 sim@10 幾乎不變，5–9 次變形 hit@10 6.1% → 9.1%，組內 cosine 0.68 → 0.66，訓練時間加倍（255 → 475 s）：對 4,438 詞、16 萬 token，50 維已足夠。CBOW 對維度較敏感。</li>
+<li><b>min_count 2</b>：詞彙 4,438 → 8,544，新增詞只出現 1–4 次，sim@10 0.967、近鄰頻次中位數 2：罕見詞互抱成團並污染既有近鄰（kidney 的近鄰出現 iec-ppara 之類基因名）。</li>
+</ul>
+</section>
+</div>
+
+<section>
+<h2><span>RQ3</span>PCA 與 t-SNE 的視覺化結果有何不同？</h2>
+<div class="three">
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="20 46 820 480" font-family="Noto Sans TC, Helvetica, Arial, sans-serif"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="285.2" cy="218.0" r="7" fill="#eda100" fill-opacity="0.85"/><text x="291.2" y="222.0" font-size="14" font-weight="bold" fill="#1d2333">semaglutide</text><circle cx="663.5" cy="115.1" r="7" fill="#1baf7a" fill-opacity="0.85"/><text x="669.5" y="119.1" font-size="14" font-weight="bold" fill="#1d2333">nausea</text><circle cx="645.3" cy="457.1" r="7" fill="#2a78d6" fill-opacity="0.85"/><text x="651.3" y="461.1" font-size="14" font-weight="bold" fill="#1d2333">kidney</text><circle cx="93.5" cy="333.5" r="7" fill="#eb6834" fill-opacity="0.85"/><text x="99.5" y="337.5" font-size="14" font-weight="bold" fill="#1d2333">mice</text><circle cx="317.2" cy="162.1" r="5" fill="#eda100" fill-opacity="0.85"/><text x="323.2" y="166.1" font-size="14"  fill="#1d2333">dulaglutide</text><circle cx="282.7" cy="167.1" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="229.0" cy="235.9" r="5" fill="#eda100" fill-opacity="0.85"/><text x="235.0" y="239.9" font-size="14"  fill="#1d2333">liraglutide</text><circle cx="197.4" cy="192.8" r="5" fill="#eda100" fill-opacity="0.85"/><text x="203.4" y="196.8" font-size="14"  fill="#1d2333">low-dose</text><circle cx="287.7" cy="123.2" r="5" fill="#eda100" fill-opacity="0.85"/><text x="293.7" y="127.2" font-size="14"  fill="#1d2333">bgm0504</text><circle cx="241.5" cy="182.8" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="274.2" cy="171.9" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="313.5" cy="171.0" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="283.6" cy="241.8" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="249.9" cy="117.4" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="278.7" cy="143.6" r="5" fill="#eda100" fill-opacity="0.85"/><text x="284.7" y="147.6" font-size="14"  fill="#1d2333">cagrisema</text><circle cx="258.3" cy="129.3" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="680.2" cy="128.6" r="5" fill="#1baf7a" fill-opacity="0.85"/><text x="686.2" y="132.6" font-size="14"  fill="#1d2333">vomiting</text><circle cx="670.3" cy="95.2" r="5" fill="#1baf7a" fill-opacity="0.85"/><text x="676.3" y="99.2" font-size="14"  fill="#1d2333">serious</text><circle cx="676.0" cy="209.2" r="5" fill="#1baf7a" fill-opacity="0.85"/><text x="682.0" y="213.2" font-size="14"  fill="#1d2333">diarrhea</text><circle cx="619.7" cy="204.6" r="5" fill="#1baf7a" fill-opacity="0.85"/><circle cx="658.9" cy="66.8" r="5" fill="#1baf7a" fill-opacity="0.85"/><text x="664.9" y="70.8" font-size="14"  fill="#1d2333">aes</text><circle cx="581.6" cy="163.6" r="5" fill="#1baf7a" fill-opacity="0.85"/><text x="587.6" y="167.6" font-size="14"  fill="#1d2333">headache</text><circle cx="622.8" cy="85.4" r="5" fill="#1baf7a" fill-opacity="0.85"/><circle cx="660.8" cy="87.8" r="5" fill="#1baf7a" fill-opacity="0.85"/><circle cx="604.7" cy="109.0" r="5" fill="#1baf7a" fill-opacity="0.85"/><circle cx="630.2" cy="76.5" r="5" fill="#1baf7a" fill-opacity="0.85"/><text x="636.2" y="80.5" font-size="14"  fill="#1d2333">gi</text><circle cx="606.9" cy="119.6" r="5" fill="#1baf7a" fill-opacity="0.85"/><text x="612.9" y="123.6" font-size="14"  fill="#1d2333">teaes</text><circle cx="602.2" cy="112.9" r="5" fill="#1baf7a" fill-opacity="0.85"/><circle cx="672.4" cy="440.0" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="678.4" y="444.0" font-size="14"  fill="#1d2333">atherosclerotic</text><circle cx="679.5" cy="479.5" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="685.5" y="483.5" font-size="14"  fill="#1d2333">progression</text><circle cx="680.4" cy="395.2" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="686.4" y="399.2" font-size="14"  fill="#1d2333">cardiovascular</text><circle cx="665.3" cy="458.2" r="5" fill="#2a78d6" fill-opacity="0.85"/><circle cx="596.4" cy="435.8" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="602.4" y="439.8" font-size="14"  fill="#1d2333">renal</text><circle cx="598.0" cy="499.1" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="604.0" y="503.1" font-size="14"  fill="#1d2333">ckd</text><circle cx="593.8" cy="375.8" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="599.8" y="379.8" font-size="14"  fill="#1d2333">albuminuria</text><circle cx="694.7" cy="412.9" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="700.7" y="416.9" font-size="14"  fill="#1d2333">end-stage</text><circle cx="614.1" cy="513.2" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="620.1" y="517.2" font-size="14"  fill="#1d2333">cardio-kidney-metabolic</text><circle cx="701.4" cy="390.9" r="5" fill="#2a78d6" fill-opacity="0.85"/><circle cx="588.5" cy="452.5" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="594.5" y="456.5" font-size="14"  fill="#1d2333">confers</text><circle cx="613.2" cy="402.3" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="619.2" y="406.3" font-size="14"  fill="#1d2333">heart</text><circle cx="160.3" cy="361.7" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="166.3" y="365.7" font-size="14"  fill="#1d2333">rats</text><circle cx="108.7" cy="342.4" r="5" fill="#eb6834" fill-opacity="0.85"/><circle cx="114.6" cy="363.3" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="120.6" y="367.3" font-size="14"  fill="#1d2333">dio</text><circle cx="174.5" cy="341.2" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="180.5" y="345.2" font-size="14"  fill="#1d2333">db</text><circle cx="108.1" cy="311.5" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="114.1" y="315.5" font-size="14"  fill="#1d2333">c57bl</text><circle cx="169.7" cy="298.4" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="175.7" y="302.4" font-size="14"  fill="#1d2333">iec-ppara</text><circle cx="58.6" cy="331.3" r="5" fill="#eb6834" fill-opacity="0.85"/><circle cx="120.1" cy="398.0" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="126.1" y="402.0" font-size="14"  fill="#1d2333">diet-induced</text><circle cx="208.5" cy="371.2" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="214.5" y="375.2" font-size="14"  fill="#1d2333">hfd-fed</text><circle cx="254.7" cy="337.2" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="260.7" y="341.2" font-size="14"  fill="#1d2333">streptozotocin-induced</text><circle cx="104.1" cy="291.0" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="110.1" y="295.0" font-size="14"  fill="#1d2333">hfd</text><circle cx="235.6" cy="355.8" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="241.6" y="359.8" font-size="14"  fill="#1d2333">animals</text></svg><figcaption><b>PCA</b>（Skip-gram 基準）：4 個種子詞（粗體）各加 12 個最近鄰，共 52 詞。PC1 大致是「臨床 / 藥物」對「動物 / 機制」軸。</figcaption></figure>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="20 46 820 480" font-family="Noto Sans TC, Helvetica, Arial, sans-serif"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="419.5" cy="74.3" r="7" fill="#eda100" fill-opacity="0.85"/><text x="425.5" y="78.3" font-size="14" font-weight="bold" fill="#1d2333">semaglutide</text><circle cx="79.4" cy="317.1" r="7" fill="#1baf7a" fill-opacity="0.85"/><text x="85.4" y="321.1" font-size="14" font-weight="bold" fill="#1d2333">nausea</text><circle cx="212.8" cy="498.3" r="7" fill="#2a78d6" fill-opacity="0.85"/><text x="218.8" y="502.3" font-size="14" font-weight="bold" fill="#1d2333">kidney</text><circle cx="680.9" cy="87.3" r="7" fill="#eb6834" fill-opacity="0.85"/><text x="686.9" y="91.3" font-size="14" font-weight="bold" fill="#1d2333">mice</text><circle cx="445.5" cy="74.5" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="436.2" cy="119.9" r="5" fill="#eda100" fill-opacity="0.85"/><text x="442.2" y="123.9" font-size="14"  fill="#1d2333">submaximal</text><circle cx="457.5" cy="66.8" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="456.5" cy="124.6" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="418.7" cy="128.9" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="389.9" cy="110.5" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="411.0" cy="115.7" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="374.1" cy="146.1" r="5" fill="#eda100" fill-opacity="0.85"/><text x="380.1" y="150.1" font-size="14"  fill="#1d2333">retatrutide</text><circle cx="379.1" cy="142.8" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="383.5" cy="121.1" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="431.3" cy="136.1" r="5" fill="#eda100" fill-opacity="0.85"/><circle cx="404.7" cy="133.6" r="5" fill="#eda100" fill-opacity="0.85"/><text x="410.7" y="137.6" font-size="14"  fill="#1d2333">ubt251</text><circle cx="90.6" cy="327.7" r="5" fill="#1baf7a" fill-opacity="0.85"/><circle cx="97.5" cy="299.1" r="5" fill="#1baf7a" fill-opacity="0.85"/><text x="103.5" y="303.1" font-size="14"  fill="#1d2333">serious</text><circle cx="110.1" cy="340.7" r="5" fill="#1baf7a" fill-opacity="0.85"/><text x="116.1" y="344.7" font-size="14"  fill="#1d2333">diarrhea</text><circle cx="101.7" cy="344.8" r="5" fill="#1baf7a" fill-opacity="0.85"/><circle cx="82.3" cy="286.2" r="5" fill="#1baf7a" fill-opacity="0.85"/><text x="88.3" y="290.2" font-size="14"  fill="#1d2333">aes</text><circle cx="84.7" cy="344.1" r="5" fill="#1baf7a" fill-opacity="0.85"/><circle cx="117.4" cy="303.7" r="5" fill="#1baf7a" fill-opacity="0.85"/><circle cx="90.7" cy="284.3" r="5" fill="#1baf7a" fill-opacity="0.85"/><circle cx="123.9" cy="296.1" r="5" fill="#1baf7a" fill-opacity="0.85"/><circle cx="58.6" cy="290.3" r="5" fill="#1baf7a" fill-opacity="0.85"/><text x="64.6" y="294.3" font-size="14"  fill="#1d2333">gi</text><circle cx="131.5" cy="294.2" r="5" fill="#1baf7a" fill-opacity="0.85"/><circle cx="113.1" cy="265.1" r="5" fill="#1baf7a" fill-opacity="0.85"/><text x="119.1" y="269.1" font-size="14"  fill="#1d2333">frequent</text><circle cx="179.5" cy="473.7" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="185.5" y="477.7" font-size="14"  fill="#1d2333">atherosclerotic</text><circle cx="153.4" cy="505.6" r="5" fill="#2a78d6" fill-opacity="0.85"/><circle cx="216.0" cy="476.1" r="5" fill="#2a78d6" fill-opacity="0.85"/><circle cx="140.9" cy="485.2" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="146.9" y="489.2" font-size="14"  fill="#1d2333">slowing</text><circle cx="196.8" cy="510.9" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="202.8" y="514.9" font-size="14"  fill="#1d2333">renal</text><circle cx="126.7" cy="513.2" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="132.7" y="517.2" font-size="14"  fill="#1d2333">ckd</text><circle cx="181.4" cy="441.1" r="5" fill="#2a78d6" fill-opacity="0.85"/><text x="187.4" y="445.1" font-size="14"  fill="#1d2333">albuminuria</text><circle cx="154.2" cy="474.6" r="5" fill="#2a78d6" fill-opacity="0.85"/><circle cx="123.9" cy="486.7" r="5" fill="#2a78d6" fill-opacity="0.85"/><circle cx="157.4" cy="467.2" r="5" fill="#2a78d6" fill-opacity="0.85"/><circle cx="149.7" cy="488.0" r="5" fill="#2a78d6" fill-opacity="0.85"/><circle cx="186.7" cy="433.1" r="5" fill="#2a78d6" fill-opacity="0.85"/><circle cx="649.7" cy="83.0" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="655.7" y="87.0" font-size="14"  fill="#1d2333">rats</text><circle cx="701.4" cy="102.4" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="707.4" y="106.4" font-size="14"  fill="#1d2333">induced</text><circle cx="689.5" cy="123.3" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="695.5" y="127.3" font-size="14"  fill="#1d2333">dio</text><circle cx="622.8" cy="87.1" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="628.8" y="91.1" font-size="14"  fill="#1d2333">db</text><circle cx="648.6" cy="123.9" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="654.6" y="127.9" font-size="14"  fill="#1d2333">c57bl</text><circle cx="681.3" cy="114.2" r="5" fill="#eb6834" fill-opacity="0.85"/><circle cx="652.4" cy="141.5" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="658.4" y="145.5" font-size="14"  fill="#1d2333">high-fat</text><circle cx="700.3" cy="139.9" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="706.3" y="143.9" font-size="14"  fill="#1d2333">diet-induced</text><circle cx="649.0" cy="119.0" r="5" fill="#eb6834" fill-opacity="0.85"/><circle cx="625.1" cy="96.4" r="5" fill="#eb6834" fill-opacity="0.85"/><circle cx="645.8" cy="137.5" r="5" fill="#eb6834" fill-opacity="0.85"/><circle cx="612.5" cy="98.8" r="5" fill="#eb6834" fill-opacity="0.85"/><text x="618.5" y="102.8" font-size="14"  fill="#1d2333">animals</text></svg><figcaption><b>t-SNE</b>（perplexity 15、400 iterations、KL 0.054）：同 52 詞、同模型，被拉成 4 個緊密的島。</figcaption></figure>
+<div class="kv">
+<p><b class="h">PCA</b>　線性：投影到變異最大的兩個正交方向（power iteration）。PC1 34.6% + PC2 19.1% = <b>53.7%</b> 變異；k-NN 保留率 k=5 / 10 = 50.8% / 83.1%。座標與距離有意義、可重現；但群內細節被壓扁（k=5 只留一半），在未挑種子的 120 個高頻詞上兩個主成分只解釋 15.4% 變異，圖幾乎沒有結構。</p>
+<p><b class="h">t-SNE</b>　非線性：最小化高維鄰居機率 P 與低維 Q 的 KL 散度。k-NN 保留率 <b>81.5% / 89.0%</b>（高頻詞 60.3% / 53.8%），局部鄰域忠實；但<b>群間距離、群的大小與方位都沒有意義</b>，換 perplexity 5 / 30 或 seed 就得到不同佈局（76.5–81.5%），KL 隨 perplexity 單調下降，不能當品質指標。</p>
+</div>
+</div>
+<p class="verdict"><b>注意</b>　四群在兩張圖都分得開，主要因為種子本來就是語料中相距最遠的主題；t-SNE 對完全隨機的向量也會畫出一團團「群」。<b>視覺上成群 ≠ 語意好</b>：判斷依據是 RQ2 的 cosine 基準線與 RQ1 / RQ5 的量化指標，圖只用來看「模型把誰當成鄰居」。</p>
+</section>
+
+<section>
+<h2><span>RQ5</span>小型語料的限制為何？</h2>
+<div class="cols">
+<p><b>穩定度是最直接的證據。</b>同語料、同超參數只換隨機 seed，Skip-gram 對同一詞的前 10 近鄰只剩 <b>48.6%</b> 重疊、CBOW <b>36.7%</b>；5–9 次的詞分別 41.7% 與 16.6%。亦即「某個罕見詞的鄰居是誰」有一半以上由初始化與抽樣順序決定；200+ 次的高頻詞 54–60%，穩定得多但仍非完全穩定。</p>
+<p><b>低頻詞</b>：Zipf 長尾使 41% 詞型只出現一次、69% 不到 5 次；留下的 4,438 詞中仍有 40%（1,766 個）只出現 5–9 次，其 sim@10 高達 0.93–0.97：不是學得好，而是向量幾乎沒離開初始化、彼此仍在同一方向上。</p>
+<p><b>專業術語</b>：tumor 19 次、nafld 10、retinopathy 18、parkinson 12，皆在不穩定區；藥名例外（semaglutide 759、tirzepatide 446）是因為語料本來就以 GLP-1 查得。一個術語要數百次出現才穩，本語料只有 123 個詞超過 200 次。</p>
+<p><b>語料領域</b>：單一主題讓「同主題」失去鑑別力：obesity–diabetes 0.66 反而高於 diabetes–insulin 0.30；腫瘤、神經科的詞以「GLP-1 對 X 的影響」樣板句出現，所以 cancer 的 CBOW 近鄰變成糖尿病併發症。反面是優點：無一詞多義、句法規整，才能在 16 萬 token 上學出 6 個主題群。</p>
+<p><b>資料量</b>：1.8 × 10⁵ token，比 Mikolov 的 10⁹ 少四個數量級。loss 在 10 epochs 收斂不是學完了，而是能擠出的資訊就這麼多；再多 epoch 只會更貼合這 1,000 篇的措辭。</p>
+</div>
+<p class="verdict"><b>結論</b>　1,000 篇摘要足以學到<b>主題層級</b>的嵌入：查詢擴展（semaglutide → dulaglutide / liraglutide）、同義縮寫（t2dm / t2d / mellitus）、副作用詞群、用 PCA / t-SNE 探索主題；不足以支撐<b>詞層級</b>的精度：類比推理、罕見術語的相似度。改善方向：在 PubMed / PMC OA 大型語料預訓練再微調、fastText 子詞（讓 glp-1ra / glp-1ras / glp-1r 共享參數）、或改用上下文嵌入。</p>
+</section>
+
+</div>
+<footer>
+<span>重現：<code>python3 app.py</code> → /#w2v；<code>python3 cli.py w2v vocab | train | compare | pairs | map | eval | overlap</code>；圖 <code>report/w2v_*.svg</code>；模型 <code>data/w2v/*.json</code>；測試 <code>python3 -m unittest discover -s tests</code></span>
+<span>Biomedical IR · Project #2 · 2026-10</span>
+</footer>
+</section>
+</body>
+</html>
