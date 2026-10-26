@@ -1,0 +1,284 @@
+{
+ "notes": "Evaluation queries for the GLP-1 abstract collection (data/vsm/pubmed_glp1_3000.jsonl). Relevance is derived from the topic labels of each record (MeSH headings with the major-topic flag, author keywords): a document is relevant when every concept group matches at least one label (regular expressions, case-insensitive); grade 2 when at least one matching MeSH heading is a major topic. 'manual' holds hand judgements that override the rule (PMID -> 0/1/2). The judgements are label-based, not text-based, so they do not depend on the weighting scheme under test; their limits are discussed in REPORT_tfidf.md.",
+ "queries": [
+  {
+   "id": "q01",
+   "text": "semaglutide weight loss in obesity",
+   "description": "drug + condition: both concepts are frequent in the collection",
+   "groups": [
+    [
+     "semaglutide",
+     "wegovy",
+     "ozempic"
+    ],
+    [
+     "obes",
+     "overweight",
+     "weight loss",
+     "body weight",
+     "weight reduction",
+     "weight management",
+     "anti-obesity"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q02",
+   "text": "tirzepatide glycemic control in type 2 diabetes",
+   "description": "drug + condition; 'diabetes' is one of the most common terms (low idf)",
+   "groups": [
+    [
+     "tirzepatide",
+     "mounjaro",
+     "zepbound"
+    ],
+    [
+     "diabetes mellitus, type 2",
+     "type 2 diabetes",
+     "t2dm?\\b",
+     "glyc(a|e)emic control",
+     "glycated hemoglobin",
+     "hba1c",
+     "blood glucose"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q03",
+   "text": "GLP-1 receptor agonists and cardiovascular outcomes",
+   "description": "the collection topic itself + an outcome: the drug-class terms carry almost no idf",
+   "groups": [
+    [
+     "glp-?1 ?r",
+     "glucagon-like peptide-?1 receptor agonist",
+     "incretin",
+     "glp-1 receptor agonist"
+    ],
+    [
+     "cardiovascular",
+     "heart failure",
+     "myocardial",
+     "stroke",
+     "atrial fibrillation",
+     "major adverse card",
+     "mace\\b",
+     "coronary",
+     "cardiac",
+     "cardioprotect"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q04",
+   "text": "chronic kidney disease and diabetic nephropathy",
+   "description": "one concept, several surface forms (CKD, renal insufficiency, DKD)",
+   "groups": [
+    [
+     "renal insufficiency, chronic",
+     "chronic kidney",
+     "diabetic nephropath",
+     "diabetic kidney",
+     "kidney diseases",
+     "\\bckd\\b",
+     "\\bdkd\\b",
+     "glomerular filtration",
+     "renal function",
+     "renal outcome",
+     "nephroprotect",
+     "kidney function"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q05",
+   "text": "gut microbiota and bile acid metabolism",
+   "description": "mechanistic topic, mostly animal studies",
+   "groups": [
+    [
+     "gastrointestinal microbiome",
+     "gut microbio",
+     "microbiota",
+     "microbiome",
+     "bile acid",
+     "short-chain fatty"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q06",
+   "text": "fatty liver disease MASLD NAFLD steatohepatitis",
+   "description": "a topic that recently changed its name (NAFLD -> MASLD): synonyms in labels and text",
+   "groups": [
+    [
+     "fatty liver",
+     "non-alcoholic",
+     "nonalcoholic",
+     "\\bmasld\\b",
+     "\\bmafld\\b",
+     "\\bnafld\\b",
+     "\\bnash\\b",
+     "\\bmash\\b",
+     "steatotic liver",
+     "steatohepatitis",
+     "hepatic steatosis",
+     "liver fibrosis"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q07",
+   "text": "neuroprotection in Alzheimer's and Parkinson's disease",
+   "description": "neurological topic; rare, high-idf terms",
+   "groups": [
+    [
+     "alzheimer",
+     "parkinson",
+     "neurodegenerat",
+     "neuroprotect",
+     "neuroinflammation",
+     "cognitive dysfunction",
+     "cognitive impairment",
+     "dementia",
+     "cognition"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q08",
+   "text": "bariatric surgery versus medication for weight loss",
+   "description": "procedure vs drug comparison",
+   "groups": [
+    [
+     "bariatric",
+     "gastric bypass",
+     "sleeve gastrectomy",
+     "metabolic surgery",
+     "obesity surgery",
+     "gastrectomy"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q09",
+   "text": "gastrointestinal adverse events nausea vomiting",
+   "description": "safety topic: gastrointestinal side effects; the query words are common in abstracts (most trials mention them), but as labels they mark papers *about* them",
+   "groups": [
+    [
+     "nausea",
+     "vomiting",
+     "gastroparesis",
+     "gastrointestinal (diseases|adverse|side|symptom|tolerab|complication|event|disorder|safety)",
+     "drug-related side effects",
+     "\\bgi (adverse|side|symptom|event|tolerab)",
+     "diarrh(o)?ea",
+     "constipation",
+     "pancreatitis",
+     "ileus",
+     "bowel obstruction"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q10",
+   "text": "polycystic ovary syndrome",
+   "description": "a small, well-defined topic (PCOS)",
+   "groups": [
+    [
+     "polycystic ovar",
+     "\\bpcos\\b"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q11",
+   "text": "SGLT2 inhibitors combination therapy",
+   "description": "a second drug class combined with GLP-1 RAs",
+   "groups": [
+    [
+     "sodium-glucose (co-?)?transporter",
+     "sglt-?2",
+     "sglt2i",
+     "gliflozin",
+     "empagliflozin",
+     "dapagliflozin"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q12",
+   "text": "insulin secretion from pancreatic beta cells",
+   "description": "physiology topic; 'insulin' is frequent, 'beta cell' is specific",
+   "groups": [
+    [
+     "insulin-secreting cells",
+     "beta[- ]?cell",
+     "β[- ]?cell",
+     "insulin secretion",
+     "islets of langerhans",
+     "islet",
+     "pancrea"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q13",
+   "text": "obstructive sleep apnea treatment",
+   "description": "a new indication (tirzepatide for OSA)",
+   "groups": [
+    [
+     "sleep apnea",
+     "sleep apnoea",
+     "\\bosa\\b"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q14",
+   "text": "cost-effectiveness and health economics",
+   "description": "economic studies: the labels are specific, the words are generic",
+   "groups": [
+    [
+     "cost-benefit",
+     "cost-effective",
+     "cost effective",
+     "cost-utility",
+     "health care costs",
+     "health economic",
+     "economic evaluation",
+     "budget impact",
+     "drug costs",
+     "quality-adjusted",
+     "qaly"
+    ]
+   ],
+   "manual": {}
+  },
+  {
+   "id": "q15",
+   "text": "type 1 diabetes adjunct therapy",
+   "description": "type 1 vs the much more common type 2: a one-token difference",
+   "groups": [
+    [
+     "diabetes mellitus, type 1",
+     "type 1 diabetes",
+     "\\bt1dm?\\b",
+     "insulin-dependent"
+    ]
+   ],
+   "manual": {}
+  }
+ ]
+}

@@ -229,7 +229,7 @@ def search_pubmed(term: str, retmax: int = 1000) -> tuple[list[str], int]:
 
 
 def pubmed_records(xml_text: str) -> list[dict]:
-    """PubmedArticleSet XML -> [{pmid, title, abstract: [paragraphs], journal, year, authors, keywords, doi}]."""
+    """PubmedArticleSet XML -> [{pmid, title, abstract: [paragraphs], journal, year, authors, keywords, doi, mesh, pubtypes}]."""
     xml_text = re.sub(r"<!DOCTYPE[^>]*>", "", xml_text, count=1)
     out = []
     for pa in ET.fromstring(xml_text).iter("PubmedArticle"):
@@ -258,6 +258,14 @@ def pubmed_records(xml_text: str) -> list[dict]:
             "authors": [a for a in authors if a],
             "keywords": [k for k in (_t(k) for k in cit.iter("Keyword")) if k],
             "doi": doi,
+            # MeSH headings: descriptor, whether it is a major topic (the article is *about* it),
+            # qualifiers.  Recent records are often not yet indexed, so the list may be empty.
+            "mesh": [{"d": _t(mh.find("DescriptorName")),
+                      "major": mh.find("DescriptorName").get("MajorTopicYN") == "Y"
+                      or any(q.get("MajorTopicYN") == "Y" for q in mh.findall("QualifierName")),
+                      "q": [_t(q) for q in mh.findall("QualifierName")]}
+                     for mh in cit.iter("MeshHeading") if mh.find("DescriptorName") is not None],
+            "pubtypes": [t for t in (_t(pt) for pt in art.iter("PublicationType")) if t],
         })
     return out
 

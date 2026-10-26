@@ -30,6 +30,15 @@ Endpoints
     POST /api/w2v/train          (body: JSON {model: sg|cbow, dim, window, negative, min_count, epochs, seed,
                                   remove_stopwords, name}) - queued; several jobs run one after another
     POST /api/w2v/select?name=   make a model the active one      POST /api/w2v/delete?name=
+    GET  /api/vsm/info           Project #3: collection + term statistics, tf / idf curves, weighting schemes
+    GET  /api/vsm/terms?terms=a,b          CF / DF / IDF / max tf of chosen terms
+    GET  /api/vsm/doc?id=PMID..&schemes=nnn,lnn,ltc&top=15   one document's term-weight vector under several schemes
+    GET  /api/vsm/search?q=..&scheme=ltc&qscheme=nnc&k=10    top-k by dot product / cosine with per-term contributions
+    GET  /api/vsm/compare?q=..&schemes=ltn,ltc&k=10          the same query under several schemes (overlap, tau, lengths)
+    GET  /api/vsm/eval?schemes=..&k=10&condensed=0           P@k / R@k / MRR / MAP / nDCG@k over the evaluation queries
+    GET  /api/vsm/queries        the evaluation queries and their relevant sets;  /api/vsm/relevant?id=q01&scheme=ltc
+    POST /api/vsm/judge?id=q01&doc=PMID..&grade=0|1|2|   manual relevance judgement (empty grade = remove)
+    POST /api/vsm/collect        (body: JSON {term, n, name}) download a collection with MeSH into data/vsm/
     POST /api/collect            (body: JSON {term, n, name}) build a PubMed abstract collection
     POST /api/upload?filename=x.xml   (body: raw XML)  add a document to the index
     POST /api/fetch?replace=0|1  (body: JSON {"ids": "..."} or plain text)
@@ -173,6 +182,25 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(engine.w2v_eval(qs.get("models", ""), max(1, min(int(qs.get("k", 10)), 30))))
             if path == "/api/w2v/overlap":
                 return self._json(engine.w2v_overlap(qs.get("models", ""), max(1, min(int(qs.get("k", 10)), 30)), qs.get("words", "")))
+            if path == "/api/vsm/info":
+                return self._json(engine.vsm_info())
+            if path == "/api/vsm/terms":
+                return self._json(engine.vsm_terms(qs.get("terms", "")))
+            if path == "/api/vsm/doc":
+                return self._json(engine.vsm_doc(qs.get("id", "").strip(), qs.get("schemes", ""), max(1, min(int(qs.get("top", 15)), 200))))
+            if path == "/api/vsm/search":
+                return self._json(engine.vsm_search(qs.get("q", ""), qs.get("scheme", "ltc"), qs.get("qscheme", "nnc"),
+                                                    max(1, min(int(qs.get("k", 10)), 100))))
+            if path == "/api/vsm/compare":
+                return self._json(engine.vsm_compare(qs.get("q", ""), qs.get("schemes", ""), qs.get("qscheme", "nnc"),
+                                                     max(1, min(int(qs.get("k", 10)), 50))))
+            if path == "/api/vsm/eval":
+                return self._json(engine.vsm_eval(qs.get("schemes", ""), max(1, min(int(qs.get("k", 10)), 50)),
+                                                  qs.get("condensed", "0") == "1", qs.get("qscheme", "nnc")))
+            if path == "/api/vsm/queries":
+                return self._json(engine.vsm_query_list())
+            if path == "/api/vsm/relevant":
+                return self._json(engine.vsm_relevant(qs.get("id", ""), qs.get("scheme", "ltc"), qs.get("qscheme", "nnc")))
             if path == "/api/vocab":
                 return self._json(engine.vocabulary(qs.get("prefix", ""), int(qs.get("limit", 200))))
             self.send_error(404)
@@ -210,6 +238,14 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(engine.w2v_select(qs.get("name", "")))
             if url.path == "/api/w2v/delete":
                 return self._json(engine.w2v_delete(qs.get("name", "")))
+            if url.path == "/api/vsm/judge":
+                g = qs.get("grade", "")
+                return self._json(engine.vsm_judge(qs.get("id", ""), qs.get("doc", ""), int(g) if g.strip().lstrip("-").isdigit() else None))
+            if url.path == "/api/vsm/collect":
+                p = json.loads(body.decode("utf-8") or "{}")
+                if not str(p.get("term", "")).strip():
+                    raise ValueError("empty PubMed query")
+                return self._json(engine.vsm_collect(str(p["term"]).strip(), int(p.get("n", 3000)), str(p.get("name", ""))))
             if url.path == "/api/collect":
                 p = json.loads(body.decode("utf-8") or "{}")
                 if not str(p.get("term", "")).strip():

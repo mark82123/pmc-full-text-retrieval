@@ -13,7 +13,7 @@
     <span class="logo">⌕</span>
     <div>
       <h1>PMC Full-Text Retrieval Tool</h1>
-      <p class="sub">AI Information Retrieval 人工智慧資訊檢索 · Project #1 + #2 · PMC full text · PubMed abstracts · Zipf · word2vec · spelling correction</p>
+      <p class="sub">AI Information Retrieval 人工智慧資訊檢索 · Project #1 + #2 + #3 · PMC full text · PubMed abstracts · Zipf · word2vec · spelling correction · TF-IDF vector space</p>
     </div>
   </div>
   <nav class="tabs">
@@ -21,6 +21,7 @@
     <button class="tab" data-tab="corpus">Corpus &amp; Statistics</button>
     <button class="tab" data-tab="zipf">Zipf 分析</button>
     <button class="tab" data-tab="w2v">Word2Vec</button>
+    <button class="tab" data-tab="vsm">TF-IDF 檢索</button>
     <button class="tab" data-tab="spell">Edit Distance</button>
     <button class="tab" data-tab="upload">Add Documents</button>
     <button class="tab" data-tab="algo">前處理與演算法</button>
@@ -233,6 +234,93 @@
   </section>
 
   <!-- ============ SPELLING / EDIT DISTANCE ============ -->
+  <!-- ===================== Project #3: term weighting / vector space ===================== -->
+  <section id="tab-vsm" class="panel">
+    <div class="card help">
+      <h2>Term Weighting 與向量空間檢索（TF-IDF）</h2>
+      <p>以 3,000 篇 PubMed 摘要（<i>GLP-1</i>，含 MeSH 標題）建立向量空間模型：<code>ir/tfidf.py</code> 把每篇文件（標題 + 摘要）轉成詞項權重向量，
+        權重以 SMART 三元記法 <code>tf · df · norm</code> 組合（<b>n</b>atural / <b>l</b>og / <b>a</b>ugmented / <b>b</b>oolean　×　<b>n</b>one / <b>t</b> = idf / <b>p</b>rob-idf　×　<b>n</b>one / <b>c</b>osine）；
+        查詢轉成同一詞彙空間的向量，分數 = 查詢向量 · 文件向量（兩側皆 L2 正規化時即 cosine similarity），由高至低排序並顯示前 10 名。
+        <code>ir/evaluation.py</code> 計算 P@k、R@k、MRR、MAP、nDCG@k；<code>ir/relevance.py</code> 由 MeSH / 作者關鍵詞建立 15 個查詢的相關文件集。</p>
+      <nav class="subnav" id="vsm-nav">
+        <a href="#vsm-s1">1 前處理與詞項統計</a><a href="#vsm-s2">2 Term weighting</a><a href="#vsm-s3">3 搜尋引擎</a>
+        <a href="#vsm-s4">4 對照實驗</a><a href="#vsm-s5">5 評估</a><a href="#vsm-s6">6 RQ 結論</a>
+      </nav>
+    </div>
+
+    <!-- 1 pre-processing + term statistics -->
+    <div class="card" id="vsm-s1">
+      <h2>1. 文字前處理與詞項統計</h2>
+      <p class="hint">前處理流程：tokenise（字母 / 數字連續片段）→ 小寫 → 停用詞移除（Snowball + 生醫補充）→ Porter stemming。每個詞項記錄 tf（在文件中的次數）、df（含此詞的文件數）、cf（全集合次數），
+        idf = ln(N / df)。下方曲線說明 RQ1（tf 的增長如何被 log 壓縮）與 RQ2（df 越大 idf 越小）。</p>
+      <div id="vsm-info"><p class="muted">loading…</p></div>
+      <div class="try"><input id="vt-terms" value="glp receptor agonist diabetes obesity patients semaglutide tirzepatide kidney microbiota alzheimer pcos apnea cost nausea the"><button id="vt-go" class="primary">Term statistics</button></div>
+      <div id="vt-out"></div>
+    </div>
+
+    <!-- 2 term weighting of one document -->
+    <div class="card" id="vsm-s2">
+      <h2>2. 同一篇文件在不同 weighting 下的詞項權重</h2>
+      <p class="hint">選一篇文件，比較其向量在各 scheme 下的前幾個詞與權重分布：raw TF 讓高頻但常見的詞（effect、patient）佔據向量；log TF 壓縮高 tf；IDF 把 df 高的詞壓低、把專有名詞抬高；L2 正規化讓長短文件的向量長度都是 1。</p>
+      <div class="try"><input id="vd-id" placeholder="PMID（空白 = 第一篇）" style="max-width:220px;min-width:180px">
+        <span class="chips" id="vd-schemes"></span>
+        <label>Top <input id="vd-top" type="number" min="5" max="60" value="12" style="width:60px"></label>
+        <button id="vd-go" class="primary">Show vectors</button></div>
+      <div id="vd-out"></div>
+    </div>
+
+    <!-- 3 search engine -->
+    <div class="card" id="vsm-s3">
+      <h2>3. 簡易搜尋引擎（向量空間模型）</h2>
+      <p class="hint">查詢 → 同樣的前處理 → 查詢向量（預設 <code>nnc</code>：原始 query tf、不乘 idf、L2 正規化；查詢端的正規化只縮放分數，不改變排名）→ 與每篇文件向量做內積 → 由高至低排序。
+        每筆結果列出各詞項的貢獻 <i>w(t,q) × w(t,d)</i>。若查詢是評估集中的查詢，會標示相關等級並可手動修改判斷。</p>
+      <div class="try"><input id="vq" value="semaglutide weight loss in obesity" placeholder="query">
+        <label>Doc scheme <select id="vq-scheme"></select></label>
+        <label>Query <select id="vq-qscheme"><option value="nnc" selected>nnc（raw tf, L2）</option><option value="nnn">nnn（raw tf）</option><option value="ntc">ntc（tf·idf, L2）</option><option value="ltc">ltc（log tf·idf, L2）</option><option value="btc">btc（boolean·idf, L2）</option></select></label>
+        <label>k <select id="vq-k"><option>10</option><option>20</option><option>50</option></select></label>
+        <button id="vq-go" class="primary">Search</button></div>
+      <div class="examples" id="vq-examples"></div>
+      <div id="vq-out"></div>
+    </div>
+
+    <!-- 4 controlled experiments -->
+    <div class="card" id="vsm-s4">
+      <h2>4. 對照實驗：同一查詢、一次只改一個因素</h2>
+      <p class="hint">固定查詢與查詢端權重，比較文件端 scheme。overlap@k 與 Kendall τ 以第一個 scheme 為基準；mean length 是前 k 名文件的平均索引詞數（RQ4：未正規化偏好長文件）。</p>
+      <div class="row" style="margin-bottom:8px"><span class="muted">預設實驗：</span>
+        <button class="small" data-exp="nnn,lnn,ntn,ltn" title="RQ1">RQ1 raw vs log TF</button>
+        <button class="small" data-exp="lnn,ltn,lnc,ltc" title="RQ2">RQ2 有無 IDF</button>
+        <button class="small" data-exp="nnn,btn,ntn,ltn" title="RQ3">RQ3 TF / IDF / TF-IDF</button>
+        <button class="small" data-exp="ltn,ltc,nnn,nnc" title="RQ4">RQ4 L2 正規化</button>
+        <button class="small" data-exp="ltc,atc,lpc,bm25" title="variants">變形 + BM25</button></div>
+      <div class="try"><input id="vc-q" value="GLP-1 receptor agonists and cardiovascular outcomes" placeholder="query">
+        <label>k <select id="vc-k"><option>10</option><option>20</option></select></label>
+        <button id="vc-go" class="primary">Compare</button></div>
+      <div class="chips model-picks" id="vc-schemes"></div>
+      <div id="vc-out"></div>
+    </div>
+
+    <!-- 5 evaluation -->
+    <div class="card" id="vsm-s5">
+      <h2>5. 搜尋結果評估</h2>
+      <p class="hint">15 個查詢；相關文件集由每篇記錄的 <b>MeSH 標題</b>（含 major-topic 旗標）與<b>作者關鍵詞</b>依規則產生（每個概念群至少命中一個標籤 → 相關；有 major-topic MeSH 命中 → grade 2），
+        與文字本身無關，因此不偏向任何 weighting。限制：約 5% 的記錄沒有任何標籤、較新的記錄 MeSH 尚未完成、規則由作者撰寫。可在第 3 節手動修改個別判斷。</p>
+      <div id="ve-queries"><p class="muted">loading…</p></div>
+      <div class="row" style="margin:10px 0"><span class="muted">評估 schemes：</span><div class="chips model-picks" id="ve-schemes"></div>
+        <label>k <select id="ve-k"><option>10</option><option>5</option><option>20</option></select></label>
+        <label class="check"><input type="checkbox" id="ve-cond"> condensed（只計有標籤的文件）</label>
+        <button id="ve-go" class="primary small">Evaluate</button></div>
+      <div id="ve-out"></div>
+      <div id="ve-rel"></div>
+    </div>
+
+    <!-- 6 research questions -->
+    <div class="card" id="vsm-s6">
+      <h2>6. 研究問題（由目前的數據計算）</h2>
+      <div id="vr-out"><p class="muted">先執行第 5 節的評估。</p></div>
+    </div>
+  </section>
+
   <section id="tab-spell" class="panel">
     <div class="card help">
       <h2>Edit distance — 動態規劃</h2>
@@ -434,7 +522,7 @@
         <tr><td>Lexical diversity</td><td>詞彙多樣性<i class="info" data-tip="= 不重複詞幹數 ÷ 索引詞總數 (type-token ratio)。越接近 1 表示用詞越多樣。">ⓘ</i> = unique terms ÷ index terms</td></tr>
         <tr><td>df / cf</td><td>df<i class="info" data-tip="document frequency：含有此詞的文件數，用於計算 IDF。">ⓘ</i> = 含此詞的文件數；cf<i class="info" data-tip="collection frequency：此詞在整個語料庫中出現的總次數。">ⓘ</i> = 此詞在全語料庫的總出現次數</td></tr>
       </table>
-      <p class="author"><b>作者</b> 胡元楨 · 學號 P77141105 · 人工智慧資訊檢索 專案一、專案二</p>
+      <p class="author"><b>作者</b> 胡元楨 · 學號 P77141105 · 人工智慧資訊檢索 專案一、專案二、專案三</p>
     </div>
   </section>
 </main>
@@ -442,5 +530,6 @@
 <script src="/static/app.js"></script>
 <script src="/static/project2.js"></script>
 <script src="/static/w2v.js"></script>
+<script src="/static/tfidf.js"></script>
 </body>
 </html>

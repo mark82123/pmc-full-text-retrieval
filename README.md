@@ -2,7 +2,7 @@
 
 Author: 胡元楨 (student ID P77141105)
 
-Projects #1 and #2 for the AI Information Retrieval (人工智慧資訊檢索) course.
+Projects #1, #2 and #3 for the AI Information Retrieval (人工智慧資訊檢索) course.
 
 * **Project #1** – a full-text search engine for PubMed Central (PMC) XML articles with keyword
   retrieval, result visualisation, document statistics and rule-based sentence (EOS) detection.
@@ -13,6 +13,12 @@ Projects #1 and #2 for the AI Information Retrieval (人工智慧資訊檢索) c
   seed stability) and **edit-distance spelling correction / fuzzy matching** in search. The written
   analyses are in [REPORT.md](REPORT.md) (Zipf) and [REPORT_w2v.md](REPORT_w2v.md) (word embedding,
   RQ1–RQ5).
+* **Project #3** – **term weighting and a vector-space search engine** over a 3,000-abstract GLP-1
+  collection (with MeSH headings): raw / log / augmented / boolean TF, IDF and probabilistic IDF, L2
+  normalisation (SMART `tf·df·norm` triplets such as `ltc`), cosine ranking with per-term score
+  contributions, controlled one-factor experiments, and an evaluation with 15 queries whose
+  relevance judgements are derived from MeSH / author-keyword labels (P@k, R@k, MRR, MAP, nDCG@k).
+  Written analysis: [REPORT_tfidf.md](REPORT_tfidf.md) (RQ1–RQ5); one-page report in `docs/`.
 
 Everything is implemented from scratch in **pure Python 3 (standard library only)**
 plus a small vanilla-JavaScript front-end. No packages need to be installed.
@@ -37,6 +43,17 @@ python3 cli.py w2v compare semaglutide nausea cancer --models sg-d50-w5-m5-e10,c
 python3 cli.py w2v pairs "semaglutide,liraglutide;nausea,vomiting;mice,rats"   # cosine matrix
 python3 cli.py w2v map semaglutide nausea kidney mice --method tsne --svg report/
 python3 cli.py w2v eval ; python3 cli.py w2v overlap --models sg-d50-w5-m5-e10,sg-d50-w5-m5-e10-s2
+
+# Project #3  (web UI: the TF-IDF 檢索 tab, /#vsm)
+python3 cli.py vsm info                                      # collection, vocabulary, tf / idf curves, weighting schemes
+python3 cli.py vsm terms glp obesity semaglutide apnea       # cf / df / idf / max tf of terms
+python3 cli.py vsm doc PMID42233552 --schemes nnn,lnn,ltn,ltc    # one document's weight vector per scheme
+python3 cli.py vsm search "semaglutide weight loss in obesity" --scheme ltc -k 10   # top-10 with per-term contributions
+python3 cli.py vsm compare "polycystic ovary syndrome" --schemes ltn,ltc,nnn,nnc    # one factor at a time
+python3 cli.py vsm eval                                      # P@k / R@k / MRR / MAP / nDCG@k of every scheme, 15 queries
+python3 cli.py vsm queries ; python3 cli.py vsm relevant q10 # the queries, their rules and relevant sets
+python3 cli.py vsm collect "GLP-1" -n 3000 --name glp1_3000  # (re)download the collection with MeSH into data/vsm/
+python3 cli.py vsm svg report/                               # figures of the report
 ```
 
 ## Features
@@ -71,6 +88,19 @@ python3 cli.py w2v eval ; python3 cli.py w2v overlap --models sg-d50-w5-m5-e10,s
 The Zipf / word2vec tabs analyse the PubMed abstract collection (title + abstract of each
 record); if no collection is present they fall back to all indexed documents.
 
+## Project #3 features
+
+| Area | What the system does |
+|---|---|
+| Collection | `data/vsm/pubmed_glp1_3000.jsonl`: the 3,000 newest English PubMed abstracts for *GLP-1* downloaded with `efetch`, each record with title, abstract, journal, year, authors, author keywords, **MeSH headings** (descriptor, major-topic flag, qualifiers) and publication types. 1,704 records carry MeSH, 2,534 keywords, 2,837 at least one label. The file lives outside the main index so the Project #2 analyses are unchanged |
+| Pre-processing + term statistics | the Project #1 pipeline (tokenise → lower-case → stop words → Porter stemming) applied to title + abstract; per document tf, length and max tf; per term cf, df, idf = ln(N / df), probabilistic idf, max / mean tf; df histogram; tf-transform and idf curves |
+| Term weighting | SMART triplets `tf·df·norm`: tf **n**atural / **l**og (1 + ln tf) / **a**ugmented (0.5 + 0.5 tf / max tf) / **b**oolean; df **n**one / **t** = ln(N / df) / **p** = max(0, ln((N − df) / df)); norm **n**one / **c**osine (L2). Twelve presets from `nnn` (raw TF) to `ltc` (standard) plus `atc`, `lpc` and Okapi BM25 as a reference. Weight vectors are stored as an inverted structure (term → {doc: weight}) and built lazily per scheme |
+| Search engine | query → same pipeline → query vector (default `nnc`) → dot product with every document that shares a term → ranking → top-k with the score, the per-term contributions w(t,q) × w(t,d) (stacked bar), document length, the abstract, MeSH and keywords. With `c` on both sides the score *is* the cosine similarity |
+| Controlled experiments | the same query under several schemes side by side: overlap@k and Kendall τ against the base scheme, mean length and mean max tf of the top-k documents, P@k / AP / nDCG@k when the query is an evaluation query; one-click sets for RQ1 (raw vs log TF), RQ2 (with / without IDF), RQ3 (TF vs IDF vs TF-IDF) and RQ4 (L2 normalisation) |
+| Relevance judgements | `data/vsm/queries_glp1.json`: 15 queries, each a list of concept groups (regular expressions matched against MeSH headings and keywords). A document is relevant when every group matches a label; grade 2 when a matching MeSH heading is a major topic. Manual judgements (UI buttons 0 / 1 / 2 under each result, or `cli.py vsm judge`) override the rule and are saved to the file |
+| Evaluation | `ir/evaluation.py`: P@k, R@k, RR / MRR, AP / MAP, R-precision, nDCG@k (graded, log₂ discount), condensed-list option (unlabelled documents removed); mean table with the best value per column, 2 × 2 × 2 factor grid (tf × idf × norm), per-query table, bar chart; rank-list comparison (overlap@k, Kendall τ, rank changes) |
+| Research questions | the RQ1–RQ5 section of the tab is written from the live numbers (tf curve, idf of the most common terms, MAP / nDCG differences between neighbouring schemes, mean length of the top-10) |
+
 ## Layout
 
 ```
@@ -90,14 +120,21 @@ ir/zipf.py          Zipf analysis: conditions, CF / DF, log-log regression, segm
 ir/spell.py         edit distance (DP), bigram index, spelling suggestions
 ir/word2vec.py      skip-gram / CBOW with negative sampling, similarity, analogy, training examples, evaluation
 ir/tsne.py          PCA (power iteration), t-SNE, k-NN preservation
+ir/tfidf.py         term weighting (SMART tf·df·norm), vector space model, cosine ranking, BM25 reference
+ir/evaluation.py    P@k, R@k, MRR, MAP, nDCG@k, R-precision; overlap@k, Kendall tau between rankings
+ir/relevance.py     label-based (MeSH / keyword) relevance judgements with manual overrides
 ir/svgplot.py       static SVG figures for the reports
-static/             index.html, style.css, app.js, project2.js, w2v.js (front-end)
+static/             index.html, style.css, app.js, project2.js, w2v.js, tfidf.js (front-end)
 tests/test_ir.py    unit tests (stemmer, tokenizer, splitter, parser, index, search, engine)
 tests/test_project2.py   unit tests (Zipf, edit distance, spelling, fuzzy search, word2vec, collection)
+tests/test_project3.py   unit tests (tf / idf variants, vectors, cosine ranking, measures, judgements, collection)
 data/               PMC XML corpus, pubmed_*.jsonl abstract collections, w2v/<name>.json trained embeddings
-report/             figures used in the reports
+data/vsm/           Project #3: pubmed_glp1_3000.jsonl (3,000 abstracts with MeSH), queries_glp1.json (queries + judgements)
+report/             figures used in the reports; rq4_mixed_lengths.py (RQ4 side experiment)
 REPORT.md           Project #2 written analysis (Zipf questions, CF/DF, TF-IDF, IR implications)
 REPORT_w2v.md       Project #2 word-embedding report (pre-processing, vocabulary, training, similarity, PCA / t-SNE, RQ1–RQ5)
+REPORT_tfidf.md     Project #3 term-weighting report (tasks 1–5, RQ1–RQ5, limitations of the judgements)
+docs/               A4 one-page reports (HTML + PDF) of Projects #2 and #3
 ```
 
 ## Web UI
@@ -129,6 +166,11 @@ REPORT_w2v.md       Project #2 word-embedding report (pre-processing, vocabulary
   table with measured values, nearest neighbours side by side, cosine matrix of word groups,
   PCA and t-SNE maps with k-NN preservation, evaluation per frequency bucket and neighbour overlap
   between models. Deep link: `/#w2v`.
+* **TF-IDF 檢索** – six numbered sections that follow Project #3: term statistics with the tf / idf
+  curves, one document's vector under several weighting schemes, the vector-space search engine
+  (top-10 with score contributions and relevance badges), controlled experiments, evaluation
+  (queries, relevant sets, measure table, factor grid, per-query table) and the RQ1–RQ5 summary.
+  Deep link: `/#vsm`.
 * **Edit Distance** – DP table and alignment for two strings; spelling suggestions for a word.
 * **Add Documents** – *Build a PubMed abstract collection* (query, size, name); paste a list of PMIDs / PMC IDs and press *Fetch & index*:
   PMIDs are converted to PMCIDs with the NCBI ID Converter, the JATS XML is
@@ -156,6 +198,11 @@ GET  /api/edit?a=semaglutide&b=samegluitde
 GET  /api/spell?word=diabtes&k=2
 GET  /api/w2v/status   /api/w2v/similar?word=nausea   /api/w2v/analogy?a=..&b=..&c=..   /api/w2v/projection?words=..
 POST /api/w2v/train                      (body = {"model": "sg", "dim": 50, "window": 5, "negative": 5, "min_count": 5, "epochs": 10})
+GET  /api/vsm/info   /api/vsm/terms?terms=glp,obesity   /api/vsm/doc?id=PMID42233552&schemes=nnn,ltc&top=15
+GET  /api/vsm/search?q=..&scheme=ltc&qscheme=nnc&k=10   /api/vsm/compare?q=..&schemes=ltn,ltc&k=10
+GET  /api/vsm/eval?schemes=nnn,ltc,bm25&k=10&condensed=0   /api/vsm/queries   /api/vsm/relevant?id=q01&scheme=ltc
+POST /api/vsm/judge?id=q01&doc=PMID..&grade=2        (empty grade removes the manual judgement)
+POST /api/vsm/collect                    (body = {"term": "GLP-1", "n": 3000, "name": "glp1_3000"})
 POST /api/collect                        (body = {"term": "GLP-1", "n": 1000, "name": "glp1"})
 POST /api/upload?filename=PMC123.xml     (body = raw XML)
 POST /api/fetch?replace=0|1              (body = {"ids": "32895440\nPMC7536103"} or plain text)

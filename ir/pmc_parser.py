@@ -41,6 +41,8 @@ class Document:
     year: str = ""
     authors: list[str] = field(default_factory=list)
     keywords: list[str] = field(default_factory=list)
+    mesh: list[dict] = field(default_factory=list)          # [{d: descriptor, major: bool, q: [qualifiers]}] (PubMed records)
+    pubtypes: list[str] = field(default_factory=list)
     article_type: str = ""
     source: str = ""            # file path
 
@@ -69,7 +71,8 @@ class Document:
         return {
             "doc_id": self.doc_id, "title": self.title, "pmid": self.pmid, "doi": self.doi,
             "journal": self.journal, "year": self.year, "authors": self.authors,
-            "keywords": self.keywords, "article_type": self.article_type, "source": self.source,
+            "keywords": self.keywords, "mesh": self.mesh, "pubtypes": self.pubtypes,
+            "article_type": self.article_type, "source": self.source,
         }
 
 
@@ -262,7 +265,7 @@ def load_directory(directory: str | Path, patterns: Iterable[str] = ("*.xml", "*
 
 def load_jsonl(path: str | Path) -> list[Document]:
     """A PubMed abstract collection: one JSON record per line
-    ({pmid, title, abstract: [paragraphs], journal, year, authors, keywords, doi})."""
+    ({pmid, title, abstract: [paragraphs], journal, year, authors, keywords, doi, mesh?, pubtypes?})."""
     path = Path(path)
     docs = []
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -272,5 +275,6 @@ def load_jsonl(path: str | Path) -> list[Document]:
         docs.append(Document(doc_id="PMID" + r["pmid"], title=r.get("title", ""), abstract=list(r.get("abstract", [])),
                              pmid=r["pmid"], doi=r.get("doi", ""), journal=r.get("journal", ""), year=r.get("year", ""),
                              authors=r.get("authors", []), keywords=r.get("keywords", []),
+                             mesh=r.get("mesh", []), pubtypes=r.get("pubtypes", []),
                              article_type="pubmed-abstract", source=str(path)))
     return docs

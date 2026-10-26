@@ -29,6 +29,18 @@ Project #2
     python3 cli.py w2v map semaglutide nausea kidney mice [--method pca|tsne] [--svg report/]   2-D map (+ k-NN preservation)
     python3 cli.py w2v eval [--models a,b] [-k 10]       neighbourhood quality per frequency bucket (rare-word behaviour)
     python3 cli.py w2v overlap --models a,b [-k 10]      neighbour overlap between two models per frequency bucket
+
+Project #3 (term weighting / vector space model; collection = data/vsm/*.jsonl)
+    python3 cli.py vsm info                              collection, vocabulary, tf / idf curves, weighting schemes
+    python3 cli.py vsm terms glp obesity semaglutide     CF / DF / IDF / max tf of terms
+    python3 cli.py vsm doc PMID42892933 --schemes nnn,lnn,ltn,ltc [--top 15]   one document's weight vector per scheme
+    python3 cli.py vsm search "semaglutide weight loss" [--scheme ltc] [--qscheme nnc] [-k 10]   top-k with contributions
+    python3 cli.py vsm compare "semaglutide weight loss" --schemes nnn,lnn,ltn,ltc [-k 10]       controlled experiment
+    python3 cli.py vsm eval [--schemes nnn,lnn,ltc,bm25] [-k 10] [--condensed]   P@k / R@k / MRR / MAP / nDCG@k
+    python3 cli.py vsm queries  |  vsm relevant q01 [--scheme ltc]           evaluation queries and relevant sets
+    python3 cli.py vsm judge q01 PMID42892933 2          manual relevance judgement (grade 0 / 1 / 2, "-" removes)
+    python3 cli.py vsm collect "GLP-1" -n 3000 --name glp1_3000   download the collection (with MeSH) into data/vsm/
+    python3 cli.py vsm svg report/                       figures for the report
 """
 
 from __future__ import annotations
@@ -51,6 +63,109 @@ _TAG = re.compile(r"</?mark>")
 def _plain(html_text: str) -> str:
     import html
     return html.unescape(_TAG.sub(lambda m: "[" if m.group(0) == "<mark>" else "]", html_text))
+
+
+def _vsm(eng: Engine, args) -> None:
+    """Project #3 sub-commands."""
+    a = args.action
+    if a == "collect":
+        term = " ".join(args.words) or "GLP-1"
+        r = eng.vsm_collect(term, args.n, args.name, progress=lambda i, n: print(f"  {i}/{n}", end="\r", flush=True))
+        print(f"\n{r['fetched']} records ({r['with_mesh']} with MeSH) of {r['pubmed_matches']} PubMed matches -> {r['file']}")
+        return
+    if a == "info":
+        i = eng.vsm_info()
+        print(f"{i['collection']}: {i['documents']} documents, {i['tokens']} tokens, {i['index_terms']} index terms "
+              f"(stop words removed: {i['stopword_tokens']}), vocabulary {i['vocabulary']} (df = 1: {i['hapax_df']}), "
+              f"length {i['min_length']}–{i['max_length']} (mean {i['avg_length']}), built in {i['build_time_s']} s")
+        print(f"labelled documents: {i['labelled']} (MeSH {i['with_mesh']}, keywords {i['with_keywords']})\n")
+        print("df histogram:     " + "   ".join(f"{h['bucket']}: {h['terms']} terms (idf {h['idf_from']}–{h['idf_to']})" for h in i["df_histogram"]))
+        print("\ntf -> raw / 1+ln tf / augmented(max tf = 10):")
+        print("   " + "  ".join(f"{c['tf']:>4}:{c['log']:.2f}/{c['aug_max10']:.2f}" for c in i["tf_curve"]))
+        print("\ndf -> idf = ln(N/df):  " + "  ".join(f"{c['df']}:{c['idf']:.2f}" for c in i["idf_curve"]))
+        print("\nweighting schemes:")
+        for sch in i["schemes"]:
+            print(f"  {sch['scheme']:5s} {sch['name']:28s} {sch['formula']}")
+        return
+    if a == "terms":
+        r = eng.vsm_terms(" ".join(args.words))
+        print(f"{'word':<16}{'term':<14}{'cf':>7}{'df':>7}{'df/N':>8}{'idf':>8}{'p-idf':>8}{'max tf':>8}{'1+ln':>7}{'mean tf':>9}")
+        for t in r["rows"]:
+            if t["stopword"]:
+                print(f"{t['word']:<16}{'(stop word)':<14}"); continue
+            print(f"{t['word']:<16}{t['term']:<14}{t['cf']:>7}{t['df']:>7}{t['df_share']:>8.3f}{t['idf']:>8.3f}{t['prob_idf']:>8.3f}{t['max_tf']:>8}{t['log_max_tf']:>7.2f}{t['mean_tf']:>9.2f}")
+        return
+    if a == "doc":
+        d = eng.vsm_doc(args.words[0] if args.words else "", args.schemes, args.top)
+        print(f"{d['doc_id']}: {d['title']}\n{d['tokens']} tokens, {d['length']} index terms, {d['unique_terms']} distinct, max tf = {d['max_tf']}\n")
+        for v in d["vectors"]:
+            print(f"[{v['scheme']}]  |d| = {v['norm']}   top term share = {v['top_share']:.3f}   top-5 share = {v['top5_share']:.3f}")
+            for r in v["vector"]:
+                print(f"   {r['term']:<16} tf={r['tf']:<3} df={r['df']:<5} tf_w={r['tf_w']:<8} df_w={r['df_w']:<8} w={r['weight']:<9} share={r['share']:.3f}")
+        return
+    if a == "search":
+        r = eng.vsm_search(" ".join(args.words), args.scheme, args.qscheme, args.k)
+        print("query terms: " + ", ".join(f"{t['word']}->{t['term']}(df={t['df']}, idf={t['idf']})" if t["term"] else f"{t['word']}[stop]" for t in r["terms"]))
+        print(f"query vector ({r['qscheme']}): {r['qvec']}\n{r['total']} documents with a non-zero score in {r['time_ms']} ms; "
+              f"scheme {r['scheme']} = {r['scheme_info']['name']}" + (f"; query {r['query_id']}: P@10 = {r['measures']['P@10']:.2f}" if r.get("measures") else "") + "\n")
+        for d in r["results"]:
+            g = f"  rel={d['grade']}" if d.get("grade") is not None else ""
+            print(f"#{d['rank']:<3} {d['doc_id']}  score={d['score']}{g}  len={d['length']}  {d['title'][:90]}")
+            print("      " + "  ".join(f"{c['term']}: {c['qw']}×{c['dw']}={c['part']}" for c in d["contributions"]))
+        return
+    if a == "compare":
+        r = eng.vsm_compare(" ".join(args.words), args.schemes, args.qscheme, args.k)
+        print(f"query: {r['query']}   (mean document length {r['avg_length']})\n")
+        print(f"{'scheme':<7}{'overlap@k':>10}{'tau':>7}{'mean len':>10}{'max tf':>8}" + ("  P@10   nDCG@10" if r["query_id"] else ""))
+        for s_ in r["schemes"]:
+            m = s_["measures"]
+            print(f"{s_['scheme']:<7}{s_['overlap']:>10.2f}{s_['tau']:>7.2f}{s_['mean_length']:>10.1f}{s_['mean_max_tf']:>8.1f}" + (f"  {m['P@10']:.2f}   {m['nDCG@10']:.3f}" if m else ""))
+        for s_ in r["schemes"]:
+            print(f"\n[{s_['scheme']}] {s_['info']['name']}")
+            for t in s_["top"]:
+                print(f"  #{t['rank']:<3}{t['doc_id']:<14}{t['score']:<9} len={t['length']:<4} (rank under {r['base']}: {t['rank_base'] or '-'})"
+                      + (f" rel={t['grade']}" if t["grade"] is not None else "") + f"  {t['title'][:70]}")
+        return
+    if a == "eval":
+        r = eng.vsm_eval(args.schemes, args.k, args.condensed, args.qscheme)
+        keys = ["P@5", "P@10", "R@10", "R@20", "MRR", "MAP", "nDCG@10", "nDCG@20", "R-prec"]
+        print(f"{len(r['queries'])} queries, {r['documents']} documents ({r['labelled']} labelled)" + (", condensed lists" if r["condensed"] else "") + "\n")
+        print(f"{'scheme':<7}" + "".join(f"{k_:>9}" for k_ in keys) + "  name")
+        for s_ in r["schemes"]:
+            print(f"{s_['scheme']:<7}" + "".join(f"{s_['mean'][k_]:>9.3f}" for k_ in keys) + f"  {s_['info']['name']}")
+        print("\nper query (P@10 / nDCG@10):")
+        print(f"{'query':<6}" + "".join(f"{s_['scheme']:>13}" for s_ in r["schemes"]))
+        for i, q in enumerate(r["queries"]):
+            print(f"{q['id']:<6}" + "".join(f"{s_['per_query'][i]['P@10']:>6.2f}/{s_['per_query'][i]['nDCG@10']:.3f}" for s_ in r["schemes"]) + f"   {q['text']}")
+        return
+    if a == "queries":
+        r = eng.vsm_query_list()
+        print(f"{len(r['queries'])} queries, {r['labelled']} of {r['documents']} documents carry topic labels ({r['file']})\n")
+        for q in r["queries"]:
+            print(f"{q['id']}  {q['text']}\n      relevant {q['relevant']} (grade 2: {q['grade2']}, grade 1: {q['grade1']}; via MeSH {q['from_mesh']}, keywords only {q['from_keyword_only']}; manual {q['manual']})")
+            print("      rules: " + "  AND  ".join("(" + " | ".join(g) + ")" for g in q["groups"]))
+        return
+    if a == "relevant":
+        r = eng.vsm_relevant(args.words[0] if args.words else "q01", args.scheme, args.qscheme)
+        m = r["measures"]
+        print(f"{r['query']['id']}: {r['query']['text']}  — {m['relevant']} relevant, P@10 {m['P@10']:.2f}, R@10 {m['R@10']:.3f}, AP {m['AP']:.3f}, nDCG@10 {m['nDCG@10']:.3f}\n")
+        for d in r["relevant"]:
+            print(f"  rank {d['rank'] or '-':>5}  grade {d['grade']}  len={d['length']:<4} {d['doc_id']}  {d['title'][:70]}\n         {', '.join(d['matched'])}")
+        return
+    if a == "judge":
+        if len(args.words) < 2:
+            raise SystemExit("usage: vsm judge QUERY_ID DOC_ID [0|1|2|-]")
+        g = args.words[2] if len(args.words) > 2 else "-"
+        print(eng.vsm_judge(args.words[0], args.words[1], None if g == "-" else int(g)))
+        return
+    if a == "svg":
+        from ir.svgplot import vsm_figures
+        out = Path(args.words[0] if args.words else "report")
+        out.mkdir(parents=True, exist_ok=True)
+        for name, svg in vsm_figures(eng).items():
+            (out / name).write_text(svg, encoding="utf-8")
+            print("wrote", out / name)
+        return
 
 
 def main() -> None:
@@ -87,6 +202,11 @@ def main() -> None:
     wv.add_argument("-n", type=int, default=5); wv.add_argument("-k", type=int, default=10)
     wv.add_argument("--method", default="pca", choices=["pca", "tsne"]); wv.add_argument("--perplexity", type=float, default=15)
     wv.add_argument("--svg", help="directory to write the map (SVG) to")
+    vm = sub.add_parser("vsm"); vm.add_argument("action", choices=["info", "terms", "doc", "search", "compare", "eval", "queries",
+                                                                     "relevant", "judge", "collect", "svg"]); vm.add_argument("words", nargs="*")
+    vm.add_argument("--scheme", default="ltc"); vm.add_argument("--qscheme", default="nnc"); vm.add_argument("--schemes", default="")
+    vm.add_argument("-k", type=int, default=10); vm.add_argument("--top", type=int, default=15); vm.add_argument("--condensed", action="store_true")
+    vm.add_argument("-n", type=int, default=3000); vm.add_argument("--name", default="")
     args = ap.parse_args()
 
     if args.cmd == "analyze":
@@ -262,6 +382,8 @@ def main() -> None:
         print(f"'{w}' {'is' if w in eng.spell else 'is not'} in the dictionary ({len(eng.spell.words)} words)")
         for r in eng.spell.suggest(w, 10, args.k):
             print(f"  {r['word']:<24}distance={r['distance']}  cf={r['cf']}")
+    elif args.cmd == "vsm":
+        _vsm(eng, args)
     elif args.cmd == "w2v":
         _w2v(eng, args)
 

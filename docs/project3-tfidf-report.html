@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project 2 Part 2</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--paper:#fff;--desk:#e9ebef;--ink:#1d2333;--muted:#5f6778;--line:#d9dde6;--rule:#1d2333;--accent:#1f5fbf;--soft:#eef3fb;--code:#f1f3f7;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;--sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace,"Noto Sans TC"}
+*{box-sizing:border-box}
+body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--sans);font-size:9.15pt;line-height:1.3;padding:24px 16px}
+.page{background:var(--paper);width:210mm;min-height:297mm;max-width:100%;margin:0 auto;box-shadow:0 2px 12px rgba(20,30,60,.12);display:flex;flex-direction:column}
+.inner{padding:6.5mm 10mm 2mm;flex:1;min-width:0}
+footer{display:flex;justify-content:space-between;gap:12px;padding:0 10mm 4mm;font-size:7.34pt;color:var(--muted);font-family:var(--mono);line-height:1.3}
+h1{font-family:var(--serif);font-size:16.95pt;line-height:1.25;margin:2px 0 3px}
+h2{font-family:var(--serif);font-size:10.40pt;margin:0 0 3px;padding-bottom:1px;border-bottom:1.5px solid var(--rule)}
+h2 span{font-family:var(--mono);font-weight:500;color:var(--accent);font-size:8.81pt;margin-right:6px}
+p{margin:0 0 2px}
+.eyebrow{font-family:var(--mono);font-size:7.68pt;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
+.meta{font-size:7.91pt;color:var(--muted);margin:0 0 4px;line-height:1.35}
+.facts{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:4px 0 6px}
+.facts div{background:var(--soft);border-radius:4px;padding:1px 7px}
+.facts b{display:block;font-family:var(--mono);font-size:10.73pt;font-weight:500;color:var(--accent);line-height:1.2}
+.facts small{font-size:7.34pt;color:var(--muted);line-height:1.2;display:block}
+section{margin-bottom:4px;min-width:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 6mm;align-items:start}.two>*{min-width:0}
+.three{display:grid;grid-template-columns:60mm 60mm 1fr;gap:0 4mm;align-items:start}.three>*{min-width:0}
+code{font-family:var(--mono);font-size:.92em;background:var(--code);padding:0 2px;border-radius:2px}
+table.t{border-collapse:collapse;width:100%;font-size:7.57pt;margin:2px 0 3px;font-variant-numeric:tabular-nums;line-height:1.3}
+table.t th{text-align:left;background:var(--soft);padding:1.5px 4px;border-bottom:1px solid var(--line);font-weight:600;vertical-align:bottom}
+table.t td{padding:1.5px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t td.k{font-weight:600;white-space:nowrap}
+table.num td:not(:first-child),table.num th:not(:first-child){text-align:right;white-space:nowrap}
+table.t .n{text-align:right;white-space:nowrap;font-family:var(--mono);font-size:7.46pt}
+table.t tr.sel td{background:var(--soft)}
+ul{padding-left:12px;margin:0 0 2px}li{margin-bottom:1px}
+.verdict{background:var(--soft);border-left:3px solid var(--accent);padding:2px 6px;margin:2px 0 2px;font-size:7.91pt}
+.verdict b{color:var(--accent)}
+figure{margin:0;min-width:0}figure svg{width:100%;height:auto;display:block;border:1px solid var(--line)}figcaption{font-size:7.34pt;color:var(--muted);line-height:1.3;margin-top:1px}
+.kv{font-size:7.80pt;line-height:1.33}.kv p{margin:0 0 2px}.kv b.h{color:var(--accent)}
+.cols{columns:2;column-gap:6mm}
+.muted{color:var(--muted)}
+@media (max-width:640px){.two,.three,.facts{grid-template-columns:1fr 1fr}.cols{columns:1}.page{min-height:0}.inner{padding:6mm 5mm}}
+@media print{body{background:none;padding:0}.page{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:0;overflow:hidden}@page{size:A4 portrait;margin:0}}
+table.cos{font-size:.86em}table.cos td,table.cos th{padding:1.5px 2px}table.cos th:first-child{white-space:normal}
+.two.tbl{grid-template-columns:52mm 1fr}
+.two.rq1{grid-template-columns:58mm 1fr}.two.rq2{grid-template-columns:84mm 1fr}.two.rq2 table{table-layout:fixed}.two.rq2 td,.two.rq2 th{overflow:hidden;white-space:nowrap}.two.rq2 th:first-child{width:38%}.two.rq3{grid-template-columns:1fr 60mm}.two.rq4{grid-template-columns:1fr 60mm}
+table.t.small{font-size:7.2pt}table.t.small td,table.t.small th{padding:1px 3px}
+body{font-size:8.8pt}.facts b{font-size:10.4pt}
+</style>
+</head>
+<body>
+<section class="page"><div class="inner">
+
+<p class="eyebrow">AI Information Retrieval（人工智慧資訊檢索）· Project #3 Term Weighting / TF-IDF</p>
+<p class="meta">胡元楨（P77141105）· 純 Python 標準函式庫自行實作：<code>ir/tfidf.py</code>（SMART tf·df·norm 權重、向量空間、cosine 排名）、<code>ir/evaluation.py</code>（P@k、R@k、MRR、MAP、nDCG）、<code>ir/relevance.py</code>（MeSH / 關鍵詞相關性判斷）；介面分頁「TF-IDF 檢索」，CLI <code>cli.py vsm …</code>；完整報告 <code>REPORT_tfidf.md</code></p>
+<div class="facts">
+<div><b>3,000</b><small>PubMed 摘要（GLP-1，含 MeSH）；平均 211 索引詞（24–672）</small></div>
+<div><b>15,823</b><small>詞幹；45% 只出現在 1 篇（idf 8.01），42 個詞出現在 ≥ 1,000 篇</small></div>
+<div><b>12</b><small>weighting schemes：nnn、lnn、btn、ntn、ltn、nnc、lnc、ntc、ltc、atc、lpc + BM25</small></div>
+<div><b>15</b><small>評估查詢；相關集由 MeSH major-topic / 關鍵詞規則產生（26–317 篇）</small></div>
+<div><b>0.615</b><small>最佳 MAP：ltn（log TF × IDF）；raw TF 0.421</small></div>
+<div><b>0.65 ms</b><small>一次查詢（倒排權重向量）；19 個單元測試</small></div>
+</div>
+
+<section>
+<h2><span>RQ1</span>原始 TF 與 Log TF 的差異，如何影響詞項權重？</h2>
+<div class="two rq1">
+<table class="t num small">
+<tr><th>tf</th><th>1</th><th>2</th><th>5</th><th>10</th><th>30</th><th>50</th></tr>
+<tr><td class="k">raw tf</td><td>1</td><td>2</td><td>5</td><td>10</td><td>30</td><td>50</td></tr>
+<tr><td class="k">1 + ln tf</td><td>1.00</td><td>1.69</td><td>2.61</td><td>3.30</td><td>4.40</td><td>4.91</td></tr>
+</table>
+<p>raw tf 讓出現 30 次的詞是出現 1 次的 30 倍，log 只給 4.4 倍。一篇 FLOW 試驗摘要（422 索引詞、max tf 38）在 <code>nnn</code> 下由小數的「0」（tf 38）主宰、前 5 詞佔向量 22.5%；<code>lnn</code> 壓到 7.8%。
+檢索上 raw → log 是效果最大的單一改動：MAP <b>0.421 → 0.533</b>（+27%）、nDCG@10 0.484 → 0.605、MRR 0.778 → 0.917；q01 前 10 名平均長度 378 → 253（raw tf 偏好能重複同一詞的長文件）。<b>詞頻增加，重要性不等比例增加。</b></p>
+</div>
+</section>
+
+<section>
+<h2><span>RQ2</span>為什麼 IDF 能降低常見詞的重要性、提高具辨識力詞項的權重？</h2>
+<div class="two rq2">
+<table class="t num small">
+<tr><th>term</th><th>df</th><th>df/N</th><th>idf</th></tr>
+<tr><td class="k">glp · receptor · agonist</td><td>2,333–2,422</td><td>78–81%</td><td><b>0.21–0.25</b></td></tr>
+<tr><td class="k">diabet · obes</td><td>1,617 · 1,429</td><td>54 · 48%</td><td>0.62 · 0.74</td></tr>
+<tr><td class="k">semaglutid · tirzepatid</td><td>714 · 440</td><td>24 · 15%</td><td>1.44 · 1.92</td></tr>
+<tr><td class="k">cardiovascular</td><td>679</td><td>23%</td><td>1.49</td></tr>
+<tr><td class="k">apnea · pco(s)</td><td>63 · 36</td><td>2 · 1%</td><td><b>3.86 · 4.42</b></td></tr>
+</table>
+<p>idf = ln(N/df) 隨 df 單調下降（df 1 → 8.01，1,000 → 1.10，N → 0）。出現在八成文件的詞對「這篇 vs 那篇」沒有資訊：對每篇都加同樣分數不改變排名，只讓分數被它的 tf 噪音淹沒。
+q03「GLP-1 receptor agonists and cardiovascular outcomes」沒有 idf 時前五名由 glp/receptor/agonist 重複最多的文件決定（腎臟、酒精、脫髮…無一相關）；有 idf 後 cardiovascular 的權重是 glp 的 6 倍，排名才轉向心血管。整體 lnn → ltn MAP <b>0.533 → 0.615</b>（+15%）；只用 idf（btn）就有 0.519，nDCG@10 甚至最高（0.620）：短文本裡「有無出現」比「出現幾次」更重要。</p>
+</div>
+</section>
+
+<section>
+<h2><span>RQ3 · RQ5</span>TF-IDF 是否產生較好的排名？不同 weighting 對各指標的影響</h2>
+<div class="two rq3">
+<table class="t num small">
+<tr><th>scheme</th><th>P@5</th><th>P@10</th><th>R@20</th><th>MRR</th><th>MAP</th><th>nDCG@10</th><th>R-prec</th></tr>
+<tr><td class="k">nnn raw TF</td><td>0.653</td><td>0.667</td><td>0.152</td><td>0.778</td><td>0.421</td><td>0.484</td><td>0.430</td></tr>
+<tr><td class="k">lnn log TF</td><td>0.853</td><td>0.827</td><td>0.177</td><td>0.917</td><td>0.533</td><td>0.605</td><td>0.531</td></tr>
+<tr><td class="k">btn IDF only</td><td>0.800</td><td>0.747</td><td>0.156</td><td>0.883</td><td>0.519</td><td><b>0.620</b></td><td>0.538</td></tr>
+<tr><td class="k">ntn raw TF × IDF</td><td>0.787</td><td>0.793</td><td>0.183</td><td>0.883</td><td>0.561</td><td>0.576</td><td>0.549</td></tr>
+<tr class="sel"><td class="k">ltn log TF × IDF</td><td><b>0.893</b></td><td><b>0.847</b></td><td><b>0.194</b></td><td>0.900</td><td><b>0.615</b></td><td>0.616</td><td><b>0.613</b></td></tr>
+<tr><td class="k">nnc raw TF, L2</td><td>0.787</td><td>0.733</td><td>0.170</td><td>0.848</td><td>0.453</td><td>0.536</td><td>0.461</td></tr>
+<tr><td class="k">lnc log TF, L2</td><td>0.813</td><td>0.767</td><td>0.184</td><td>0.902</td><td>0.531</td><td>0.580</td><td>0.532</td></tr>
+<tr><td class="k">ntc raw TF × IDF, L2</td><td>0.827</td><td>0.807</td><td>0.185</td><td>0.847</td><td>0.564</td><td>0.582</td><td>0.567</td></tr>
+<tr><td class="k">ltc log TF × IDF, L2</td><td>0.827</td><td>0.820</td><td>0.190</td><td>0.817</td><td>0.602</td><td>0.595</td><td>0.602</td></tr>
+<tr><td class="k">atc augmented TF × IDF, L2</td><td>0.733</td><td>0.773</td><td>0.167</td><td>0.832</td><td>0.563</td><td>0.581</td><td>0.565</td></tr>
+<tr><td class="k">lpc log TF × prob IDF, L2</td><td>0.813</td><td>0.827</td><td>0.187</td><td>0.783</td><td>0.607</td><td>0.590</td><td>0.605</td></tr>
+<tr><td class="k">bm25（參考）</td><td><b>0.893</b></td><td><b>0.847</b></td><td>0.190</td><td><b>0.967</b></td><td>0.610</td><td>0.619</td><td>0.595</td></tr>
+</table>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330"  font-family="Helvetica, Arial, sans-serif"><rect width="100%" height="100%" fill="#ffffff"/><text x="56" y="22" font-size="15" font-weight="bold" fill="#1d2333">MAP and nDCG@10 per weighting scheme (15 queries)</text><line x1="56" x2="744" y1="260.0" y2="260.0" stroke="#e5e7ef"/><text x="48" y="264.0" font-size="11" text-anchor="end" fill="#6b7280">0.0</text><line x1="56" x2="744" y1="232.5" y2="232.5" stroke="#e5e7ef"/><text x="48" y="236.5" font-size="11" text-anchor="end" fill="#6b7280">0.1</text><line x1="56" x2="744" y1="205.0" y2="205.0" stroke="#e5e7ef"/><text x="48" y="209.0" font-size="11" text-anchor="end" fill="#6b7280">0.2</text><line x1="56" x2="744" y1="177.5" y2="177.5" stroke="#e5e7ef"/><text x="48" y="181.5" font-size="11" text-anchor="end" fill="#6b7280">0.3</text><line x1="56" x2="744" y1="150.0" y2="150.0" stroke="#e5e7ef"/><text x="48" y="154.0" font-size="11" text-anchor="end" fill="#6b7280">0.4</text><line x1="56" x2="744" y1="122.5" y2="122.5" stroke="#e5e7ef"/><text x="48" y="126.5" font-size="11" text-anchor="end" fill="#6b7280">0.5</text><line x1="56" x2="744" y1="95.0" y2="95.0" stroke="#e5e7ef"/><text x="48" y="99.0" font-size="11" text-anchor="end" fill="#6b7280">0.6</text><line x1="56" x2="744" y1="67.5" y2="67.5" stroke="#e5e7ef"/><text x="48" y="71.5" font-size="11" text-anchor="end" fill="#6b7280">0.7</text><line x1="56" x2="744" y1="40.0" y2="40.0" stroke="#e5e7ef"/><text x="48" y="44.0" font-size="11" text-anchor="end" fill="#6b7280">0.8</text><rect x="60.0" y="144.1" width="22.7" height="115.9" fill="#2a78d6"/><text x="72.3" y="141.1" font-size="9" text-anchor="middle" fill="#1d2333">0.421</text><rect x="84.7" y="126.9" width="22.7" height="133.1" fill="#eb6834"/><text x="97.0" y="123.9" font-size="9" text-anchor="middle" fill="#1d2333">0.484</text><text x="84.7" y="275" font-size="11" text-anchor="middle" fill="#1d2333">nnn</text><rect x="117.3" y="113.3" width="22.7" height="146.7" fill="#2a78d6"/><text x="129.7" y="110.3" font-size="9" text-anchor="middle" fill="#1d2333">0.533</text><rect x="142.0" y="93.5" width="22.7" height="166.5" fill="#eb6834"/><text x="154.3" y="90.5" font-size="9" text-anchor="middle" fill="#1d2333">0.605</text><text x="142.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">lnn</text><rect x="174.7" y="117.1" width="22.7" height="142.9" fill="#2a78d6"/><text x="187.0" y="114.1" font-size="9" text-anchor="middle" fill="#1d2333">0.519</text><rect x="199.3" y="89.6" width="22.7" height="170.4" fill="#eb6834"/><text x="211.7" y="86.6" font-size="9" text-anchor="middle" fill="#1d2333">0.620</text><text x="199.3" y="275" font-size="11" text-anchor="middle" fill="#1d2333">btn</text><rect x="232.0" y="105.8" width="22.7" height="154.2" fill="#2a78d6"/><text x="244.3" y="102.8" font-size="9" text-anchor="middle" fill="#1d2333">0.561</text><rect x="256.7" y="101.5" width="22.7" height="158.5" fill="#eb6834"/><text x="269.0" y="98.5" font-size="9" text-anchor="middle" fill="#1d2333">0.576</text><text x="256.7" y="275" font-size="11" text-anchor="middle" fill="#1d2333">ntn</text><rect x="289.3" y="90.8" width="22.7" height="169.2" fill="#2a78d6"/><text x="301.7" y="87.8" font-size="9" text-anchor="middle" fill="#1d2333">0.615</text><rect x="314.0" y="90.6" width="22.7" height="169.4" fill="#eb6834"/><text x="326.3" y="87.6" font-size="9" text-anchor="middle" fill="#1d2333">0.616</text><text x="314.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">ltn</text><rect x="346.7" y="135.4" width="22.7" height="124.6" fill="#2a78d6"/><text x="359.0" y="132.4" font-size="9" text-anchor="middle" fill="#1d2333">0.453</text><rect x="371.3" y="112.5" width="22.7" height="147.5" fill="#eb6834"/><text x="383.7" y="109.5" font-size="9" text-anchor="middle" fill="#1d2333">0.536</text><text x="371.3" y="275" font-size="11" text-anchor="middle" fill="#1d2333">nnc</text><rect x="404.0" y="113.9" width="22.7" height="146.1" fill="#2a78d6"/><text x="416.3" y="110.9" font-size="9" text-anchor="middle" fill="#1d2333">0.531</text><rect x="428.7" y="100.5" width="22.7" height="159.5" fill="#eb6834"/><text x="441.0" y="97.5" font-size="9" text-anchor="middle" fill="#1d2333">0.580</text><text x="428.7" y="275" font-size="11" text-anchor="middle" fill="#1d2333">lnc</text><rect x="461.3" y="105.0" width="22.7" height="155.0" fill="#2a78d6"/><text x="473.7" y="102.0" font-size="9" text-anchor="middle" fill="#1d2333">0.564</text><rect x="486.0" y="100.0" width="22.7" height="160.0" fill="#eb6834"/><text x="498.3" y="97.0" font-size="9" text-anchor="middle" fill="#1d2333">0.582</text><text x="486.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">ntc</text><rect x="518.7" y="94.3" width="22.7" height="165.7" fill="#2a78d6"/><text x="531.0" y="91.3" font-size="9" text-anchor="middle" fill="#1d2333">0.602</text><rect x="543.3" y="96.3" width="22.7" height="163.7" fill="#eb6834"/><text x="555.7" y="93.3" font-size="9" text-anchor="middle" fill="#1d2333">0.595</text><text x="543.3" y="275" font-size="11" text-anchor="middle" fill="#1d2333">ltc</text><rect x="576.0" y="105.2" width="22.7" height="154.8" fill="#2a78d6"/><text x="588.3" y="102.2" font-size="9" text-anchor="middle" fill="#1d2333">0.563</text><rect x="600.7" y="100.3" width="22.7" height="159.7" fill="#eb6834"/><text x="613.0" y="97.3" font-size="9" text-anchor="middle" fill="#1d2333">0.581</text><text x="600.7" y="275" font-size="11" text-anchor="middle" fill="#1d2333">atc</text><rect x="633.3" y="93.1" width="22.7" height="166.9" fill="#2a78d6"/><text x="645.7" y="90.1" font-size="9" text-anchor="middle" fill="#1d2333">0.607</text><rect x="658.0" y="97.9" width="22.7" height="162.1" fill="#eb6834"/><text x="670.3" y="94.9" font-size="9" text-anchor="middle" fill="#1d2333">0.590</text><text x="658.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">lpc</text><rect x="690.7" y="92.2" width="22.7" height="167.8" fill="#2a78d6"/><text x="703.0" y="89.2" font-size="9" text-anchor="middle" fill="#1d2333">0.610</text><rect x="715.3" y="89.8" width="22.7" height="170.2" fill="#eb6834"/><text x="727.7" y="86.8" font-size="9" text-anchor="middle" fill="#1d2333">0.619</text><text x="715.3" y="275" font-size="11" text-anchor="middle" fill="#1d2333">bm25</text><text transform="translate(16 150.0) rotate(-90)" font-size="12" text-anchor="middle" fill="#6b7280">mean over queries</text><rect x="56" y="308" width="14" height="14" fill="#2a78d6"/><text x="76" y="319" font-size="12" fill="#1d2333">MAP</text><rect x="109.8" y="308" width="14" height="14" fill="#eb6834"/><text x="129.8" y="319" font-size="12" fill="#1d2333">nDCG@10</text></svg><figcaption>15 個查詢的平均 MAP 與 nDCG@10（<code>cli.py vsm eval</code>、<code>vsm svg</code>）。</figcaption></figure>
+</div>
+<p class="verdict"><b>RQ3</b>　是：MAP raw TF 0.421 → log TF 0.533 → IDF only 0.519 → TF-IDF（ltn）<b>0.615</b>；逐題 AP 上 ltn 15/15 勝 raw TF、15/15 勝 IDF-only、14/15 勝 log TF。2×2×2 因素格（MAP）：log +0.07、idf +0.10、L2 −0.01～+0.03。
+<b>RQ5</b>　raw TF 在所有指標最差；log TF × IDF 在所有指標前三；但「最佳」隨指標與查詢改變——nDCG@10 偏好 btn / BM25（重視 major-topic 的 grade-2 文件）、MRR 偏好 BM25（0.967）、q04 偏好 raw TF（nDCG 0.815 vs 0.587）、q15 偏好正規化（lnc 1.000）、q09 全部都差（副作用詞幾乎每篇試驗都提到，標籤卻只標「以此為主題」者）。結論須結合查詢、資料集與指標。</p>
+</section>
+
+<section>
+<h2><span>RQ4</span>文件向量是否需要 L2 normalization？正規化前後的排名有何差異？</h2>
+<div class="two rq4">
+<div>
+<table class="t num small">
+<tr><th>q10「polycystic ovary syndrome」</th><th>overlap@10</th><th>τ</th><th>mean len</th><th>P@10</th><th>nDCG@10</th></tr>
+<tr><td class="k">ltn log TF × IDF</td><td>1.00</td><td>1.00</td><td>237</td><td>1.00</td><td>0.775</td></tr>
+<tr><td class="k">ltc + L2</td><td>0.40</td><td>−0.36</td><td>153</td><td>0.90</td><td>0.464</td></tr>
+<tr><td class="k">nnn raw TF</td><td>0.40</td><td>−0.36</td><td>213</td><td>0.70</td><td>0.609</td></tr>
+<tr><td class="k">nnc + L2</td><td>0.20</td><td>−0.39</td><td>118</td><td>0.70</td><td>0.459</td></tr>
+</table>
+<p>未正規化的內積 = ‖d‖·cos θ：長文件多提幾次就贏；正規化後只比方向。兩者排名差異很大（15 題平均 ltn vs ltc 前 10 名重疊 <b>48%</b>、τ ≈ 0；前 10 名平均長度 262 → 186），但本集合全是長度相近的摘要（平均 211、相關文件 217），正規化收益小（MAP 0.615 → 0.602，僅 5/15 題變好），而 30 個詞的更正啟事（<i>Correction: …</i>）因為沒有其他詞稀釋，在 ltc 下竄到第一名。
+長度懸殊時正規化不可或缺：把 3 篇 PMC 全文（3,221–4,358 詞）混進 1,003 篇摘要，10 題前 10 名的 100 個位置中 nnn 有 15、ltn 有 9 個被長文佔走，nnc / ltc / BM25 為 0（<code>report/rq4_mixed_lengths.py</code>）。BM25 的部分正規化（b = 0.75）兩種情況都最好：問題不是「要不要」而是「正規化多少」。</p>
+</div>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300"  font-family="Helvetica, Arial, sans-serif"><rect width="100%" height="100%" fill="#ffffff"/><text x="56" y="22" font-size="15" font-weight="bold" fill="#1d2333">Length of the retrieved documents (collection mean 211 index terms) (RQ4)</text><line x1="56" x2="744" y1="230.0" y2="230.0" stroke="#e5e7ef"/><text x="48" y="234.0" font-size="11" text-anchor="end" fill="#6b7280">0</text><line x1="56" x2="744" y1="200.5" y2="200.5" stroke="#e5e7ef"/><text x="48" y="204.5" font-size="11" text-anchor="end" fill="#6b7280">50</text><line x1="56" x2="744" y1="171.0" y2="171.0" stroke="#e5e7ef"/><text x="48" y="175.0" font-size="11" text-anchor="end" fill="#6b7280">100</text><line x1="56" x2="744" y1="141.5" y2="141.5" stroke="#e5e7ef"/><text x="48" y="145.5" font-size="11" text-anchor="end" fill="#6b7280">150</text><line x1="56" x2="744" y1="112.0" y2="112.0" stroke="#e5e7ef"/><text x="48" y="116.0" font-size="11" text-anchor="end" fill="#6b7280">200</text><line x1="56" x2="744" y1="82.5" y2="82.5" stroke="#e5e7ef"/><text x="48" y="86.5" font-size="11" text-anchor="end" fill="#6b7280">250</text><line x1="56" x2="744" y1="53.0" y2="53.0" stroke="#e5e7ef"/><text x="48" y="57.0" font-size="11" text-anchor="end" fill="#6b7280">300</text><rect x="60.0" y="60.4" width="47.3" height="169.6" fill="#2a78d6"/><text x="84.7" y="57.4" font-size="9" text-anchor="middle" fill="#1d2333">288</text><text x="84.7" y="245" font-size="11" text-anchor="middle" fill="#1d2333">nnn</text><rect x="117.3" y="73.4" width="47.3" height="156.6" fill="#2a78d6"/><text x="142.0" y="70.4" font-size="9" text-anchor="middle" fill="#1d2333">266</text><text x="142.0" y="245" font-size="11" text-anchor="middle" fill="#1d2333">lnn</text><rect x="174.7" y="98.1" width="47.3" height="131.9" fill="#2a78d6"/><text x="199.3" y="95.1" font-size="9" text-anchor="middle" fill="#1d2333">224</text><text x="199.3" y="245" font-size="11" text-anchor="middle" fill="#1d2333">btn</text><rect x="232.0" y="68.3" width="47.3" height="161.7" fill="#2a78d6"/><text x="256.7" y="65.3" font-size="9" text-anchor="middle" fill="#1d2333">274</text><text x="256.7" y="245" font-size="11" text-anchor="middle" fill="#1d2333">ntn</text><rect x="289.3" y="75.6" width="47.3" height="154.4" fill="#2a78d6"/><text x="314.0" y="72.6" font-size="9" text-anchor="middle" fill="#1d2333">262</text><text x="314.0" y="245" font-size="11" text-anchor="middle" fill="#1d2333">ltn</text><rect x="346.7" y="114.9" width="47.3" height="115.1" fill="#2a78d6"/><text x="371.3" y="111.9" font-size="9" text-anchor="middle" fill="#1d2333">195</text><text x="371.3" y="245" font-size="11" text-anchor="middle" fill="#1d2333">nnc</text><rect x="404.0" y="132.7" width="47.3" height="97.3" fill="#2a78d6"/><text x="428.7" y="129.7" font-size="9" text-anchor="middle" fill="#1d2333">165</text><text x="428.7" y="245" font-size="11" text-anchor="middle" fill="#1d2333">lnc</text><rect x="461.3" y="111.4" width="47.3" height="118.6" fill="#2a78d6"/><text x="486.0" y="108.4" font-size="9" text-anchor="middle" fill="#1d2333">201</text><text x="486.0" y="245" font-size="11" text-anchor="middle" fill="#1d2333">ntc</text><rect x="518.7" y="120.3" width="47.3" height="109.7" fill="#2a78d6"/><text x="543.3" y="117.3" font-size="9" text-anchor="middle" fill="#1d2333">186</text><text x="543.3" y="245" font-size="11" text-anchor="middle" fill="#1d2333">ltc</text><rect x="576.0" y="129.7" width="47.3" height="100.3" fill="#2a78d6"/><text x="600.7" y="126.7" font-size="9" text-anchor="middle" fill="#1d2333">170</text><text x="600.7" y="245" font-size="11" text-anchor="middle" fill="#1d2333">atc</text><rect x="633.3" y="119.5" width="47.3" height="110.5" fill="#2a78d6"/><text x="658.0" y="116.5" font-size="9" text-anchor="middle" fill="#1d2333">187</text><text x="658.0" y="245" font-size="11" text-anchor="middle" fill="#1d2333">lpc</text><rect x="690.7" y="109.0" width="47.3" height="121.0" fill="#2a78d6"/><text x="715.3" y="106.0" font-size="9" text-anchor="middle" fill="#1d2333">205</text><text x="715.3" y="245" font-size="11" text-anchor="middle" fill="#1d2333">bm25</text><text transform="translate(16 135.0) rotate(-90)" font-size="12" text-anchor="middle" fill="#6b7280">index terms</text><rect x="56" y="278" width="14" height="14" fill="#2a78d6"/><text x="76" y="289" font-size="12" fill="#1d2333">mean length of the top-10 documents</text></svg><figcaption>各 scheme 前 10 名的平均長度（15 題平均）：未正規化 224–288，正規化 165–201，BM25 205。</figcaption></figure>
+</div>
+</section>
+
+<section>
+<h2><span>方法與限制</span>相關性判斷</h2>
+<p>資料集沒有現成標籤，依作業指示用<b>主題標籤</b>：每個查詢定義若干概念群（正規表示式），文件的每一群至少命中一個 MeSH 標題或作者關鍵詞即相關，命中 major-topic MeSH 為 grade 2；只看標籤不看文字，故不偏向任何 weighting，並可在介面手動覆寫。限制：163 篇（5.4%）無任何標籤（另提供 condensed-list 評估，各值 +0.01～0.03、排序不變）；最新記錄 MeSH 尚未完成（57% 有 MeSH）；規則由作者撰寫而非獨立評審；標籤層級的相關比人工判讀寬鬆，相關集偏大、R@k 絕對值低。另一觀察：純數字 token（佔詞彙 11.5%）df 小、idf 高，會混入 ltn 向量前列；移除數字是最直接的 modified TF-IDF。</p>
+</section>
+
+</div>
+<footer><span>python3 cli.py vsm info | terms | doc | search | compare | eval | queries | relevant | judge | svg　·　/#vsm</span><span>tests/test_project3.py（19）· 全部 72 個測試通過 · 2026-10-27</span></footer>
+</section>
+</body>
+</html>

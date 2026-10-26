@@ -114,3 +114,77 @@ def scatter_plot(points: list[dict], title: str, width: int = 760, height: int =
         lx += 30 + len(g) * 7
     o.append("</svg>")
     return "".join(o)
+
+
+def bar_chart(groups: list[str], series: list[dict], title: str, ylabel: str = "", width: int = 760, height: int = 360,
+              ymax: float | None = None, decimals: int = 3) -> str:
+    """Grouped vertical bars: series = [{"name", "values": [per group], "color"?}]."""
+    L, R, T, B = 56, 16, 40, 70
+    top = ymax or max((v for s in series for v in s["values"]), default=1.0) * 1.12
+    gw = (width - L - R) / max(len(groups), 1)
+    bw = (gw - 8) / max(len(series), 1)
+    sy = lambda v: height - B - v / top * (height - T - B)       # noqa: E731
+    o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}" height="{height}" '
+         f'font-family="Helvetica, Arial, sans-serif"><rect width="100%" height="100%" fill="#ffffff"/>',
+         f'<text x="{L}" y="22" font-size="15" font-weight="bold" fill="#1d2333">{title}</text>']
+    for v, lab in _ticks(0, top, False):
+        o.append(f'<line x1="{L}" x2="{width - R}" y1="{sy(v):.1f}" y2="{sy(v):.1f}" stroke="#e5e7ef"/>'
+                 f'<text x="{L - 8}" y="{sy(v) + 4:.1f}" font-size="11" text-anchor="end" fill="#6b7280">{lab}</text>')
+    for gi, g in enumerate(groups):
+        x0 = L + gi * gw + 4
+        for si, s in enumerate(series):
+            v = s["values"][gi]
+            c = s.get("color") or COLORS[si % len(COLORS)]
+            o.append(f'<rect x="{x0 + si * bw:.1f}" y="{sy(v):.1f}" width="{max(bw - 2, 1):.1f}" height="{height - B - sy(v):.1f}" fill="{c}"/>')
+            if len(series) <= 2:
+                o.append(f'<text x="{x0 + si * bw + bw / 2:.1f}" y="{sy(v) - 3:.1f}" font-size="9" text-anchor="middle" fill="#1d2333">{v:.{decimals}f}</text>')
+        o.append(f'<text x="{x0 + gw / 2 - 4:.1f}" y="{height - B + 15}" font-size="11" text-anchor="middle" fill="#1d2333">{g}</text>')
+    o.append(f'<text transform="translate(16 {(T + height - B) / 2}) rotate(-90)" font-size="12" text-anchor="middle" fill="#6b7280">{ylabel}</text>')
+    lx = L
+    for si, s in enumerate(series):
+        c = s.get("color") or COLORS[si % len(COLORS)]
+        o.append(f'<rect x="{lx}" y="{height - 22}" width="14" height="14" fill="{c}"/><text x="{lx + 20}" y="{height - 11}" font-size="12" fill="#1d2333">{s["name"]}</text>')
+        lx += 34 + len(s["name"]) * 6.6
+    o.append("</svg>")
+    return "".join(o)
+
+
+def vsm_figures(engine) -> dict[str, str]:
+    """Figures of the Project #3 report (file name -> SVG)."""
+    from .tfidf import tf_weight
+    info = engine.vsm_info()
+    ev = engine.vsm_eval("", 10)
+    out: dict[str, str] = {}
+    tfs = list(range(1, 41))
+    out["tfidf_tf_transforms.svg"] = line_plot(
+        [{"name": "n  raw tf", "points": [(t, float(t)) for t in tfs]},
+         {"name": "l  1 + ln tf", "points": [(t, tf_weight("l", t)) for t in tfs]},
+         {"name": "a  0.5 + 0.5 tf / max tf (max tf = 10)", "points": [(t, tf_weight("a", t, 10)) for t in tfs]},
+         {"name": "b  boolean", "points": [(t, 1.0) for t in tfs]}],
+        "tf transforms (RQ1)", "tf", "tf weight", width=520, height=320)
+    out["tfidf_idf_curve.svg"] = line_plot(
+        [{"name": "t  idf = ln(N / df)", "points": [(c["df"], c["idf"]) for c in info["idf_curve"]]},
+         {"name": "p  prob idf", "points": [(c["df"], c["prob_idf"]) for c in info["idf_curve"] if c["prob_idf"] > 0] or [(1, 0)]}],
+        f"idf against df (N = {info['documents']}) (RQ2)", "df (log scale)", "idf", xlog=True, width=520, height=320)
+    schemes = [s for s in ev["schemes"]]
+    names = [s["scheme"] for s in schemes]
+    out["tfidf_eval.svg"] = bar_chart(names, [{"name": "MAP", "values": [s["mean"]["MAP"] for s in schemes]},
+                                              {"name": "nDCG@10", "values": [s["mean"]["nDCG@10"] for s in schemes]}],
+                                      f"MAP and nDCG@10 per weighting scheme ({len(ev['queries'])} queries)", "mean over queries", width=760, height=330, ymax=0.8)
+    out["tfidf_eval_p10.svg"] = bar_chart(names, [{"name": "P@10", "values": [s["mean"]["P@10"] for s in schemes]},
+                                                  {"name": "MRR", "values": [s["mean"]["MRR"] for s in schemes]}],
+                                          "P@10 and MRR per weighting scheme", "mean over queries", width=760, height=330, ymax=1.15)
+    # RQ4: mean length of the top-10 documents per scheme, averaged over the queries
+    vs = engine.vsm()
+    qs = engine.vsm_queries()
+    lens = []
+    for s in names:
+        tot = 0.0
+        for q in qs.queries:
+            top = vs.ranking_ids(q.text, s)[:10]
+            tot += sum(vs.length[d] for d in top) / max(len(top), 1)
+        lens.append(tot / len(qs.queries))
+    out["tfidf_top10_length.svg"] = bar_chart(names, [{"name": "mean length of the top-10 documents", "values": lens}],
+                                              f"Length of the retrieved documents (collection mean {vs.avg_length:.0f} index terms) (RQ4)",
+                                              "index terms", width=760, height=300, decimals=0)
+    return out

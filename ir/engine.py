@@ -23,17 +23,29 @@ from .spell import SpellIndex
 from .stopwords import STOP_WORDS
 from .stats import corpus_stats, document_stats
 from .tokenizer import TOKEN_RE, Tokenizer
+from .tfidf import DEFAULT_QUERY_SCHEME, DEFAULT_SCHEME, PRESETS, VectorSpace, describe_scheme, df_weight, parse_scheme, tf_weight
+from .relevance import QuerySet
+from . import evaluation
 from .tsne import knn_preservation, pca2, tsne
 from .word2vec import WORD_RE, Word2Vec, count_training_examples, neighbour_overlap, sentences_from_texts, training_examples
 
 W2V_FILE = "word2vec.json"                     # legacy single-model file
 W2V_DIR = "w2v"                                # data/w2v/<name>.json, one file per trained model
 W2V_DEFAULT = "sg-d50-w5-m5-e10"               # active model at start-up when it exists
+VSM_DIR = "vsm"                                # data/vsm/: Project #3 abstract collection(s) + evaluation queries
+VSM_QUERIES = "queries_glp1.json"
 # query words that are expanded by the engine itself (prefix* / fuzzy~2) are not spell-checked
 _EXPANDED_WORD_RE = re.compile(r"\S*(?:\*|~[1-3]?)(?=[\s)]|$)")
 
 MATCH_MAP_BINS = 40
 ELLIPSIS = '<span class="ellip" title="omitted text between the best-matching sentences">…</span>'
+
+
+def _relpath(path: Path, base: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(base.resolve()))
+    except ValueError:
+        return str(path)
 
 
 def _mark(text: str, spans: list[tuple[int, int]]) -> str:
@@ -71,6 +83,9 @@ class Engine:
         self._w2v_lock = threading.Lock()
         self._w2v_sent: dict = {}                      # cached pre-processed sentences
         self._w2v_cache: dict = {}                     # projections, evaluations, vocabulary stats
+        self._vsm: dict = {}                           # Project #3 vector space models by (options), see vsm()
+        self._vsm_queries: QuerySet | None = None
+        self._vsm_eval_cache: dict = {}
 
     # ------------------------------------------------------------------ #
     def load(self) -> int:
@@ -895,3 +910,201 @@ class Engine:
         if key not in self._w2v_cache:
             self._w2v_cache[key] = neighbour_overlap(a, b, k, words=ws)
         return {"a": names[0], "b": names[1], **self._w2v_cache[key]}
+
+    # ------------------------------------------------------------------ #
+    # Project #3: term weighting / vector space model
+    # ------------------------------------------------------------------ #
+    def _vsm_dir(self) -> Path:
+        return self.data_dir / VSM_DIR
+
+    def vsm_docs(self) -> tuple[str, list[Document]]:
+        """The collection of the TF-IDF tab: data/vsm/*.jsonl when present
+        (the 3,000-abstract GLP-1 collection with MeSH headings), otherwise
+        the collection of the Zipf / word2vec tabs."""
+        files = sorted(self._vsm_dir().glob("*.jsonl")) if self._vsm_dir().is_dir() else []
+        if files:
+            docs = []
+            for f in files:
+                docs.extend(load_jsonl(f))
+            return "PubMed abstract collection (" + ", ".join(f.stem for f in files) + ")", docs
+        return self.collection_docs()
+
+    def vsm(self, remove_stopwords: bool = True, stemming: bool = True) -> VectorSpace:
+        key = (remove_stopwords, stemming)
+        hit = self._vsm.get(key)
+        if hit is None or (not self._vsm_dir().is_dir() and hit[0] != self._version):
+            name, docs = self.vsm_docs()
+            t0 = time.time()
+            vs = VectorSpace(docs, remove_stopwords=remove_stopwords, stemming=stemming)
+            vs.name, vs.build_time = name, time.time() - t0            # type: ignore[attr-defined]
+            self._vsm[key] = (self._version, vs)
+            self._vsm_eval_cache = {}
+            if key == (True, True):
+                self._vsm_queries = None
+            hit = self._vsm[key]
+        return hit[1]
+
+    def vsm_queries(self) -> QuerySet:
+        if self._vsm_queries is None:
+            self._vsm_queries = QuerySet(self._vsm_dir() / VSM_QUERIES, self.vsm().docs)
+        return self._vsm_queries
+
+    def vsm_info(self) -> dict:
+        vs = self.vsm()
+        st = vs.vocabulary_stats()
+        tf_curve = [{"tf": tf, "raw": tf, "log": round(tf_weight("l", tf), 4), "aug_max10": round(tf_weight("a", tf, 10), 4),
+                     "boolean": 1} for tf in [1, 2, 3, 4, 5, 6, 8, 10, 15, 20, 30, 50]]
+        idf_curve = [{"df": df, "idf": round(df_weight("t", df, vs.N), 4), "prob_idf": round(df_weight("p", df, vs.N), 4),
+                      "share": round(df / vs.N, 4)} for df in [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 1500, 2000, vs.N] if df <= vs.N]
+        return {"collection": getattr(vs, "name", ""), "build_time_s": round(getattr(vs, "build_time", 0.0), 2),
+                "stopwords_removed": vs.tokenizer.remove_stopwords, "stemming": vs.tokenizer.stemming,
+                **st, "tf_curve": tf_curve, "idf_curve": idf_curve,
+                "schemes": [{"scheme": k, "name": n, "formula": f, **({} if k == "bm25" else describe_scheme(k))} for k, n, f in PRESETS],
+                "default_scheme": DEFAULT_SCHEME, "default_qscheme": DEFAULT_QUERY_SCHEME,
+                "sample_ids": vs.order[:5], "labelled": len(self.vsm_queries().judged()),
+                "with_mesh": sum(1 for d in vs.docs.values() if d.mesh), "with_keywords": sum(1 for d in vs.docs.values() if d.keywords)}
+
+    def vsm_terms(self, words: str = "") -> dict:
+        vs = self.vsm()
+        ws = self._words(words)
+        if not ws:
+            ws = ["glp", "receptor", "agonist", "diabetes", "obesity", "semaglutide", "tirzepatide", "liraglutide", "kidney",
+                  "microbiota", "alzheimer", "pcos", "apnea", "cost", "mice", "patients", "study", "nausea"]
+        return {"documents": vs.N, "rows": vs.analyse_terms(ws)}
+
+    def vsm_doc(self, doc_id: str, schemes: str = "", top: int = 15) -> dict:
+        vs = self.vsm()
+        if not doc_id:                                  # default: the labelled document with the most repeated term (shows the tf effect best)
+            core = [d for d in vs.order if any(m.get("d") in ("Semaglutide", "Glucagon-Like Peptide-1 Receptor Agonists") for m in vs.docs[d].mesh)]
+            doc_id = max(core or vs.order, key=lambda d: (vs.max_tf[d], d))
+        if doc_id.isdigit():
+            doc_id = "PMID" + doc_id
+        if doc_id not in vs.docs:
+            raise ValueError(f"document {doc_id} is not in the collection")
+        names = self._words(schemes) or ["nnn", "lnn", "ntn", "ltn", "ltc"]
+        doc = vs.docs[doc_id]
+        return {"doc_id": doc_id, "title": doc.title, "year": doc.year, "journal": doc.journal, "abstract": doc.abstract,
+                "keywords": doc.keywords, "mesh": doc.mesh, "length": vs.length[doc_id], "tokens": vs.n_tokens[doc_id],
+                "unique_terms": len(vs.tf[doc_id]), "max_tf": vs.max_tf[doc_id],
+                "vectors": [vs.doc_vector(doc_id, s, top) for s in names if parse_scheme(s)[0] != "bm25"]}
+
+    def _vsm_labels(self, query_text: str, doc_ids: list[str]) -> tuple[str, dict[str, int], dict[str, list[str]]]:
+        qs = self.vsm_queries()
+        q = qs.by_text(query_text)
+        if q is None:
+            return "", {}, {}
+        rel = qs.qrels(q.id)
+        return q.id, {d: rel.get(d, 0) for d in doc_ids}, {d: qs.matched_labels(q.id, d) for d in doc_ids}
+
+    def vsm_search(self, query: str, scheme: str = DEFAULT_SCHEME, qscheme: str = DEFAULT_QUERY_SCHEME, k: int = 10) -> dict:
+        if not query.strip():
+            raise ValueError("empty query")
+        vs = self.vsm()
+        t0 = time.time()
+        res = vs.search(query, scheme, qscheme, k)
+        qid, grades, matched = self._vsm_labels(query, [r["doc_id"] for r in res["results"]])
+        for r in res["results"]:
+            d = vs.docs[r["doc_id"]]
+            r.update(abstract=d.abstract, keywords=d.keywords, mesh=[m["d"] + ("*" if m.get("major") else "") for m in d.mesh],
+                     grade=grades.get(r["doc_id"], 0) if qid else None, matched_labels=matched.get(r["doc_id"], []))
+        res["time_ms"] = round((time.time() - t0) * 1000, 2)
+        res["query_id"] = qid
+        res["collection"] = getattr(vs, "name", "")
+        if qid:
+            res["measures"] = evaluation.evaluate_run(vs.ranking_ids(query, scheme, qscheme), self.vsm_queries().qrels(qid), ks=(5, 10, 20))
+        return res
+
+    def vsm_compare(self, query: str, schemes: str = "", qscheme: str = DEFAULT_QUERY_SCHEME, k: int = 10) -> dict:
+        """The same query under several schemes: top-k lists, overlap / Kendall
+        tau against the first scheme, mean length of the top-k documents."""
+        if not query.strip():
+            raise ValueError("empty query")
+        vs = self.vsm()
+        names = self._words(schemes) or ["nnn", "lnn", "ltn", "ltc"]
+        runs = {s: vs.rank(query, s, qscheme)[0] for s in names}
+        ids = {s: [d for d, _ in r] for s, r in runs.items()}
+        base = names[0]
+        qid, grades, _ = self._vsm_labels(query, sorted({d for r in ids.values() for d in r[:k]}))
+        qrels = self.vsm_queries().qrels(qid) if qid else {}
+        out = []
+        for s in names:
+            top = runs[s][:k]
+            out.append({"scheme": s, "info": describe_scheme(s), "total": len(runs[s]),
+                        "overlap": round(evaluation.overlap_at_k(ids[base], ids[s], k), 3),
+                        "tau": round(evaluation.kendall_tau(ids[base], ids[s], k), 3),
+                        "mean_length": round(sum(vs.length[d] for d, _ in top) / max(len(top), 1), 1),
+                        "mean_max_tf": round(sum(vs.max_tf[d] for d, _ in top) / max(len(top), 1), 1),
+                        "measures": evaluation.evaluate_run(ids[s], qrels, ks=(5, 10, 20)) if qid else None,
+                        "top": [{"rank": i, "doc_id": d, "score": round(sc, 5), "title": vs.docs[d].title, "length": vs.length[d],
+                                 "max_tf": vs.max_tf[d], "grade": grades.get(d, 0) if qid else None,
+                                 "rank_base": next((j for j, (x, _) in enumerate(runs[base], 1) if x == d), 0)}
+                                for i, (d, sc) in enumerate(top, 1)]})
+        return {"query": query, "qscheme": qscheme, "k": k, "base": base, "query_id": qid, "schemes": out,
+                "terms": vs.query_terms(query)[1], "avg_length": round(vs.avg_length, 1)}
+
+    def vsm_eval(self, schemes: str = "", k: int = 10, condensed: bool = False, qscheme: str = DEFAULT_QUERY_SCHEME) -> dict:
+        vs = self.vsm()
+        qs = self.vsm_queries()
+        names = self._words(schemes) or [s for s, _, _ in PRESETS]
+        judged = qs.judged()
+        rows = []
+        for s in names:
+            key = (s, k, condensed, qscheme)
+            if key not in self._vsm_eval_cache:
+                per = []
+                for q in qs.queries:
+                    run = vs.ranking_ids(q.text, s, qscheme)
+                    m = evaluation.evaluate_run(run, qs.qrels(q.id), ks=(5, 10, 20), condensed=condensed, judged=judged)
+                    per.append({"id": q.id, **{kk: (round(v, 4) if isinstance(v, float) else v) for kk, v in m.items()}})
+                mean = {kk: round(v, 4) for kk, v in evaluation.mean_measures(per).items()}
+                self._vsm_eval_cache[key] = {"scheme": s, "info": describe_scheme(s), "mean": mean, "per_query": per}
+            rows.append(self._vsm_eval_cache[key])
+        return {"k": k, "condensed": condensed, "qscheme": qscheme, "queries": qs.summary(), "labelled": len(judged),
+                "documents": vs.N, "schemes": rows, "notes": qs.notes}
+
+    def vsm_query_list(self) -> dict:
+        qs = self.vsm_queries()
+        return {"queries": qs.summary(), "labelled": len(qs.judged()), "documents": self.vsm().N, "notes": qs.notes,
+                "file": _relpath(qs.path, self.data_dir.parent)}
+
+    def vsm_judge(self, qid: str, doc_id: str, grade: int | None) -> dict:
+        qs = self.vsm_queries()
+        if doc_id.isdigit():
+            doc_id = "PMID" + doc_id
+        r = qs.set_manual(qid, doc_id, grade)
+        self._vsm_eval_cache = {}
+        return r
+
+    def vsm_relevant(self, qid: str, scheme: str = DEFAULT_SCHEME, qscheme: str = DEFAULT_QUERY_SCHEME) -> dict:
+        """The relevant set of one query with the rank each document got under *scheme*."""
+        qs = self.vsm_queries()
+        q = qs.get(qid)
+        if q is None:
+            raise ValueError(f"unknown query {qid}")
+        vs = self.vsm()
+        run = vs.ranking_ids(q.text, scheme, qscheme)
+        pos = {d: i for i, d in enumerate(run, 1)}
+        rel = qs.qrels(q.id)
+        rows = [{"doc_id": d, "grade": g, "rank": pos.get(d, 0), "title": vs.docs[d].title, "length": vs.length[d],
+                 "matched": qs.matched_labels(q.id, d), "manual": d in q.manual} for d, g in rel.items()]
+        rows.sort(key=lambda r: (r["rank"] or 10 ** 9))
+        return {"query": q.spec(), "scheme": scheme, "relevant": rows, "retrieved": len(run),
+                "measures": evaluation.evaluate_run(run, rel, ks=(5, 10, 20))}
+
+    def vsm_collect(self, term: str, n: int = 3000, name: str = "", progress=None) -> dict:
+        """Download a PubMed abstract collection (with MeSH headings) into
+        data/vsm/ for the TF-IDF tab; replaces a collection of the same name."""
+        n = max(1, min(int(n), 5000))
+        pmids, total = search_pubmed(term, n + max(20, n // 20))
+        if not pmids:
+            raise ValueError(f"PubMed has no English abstracts for: {term}")
+        records = fetch_pubmed_batch(pmids, progress=progress)[:n]
+        slug = re.sub(r"[^a-z0-9]+", "_", (name or term).lower()).strip("_")[:40] or "collection"
+        self._vsm_dir().mkdir(parents=True, exist_ok=True)
+        path = self._vsm_dir() / f"pubmed_{slug}.jsonl"
+        with path.open("w", encoding="utf-8") as fh:
+            for r in records:
+                fh.write(json.dumps({**r, "query": term}, ensure_ascii=False) + "\n")
+        self._vsm, self._vsm_queries, self._vsm_eval_cache = {}, None, {}
+        return {"query": term, "pubmed_matches": total, "requested": n, "fetched": len(records), "file": str(path),
+                "with_mesh": sum(1 for r in records if r.get("mesh")), "documents": self.vsm().N}
