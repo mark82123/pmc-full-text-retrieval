@@ -1,5 +1,5 @@
 {
- "notes": "Evaluation queries for the GLP-1 abstract collection (data/vsm/pubmed_glp1_3000.jsonl). Relevance is derived from the topic labels of each record (MeSH headings with the major-topic flag, author keywords): a document is relevant when every concept group matches at least one label (regular expressions, case-insensitive); grade 2 when at least one matching MeSH heading is a major topic. 'manual' holds hand judgements that override the rule (PMID -> 0/1/2). The judgements are label-based, not text-based, so they do not depend on the weighting scheme under test; their limits are discussed in REPORT_tfidf.md.",
+ "notes": "Evaluation queries for the GLP-1 abstract collection (data/vsm/pubmed_glp1_3000.jsonl). Relevance is derived from the topic labels of each record (MeSH headings with the major-topic flag, author keywords): a document is relevant when every concept group matches at least one label (regular expressions, case-insensitive); grade 2 when at least one matching MeSH heading is a major topic. 'manual' holds hand judgements that override the rule (PMID -> 0/1/2). The judgements are label-based, not text-based, so they do not depend on the weighting scheme under test; their limits are discussed in REPORT_tfidf.md. The 'manual' entries were added by pooling the top-10 of six schemes (nnn, lnn, btn, ltn, ltc, bm25) per query and reading the title + abstract of every pooled document the rule scored 0 (118 documents): 0 = confirmed not relevant, 1/2 = relevant although the labels missed it.",
  "queries": [
   {
    "id": "q01",
@@ -21,7 +21,12 @@
      "anti-obesity"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42821214": 0,
+    "PMID42251859": 1,
+    "PMID42767324": 0,
+    "PMID41307513": 0
+   }
   },
   {
    "id": "q02",
@@ -43,7 +48,24 @@
      "blood glucose"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42251859": 0,
+    "PMID42251860": 0,
+    "PMID42035781": 0,
+    "PMID42251856": 0,
+    "PMID42234428": 0,
+    "PMID42030105": 0,
+    "PMID42810372": 0,
+    "PMID42250575": 0,
+    "PMID41883513": 0,
+    "PMID42251769": 0,
+    "PMID42898168": 0,
+    "PMID42394981": 1,
+    "PMID42534427": 1,
+    "PMID42862661": 0,
+    "PMID42097623": 0,
+    "PMID42639616": 0
+   }
   },
   {
    "id": "q03",
@@ -69,7 +91,24 @@
      "cardioprotect"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42302979": 0,
+    "PMID42456704": 0,
+    "PMID42705550": 0,
+    "PMID42486607": 0,
+    "PMID42309434": 0,
+    "PMID42789287": 0,
+    "PMID42676363": 0,
+    "PMID41355396": 0,
+    "PMID41569401": 0,
+    "PMID41665869": 0,
+    "PMID41665888": 0,
+    "PMID42365335": 2,
+    "PMID42815506": 2,
+    "PMID41903177": 2,
+    "PMID42624784": 2,
+    "PMID42681751": 1
+   }
   },
   {
    "id": "q04",
@@ -91,7 +130,14 @@
      "kidney function"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42608342": 1,
+    "PMID42705609": 1,
+    "PMID42292743": 0,
+    "PMID42470502": 1,
+    "PMID42819943": 0,
+    "PMID42918905": 0
+   }
   },
   {
    "id": "q05",
@@ -107,7 +153,10 @@
      "short-chain fatty"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42499664": 2,
+    "PMID42294227": 2
+   }
   },
   {
    "id": "q06",
@@ -129,7 +178,10 @@
      "liver fibrosis"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42776095": 2,
+    "PMID42056219": 0
+   }
   },
   {
    "id": "q07",
@@ -164,7 +216,13 @@
      "gastrectomy"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42105046": 0,
+    "PMID42579223": 0,
+    "PMID40580049": 0,
+    "PMID40549581": 0,
+    "PMID42781681": 1
+   }
   },
   {
    "id": "q09",
@@ -185,7 +243,27 @@
      "bowel obstruction"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42536519": 0,
+    "PMID42692277": 0,
+    "PMID42863671": 1,
+    "PMID42334501": 1,
+    "PMID42906844": 2,
+    "PMID42544311": 2,
+    "PMID42316363": 0,
+    "PMID42815506": 0,
+    "PMID42744082": 0,
+    "PMID41991422": 1,
+    "PMID41644273": 0,
+    "PMID41848415": 0,
+    "PMID42259343": 0,
+    "PMID42365860": 0,
+    "PMID42422116": 0,
+    "PMID42432163": 0,
+    "PMID42483679": 0,
+    "PMID42622003": 2,
+    "PMID42822760": 1
+   }
   },
   {
    "id": "q10",
@@ -197,7 +275,16 @@
      "\\bpcos\\b"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42597412": 0,
+    "PMID42037238": 0,
+    "PMID42411248": 0,
+    "PMID41885132": 0,
+    "PMID41913544": 0,
+    "PMID42082824": 0,
+    "PMID42208956": 0,
+    "PMID42880183": 2
+   }
   },
   {
    "id": "q11",
@@ -213,7 +300,11 @@
      "dapagliflozin"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42500549": 2,
+    "PMID42086460": 0,
+    "PMID42647034": 1
+   }
   },
   {
    "id": "q12",
@@ -230,7 +321,16 @@
      "pancrea"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42062836": 1,
+    "PMID42697752": 0,
+    "PMID42784708": 0,
+    "PMID42728365": 0,
+    "PMID42758304": 0,
+    "PMID42526996": 2,
+    "PMID42736532": 1,
+    "PMID42737905": 2
+   }
   },
   {
    "id": "q13",
@@ -243,7 +343,16 @@
      "\\bosa\\b"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42814954": 2,
+    "PMID42904878": 2,
+    "PMID41989133": 0,
+    "PMID42054048": 0,
+    "PMID42378200": 2,
+    "PMID42402270": 0,
+    "PMID42444567": 0,
+    "PMID42823495": 1
+   }
   },
   {
    "id": "q14",
@@ -264,7 +373,14 @@
      "qaly"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42894545": 2,
+    "PMID42008388": 0,
+    "PMID42372278": 0,
+    "PMID42736030": 2,
+    "PMID42890581": 2,
+    "PMID42808550": 2
+   }
   },
   {
    "id": "q15",
@@ -278,7 +394,23 @@
      "insulin-dependent"
     ]
    ],
-   "manual": {}
+   "manual": {
+    "PMID42251860": 0,
+    "PMID42234428": 0,
+    "PMID42418075": 0,
+    "PMID42712110": 0,
+    "PMID41795036": 0,
+    "PMID42309434": 0,
+    "PMID42035781": 0,
+    "PMID42786044": 0,
+    "PMID42496918": 0,
+    "PMID41999297": 0,
+    "PMID42054048": 0,
+    "PMID42217111": 0,
+    "PMID42219586": 0,
+    "PMID42289243": 0,
+    "PMID42321509": 0
+   }
   }
  ]
 }

@@ -17,7 +17,7 @@ Projects #1, #2 and #3 for the AI Information Retrieval (人工智慧資訊檢�
   collection (with MeSH headings): raw / log / augmented / boolean TF, IDF and probabilistic IDF, L2
   normalisation (SMART `tf·df·norm` triplets such as `ltc`), cosine ranking with per-term score
   contributions, controlled one-factor experiments, and an evaluation with 15 queries whose
-  relevance judgements are derived from MeSH / author-keyword labels (P@k, R@k, MRR, MAP, nDCG@k).
+  relevance judgements are derived from MeSH / author-keyword labels plus 118 pooled manual judgements (P@k, R@k, MRR, MAP, nDCG@k).
   Written analysis: [REPORT_tfidf.md](REPORT_tfidf.md) (RQ1–RQ5); one-page report in `docs/`.
 
 Everything is implemented from scratch in **pure Python 3 (standard library only)**
