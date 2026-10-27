@@ -65,10 +65,10 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 <div class="facts">
 <div><b>3,000</b><small>PubMed 摘要（GLP-1，含 MeSH）；平均 211 索引詞（24–672）</small></div>
 <div><b>15,823</b><small>詞幹；45% 只出現在 1 篇（idf 8.01），42 個詞出現在 ≥ 1,000 篇</small></div>
-<div><b>12</b><small>weighting schemes：11 種 SMART 組合（代號見下）+ BM25 對照</small></div>
+<div><b>2×2×2</b><small>因素設計：tf raw/log × idf 有/無 × L2 有/無；另加 atc、lpc、BM25 三個變形</small></div>
 <div><b>15</b><small>評估查詢；相關集由 MeSH / 關鍵詞規則 + 118 篇人工判讀產生（30–318 篇）</small></div>
 <div><b>0.661</b><small>最佳 MAP：ltn（log TF × IDF）；raw TF 0.451</small></div>
-<div><b>0.65 ms</b><small>一次查詢（倒排權重向量）；19 個單元測試</small></div>
+<div><b>118</b><small>篇人工判讀，補回 37 篇漏標的相關文件；指標高 0.03–0.11，排序不變</small></div>
 </div>
 <p class="legend"><b>權重代號怎麼讀</b>　SMART 三字母依位置：<span class="pos"><b>l</b><i>①tf</i></span><span class="pos"><b>t</b><i>②df</i></span><span class="pos"><b>c</b><i>③正規化</i></span>　① tf：<b>n</b> 原始次數 · <b>l</b> 1+ln tf · <b>a</b> 增強 · <b>b</b> 布林　② df：<b>n</b> 不乘 · <b>t</b> idf · <b>p</b> 機率 idf　③ 正規化：<b>n</b> 無 · <b>c</b> cosine　例：<code>nnn</code> 原始 tf、<code>lnn</code> log tf、<code>ltn</code> log tf × idf、<code>ltc</code> 再加 cosine（完整對照表：第 2 頁附錄）</p>
 
@@ -154,7 +154,7 @@ q03「GLP-1 receptor agonists and cardiovascular outcomes」沒有 idf 時排名
 </section>
 
 </div>
-<footer><span style="white-space:nowrap">cli.py vsm info|terms|doc|search|compare|eval|queries|judge|svg · /#vsm</span><span style="white-space:nowrap">72 tests pass · 118 篇人工判讀 · 2026-10-27</span></footer>
+<footer><span style="white-space:nowrap">cli.py vsm info|terms|doc|search|compare|eval|queries|judge|svg · /#vsm</span><span style="white-space:nowrap">一次查詢 0.65 ms · 72 tests pass · 2026-10-27</span></footer>
 </section>
 <section class="page appendix"><div class="inner">
 <h2><span>附錄 A</span>SMART 權重代號對照表（tf · df · norm）</h2>
