@@ -61,9 +61,9 @@
     try {
       const r = await api('/api/vsm/terms?' + new URLSearchParams({ terms: $('#vt-terms').value }));
       const N = r.documents, maxIdf = Math.log(N);
-      box.innerHTML = `<table class="grid num"><tr><th>word</th><th>term (stem)</th><th>cf</th><th>df</th><th>df / N</th><th>idf = ln(N/df)</th><th>prob idf</th><th>max tf</th><th>1 + ln(max tf)</th><th>mean tf</th><th></th></tr>
+      box.innerHTML = `<div class="tscroll"><table class="grid num"><tr><th>word</th><th>term (stem)</th><th>cf</th><th>df</th><th>df / N</th><th>idf = ln(N/df)</th><th>prob idf</th><th>max tf</th><th>1 + ln(max tf)</th><th>mean tf</th><th></th></tr>
         ${r.rows.map(t => t.stopword ? `<tr><td>${esc(t.word)}</td><td class="muted" colspan="10">stop word – removed before indexing</td></tr>`
-          : `<tr><td>${esc(t.word)}</td><td>${esc(t.term)}${t.df ? '' : ' <span class="muted">(not in collection)</span>'}</td><td>${fmt(t.cf)}</td><td>${fmt(t.df)}</td><td>${pct(t.df_share)}</td><td>${f(t.idf, 3)}</td><td>${f(t.prob_idf, 3)}</td><td>${t.max_tf}</td><td>${f(t.log_max_tf, 2)}</td><td>${f(t.mean_tf, 2)}</td><td><span class="wbar" style="width:${Math.round(t.idf / maxIdf * 90)}px" title="idf"></span></td></tr>`).join('')}</table>
+          : `<tr><td>${esc(t.word)}</td><td>${esc(t.term)}${t.df ? '' : ' <span class="muted">(not in collection)</span>'}</td><td>${fmt(t.cf)}</td><td>${fmt(t.df)}</td><td>${pct(t.df_share)}</td><td>${f(t.idf, 3)}</td><td>${f(t.prob_idf, 3)}</td><td>${t.max_tf}</td><td>${f(t.log_max_tf, 2)}</td><td>${f(t.mean_tf, 2)}</td><td><span class="wbar" style="width:${Math.round(t.idf / maxIdf * 90)}px" title="idf"></span></td></tr>`).join('')}</table></div>
         <p class="hint" style="margin-top:6px">collection = ${fmt(N)} documents; the bar is idf relative to its maximum ln N = ${f(maxIdf, 2)} (a term in a single document).</p>`;
     } catch (e) { err(box, e); }
   }
@@ -103,8 +103,8 @@
         const max = v.vector[0] ? v.vector[0].weight : 1;
         return `<div class="vcol"><h4><span style="color:${colorOf(v.scheme)}">${esc(v.scheme)}</span> · ${esc(st.info.schemes.find(s => s.scheme === v.scheme)?.name || '')}</h4>
           <div class="muted">|d| = ${f(v.norm, 3)} · top term ${pct(v.top_share)} of the weight · top 5 ${pct(v.top5_share)}</div>
-          <table class="grid num" style="font-size:12px;margin-top:4px"><tr><th>term</th><th>tf</th><th>df</th><th>w</th><th></th></tr>
-          ${v.vector.map(r => `<tr><td>${esc(r.term)}</td><td>${r.tf}</td><td>${fmt(r.df)}</td><td title="tf_w ${r.tf_w} × df_w ${r.df_w}">${f(r.weight, v.scheme.endsWith('c') ? 4 : 2)}</td><td><span class="wbar" style="width:${Math.max(2, Math.round(r.weight / max * 70))}px;background:${colorOf(v.scheme)}"></span></td></tr>`).join('')}</table></div>`;
+          <table class="grid num vtab"><tr><th>term</th><th>tf</th><th>df</th><th>w</th><th></th></tr>
+          ${v.vector.map(r => `<tr><td title="${esc(r.term)}">${esc(r.term)}</td><td>${r.tf}</td><td>${fmt(r.df)}</td><td title="tf_w ${r.tf_w} × df_w ${r.df_w}">${f(r.weight, v.scheme.endsWith('c') ? 4 : 2)}</td><td class="bar"><span class="wbar" style="width:${Math.max(3, Math.round(r.weight / max * 100))}%;background:${colorOf(v.scheme)}"></span></td></tr>`).join('')}</table></div>`;
       }).join('') + '</div>';
       const vec = d.vectors;
       if (vec.length >= 2) {
@@ -168,9 +168,9 @@
       const base = r.schemes[0];
       let h = `<div class="analysis">${r.terms.map(t => t.term ? `<span class="chip term">${esc(t.word)} → <b>${esc(t.term)}</b> <small>df ${fmt(t.df)} · idf ${f(t.idf, 2)}</small></span>` : `<span class="chip stopword">${esc(t.word)}</span>`).join('')}
         <span class="muted">base = ${esc(r.base)}; mean document length ${r.avg_length}${r.query_id ? `; evaluation query ${esc(r.query_id)}` : ''}</span></div>
-        <table class="grid num"><tr><th>scheme</th><th>name</th><th>scored docs</th><th>overlap@${r.k} vs ${esc(r.base)}</th><th>Kendall τ</th><th>mean length of top ${r.k}</th><th>mean max tf</th>${r.query_id ? '<th>P@5</th><th>P@10</th><th>R@10</th><th>AP</th><th>nDCG@10</th>' : ''}</tr>
+        <div class="tscroll"><table class="grid num"><tr><th>scheme</th><th>name</th><th>scored docs</th><th>overlap@${r.k} vs ${esc(r.base)}</th><th>Kendall τ</th><th>mean length of top ${r.k}</th><th>mean max tf</th>${r.query_id ? '<th>P@5</th><th>P@10</th><th>R@10</th><th>AP</th><th>nDCG@10</th>' : ''}</tr>
         ${r.schemes.map(s => `<tr><td><b style="color:${colorOf(s.scheme)}">${esc(s.scheme)}</b></td><td>${esc(s.info.name)}</td><td>${fmt(s.total)}</td><td>${f(s.overlap, 2)}</td><td>${f(s.tau, 2)}</td><td>${s.mean_length}</td><td>${s.mean_max_tf}</td>
-          ${s.measures ? `<td>${f(s.measures['P@5'], 2)}</td><td>${f(s.measures['P@10'], 2)}</td><td>${f(s.measures['R@10'], 3)}</td><td>${f(s.measures.AP, 3)}</td><td>${f(s.measures['nDCG@10'], 3)}</td>` : ''}</tr>`).join('')}</table>`;
+          ${s.measures ? `<td>${f(s.measures['P@5'], 2)}</td><td>${f(s.measures['P@10'], 2)}</td><td>${f(s.measures['R@10'], 3)}</td><td>${f(s.measures.AP, 3)}</td><td>${f(s.measures['nDCG@10'], 3)}</td>` : ''}</tr>`).join('')}</table></div>`;
       h += '<div class="vcols">' + r.schemes.map(s => `<div class="vcol"><h4><span style="color:${colorOf(s.scheme)}">${esc(s.scheme)}</span> · ${esc(s.info.name)}</h4>
         <ol>${s.top.map(t => `<li class="${t.grade ? 'rel' + t.grade : ''}" title="${esc(t.title)}">${esc(t.title.length > 70 ? t.title.slice(0, 70) + '…' : t.title)}
           <span class="mv">score ${f(t.score, 3)} · len ${t.length} · max tf ${t.max_tf}${s.scheme !== r.base ? ` · ${t.rank_base ? '#' + t.rank_base + ' under ' + esc(r.base) : 'not in ' + esc(r.base)}` : ''}${t.grade != null ? ' · rel ' + t.grade : ''}</span></li>`).join('')}</ol></div>`).join('') + '</div>';
@@ -189,10 +189,10 @@
       st.queries = r;
       $('#vq-examples').innerHTML = '<span class="muted">evaluation queries:</span> ' + r.queries.map(q => `<a href="#" data-q="${esc(q.text)}" title="${esc(q.description)} · ${q.relevant} relevant">${esc(q.id)}</a>`).join('');
       $$('#vq-examples a').forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('#vq').value = a.dataset.q; search(); }));
-      box.innerHTML = `<table class="grid"><tr><th>id</th><th style="min-width:270px">query</th><th style="text-align:right">relevant</th><th style="text-align:right">grade 2 / 1</th><th style="text-align:right">via MeSH</th><th style="text-align:right">keywords only</th><th style="text-align:right">manual</th><th>rule (every group must match a label)</th><th></th></tr>
+      box.innerHTML = `<div class="tscroll"><table class="grid qtab"><tr><th>id</th><th>query</th><th style="text-align:right">relevant</th><th style="text-align:right">grade 2 / 1</th><th style="text-align:right">via MeSH</th><th style="text-align:right">keywords only</th><th style="text-align:right">manual</th><th>rule (every group must match a label)</th><th></th></tr>
         ${r.queries.map(q => `<tr><td>${esc(q.id)}</td><td class="t"><b>${esc(q.text)}</b><br><span class="muted">${esc(q.description)}</span></td><td style="text-align:right">${q.relevant}</td><td style="text-align:right">${q.grade2} / ${q.grade1}</td><td style="text-align:right">${q.from_mesh}</td><td style="text-align:right">${q.from_keyword_only}</td><td style="text-align:right">${q.manual}</td>
-          <td class="t" style="font-size:11px;font-family:ui-monospace,Menlo,monospace;max-width:420px">${q.groups.map(g => '(' + g.map(esc).join(' | ') + ')').join(' AND ')}</td>
-          <td><a href="#" data-rel="${esc(q.id)}">relevant set</a> · <a href="#" data-run="${esc(q.text)}">search</a></td></tr>`).join('')}</table>
+          <td class="t rule">${q.groups.map(g => '(' + g.map(esc).join(' | ') + ')').join(' AND ')}</td>
+          <td><a href="#" data-rel="${esc(q.id)}">relevant set</a> · <a href="#" data-run="${esc(q.text)}">search</a></td></tr>`).join('')}</table></div>
         <p class="hint" style="margin-top:6px">${fmt(r.labelled)} of ${fmt(r.documents)} documents carry at least one label (${pct(r.labelled / r.documents)}); the rest can never be judged relevant. File: <code>${esc(r.file)}</code></p>`;
       $$('a[data-rel]', box).forEach(a => a.addEventListener('click', e => { e.preventDefault(); relevantSet(a.dataset.rel); }));
       $$('a[data-run]', box).forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('#vq').value = a.dataset.run; search(); location.hash = '#vsm-s3'; $('#vsm-s3').scrollIntoView(); }));
@@ -207,8 +207,8 @@
       const r = await api('/api/vsm/relevant?' + new URLSearchParams({ id: qid, scheme }));
       const m = r.measures;
       box.innerHTML = `<h4 style="margin:12px 0 4px">Relevant set of ${esc(r.query.id)} — “${esc(r.query.text)}” (${m.relevant} documents; rank under <b>${esc(scheme)}</b>: P@10 ${f(m['P@10'], 2)}, R@10 ${f(m['R@10'], 3)}, AP ${f(m.AP, 3)}, nDCG@10 ${f(m['nDCG@10'], 3)}; ${fmt(r.retrieved)} documents scored)</h4>
-        <table class="grid"><tr><th style="text-align:right">rank</th><th>grade</th><th>document</th><th style="text-align:right">length</th><th>matched labels (* = MeSH major topic)</th></tr>
-        ${r.relevant.map(d => `<tr><td style="text-align:right">${d.rank || '<span class="muted">not retrieved</span>'}</td><td>${gradeTag(d.grade, d.matched)}${d.manual ? ' <small class="muted">manual</small>' : ''}</td><td class="t">${esc(d.title)} <span class="muted">${esc(d.doc_id)}</span></td><td style="text-align:right">${d.length}</td><td class="t" style="font-size:12px">${d.matched.map(esc).join(', ')}</td></tr>`).join('')}</table>`;
+        <div class="tscroll"><table class="grid"><tr><th style="text-align:right">rank</th><th>grade</th><th>document</th><th style="text-align:right">length</th><th>matched labels (* = MeSH major topic)</th></tr>
+        ${r.relevant.map(d => `<tr><td style="text-align:right">${d.rank || '<span class="muted">not retrieved</span>'}</td><td>${gradeTag(d.grade, d.matched)}${d.manual ? ' <small class="muted">manual</small>' : ''}</td><td class="t">${esc(d.title)} <span class="muted">${esc(d.doc_id)}</span></td><td style="text-align:right">${d.length}</td><td class="t" style="font-size:12px">${d.matched.map(esc).join(', ')}</td></tr>`).join('')}</table></div>`;
       box.scrollIntoView({ block: 'start' });
     } catch (e) { err(box, e); }
   }
@@ -223,8 +223,8 @@
       st.evalData = r;
       const best = {};
       MEASURES.forEach(k => { best[k] = Math.max(...r.schemes.map(s => s.mean[k])); });
-      let h = `<table class="grid num" id="ve-table"><tr><th>scheme</th><th>name</th>${MEASURES.map(k => `<th>${k}</th>`).join('')}</tr>
-        ${r.schemes.map(s => `<tr><td><b style="color:${colorOf(s.scheme)}">${esc(s.scheme)}</b></td><td>${esc(s.info.name)}</td>${MEASURES.map(k => `<td class="${s.mean[k] === best[k] ? 'best' : ''}">${f(s.mean[k], 3)}</td>`).join('')}</tr>`).join('')}</table>
+      let h = `<div class="tscroll"><table class="grid num" id="ve-table"><tr><th>scheme</th><th>name</th>${MEASURES.map(k => `<th>${k}</th>`).join('')}</tr>
+        ${r.schemes.map(s => `<tr><td><b style="color:${colorOf(s.scheme)}">${esc(s.scheme)}</b></td><td>${esc(s.info.name)}</td>${MEASURES.map(k => `<td class="${s.mean[k] === best[k] ? 'best' : ''}">${f(s.mean[k], 3)}</td>`).join('')}</tr>`).join('')}</table></div>
         <p class="hint">mean over ${r.queries.length} queries${r.condensed ? ' (condensed lists: unlabelled documents removed before measuring)' : ' (unlabelled documents count as not relevant)'}; best value per column in bold.</p>
         <div class="row" style="margin:8px 0"><label>Chart / per-query measure <select id="ve-measure">${MEASURES.map(k => `<option${k === 'nDCG@10' ? ' selected' : ''}>${k}</option>`).join('')}</select></label></div>
         <div class="two"><div id="ve-chart"></div><div id="ve-chart2"></div></div>
@@ -240,9 +240,9 @@
           <table class="grid num"><tr><th>tf \\ idf · norm</th><th>no idf, no norm</th><th>idf, no norm</th><th>no idf, L2</th><th>idf, L2</th></tr>
           ${[['n', 'raw tf'], ['l', 'log tf']].map(([t, name]) => `<tr><td>${name}</td>${[t + 'nn', t + 'tn', t + 'nc', t + 'tc'].map(s => `<td>${val(s) != null ? f(val(s), 3) : '–'}</td>`).join('')}</tr>`).join('')}</table>
           <p class="hint">讀法：同一列比較 idf / 正規化的效果，同一欄比較 raw vs log tf。</p>` : '';
-        $('#ve-perq').innerHTML = `<h4>${esc(k)} per query</h4><table class="grid num"><tr><th>query</th>${r.schemes.map(s => `<th style="color:${colorOf(s.scheme)}">${esc(s.scheme)}</th>`).join('')}<th>relevant</th></tr>
+        $('#ve-perq').innerHTML = `<h4>${esc(k)} per query</h4><div class="tscroll"><table class="grid num"><tr><th>query</th>${r.schemes.map(s => `<th style="color:${colorOf(s.scheme)}">${esc(s.scheme)}</th>`).join('')}<th>relevant</th></tr>
           ${r.queries.map((q, i) => { const vals = r.schemes.map(s => s.per_query[i][k]); const mx = Math.max(...vals);
-            return `<tr><td title="${esc(q.text)}">${esc(q.id)} <span class="muted">${esc(q.text.length > 44 ? q.text.slice(0, 44) + '…' : q.text)}</span></td>${vals.map(v => `<td class="${v === mx ? 'best' : ''}">${f(v, 3)}</td>`).join('')}<td>${q.relevant}</td></tr>`; }).join('')}</table>`;
+            return `<tr><td title="${esc(q.text)}">${esc(q.id)} <span class="muted">${esc(q.text.length > 44 ? q.text.slice(0, 44) + '…' : q.text)}</span></td>${vals.map(v => `<td class="${v === mx ? 'best' : ''}">${f(v, 3)}</td>`).join('')}<td>${q.relevant}</td></tr>`; }).join('')}</table></div>`;
       };
       $('#ve-measure').addEventListener('change', draw);
       draw();
