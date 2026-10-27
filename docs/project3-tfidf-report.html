@@ -45,7 +45,7 @@ figure{margin:0;min-width:0}figure svg{width:100%;height:auto;display:block;bord
 @media print{body{background:none;padding:0}.page{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:0;overflow:hidden}@page{size:A4 portrait;margin:0}}
 table.cos{font-size:.86em}table.cos td,table.cos th{padding:1.5px 2px}table.cos th:first-child{white-space:normal}
 .two.tbl{grid-template-columns:52mm 1fr}
-.two.rq1{display:block}.two.rq1::after{content:"";display:block;clear:both}.two.rq1 table{float:left;width:58mm;margin:0 4mm 0 0}.two.rq2{grid-template-columns:84mm 1fr}.two.rq2 table{table-layout:fixed}.two.rq2 td,.two.rq2 th{overflow:hidden;white-space:nowrap}.two.rq2 th:first-child{width:38%}.two.rq3{grid-template-columns:1fr 60mm}.two.rq4{grid-template-columns:1fr 60mm}
+.two.rq1{display:block}.rq1l{margin:0;padding-left:1.1em}.rq1l li{margin:0;padding:0}.two.rq1::after{content:"";display:block;clear:both}.two.rq1 table{float:left;width:58mm;margin:0 4mm 0 0}.two.rq2{grid-template-columns:84mm 1fr}.two.rq2 table{table-layout:fixed}.two.rq2 td,.two.rq2 th{overflow:hidden;white-space:nowrap}.two.rq2 th:first-child{width:38%}.two.rq3{grid-template-columns:1fr 60mm}.two.rq4{grid-template-columns:1fr 60mm}
 table.t.small{font-size:7.2pt}table.t.small td,table.t.small th{padding:1px 3px}
 body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 </style>
@@ -72,7 +72,13 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 <tr><td class="k">raw tf</td><td>1</td><td>2</td><td>5</td><td>10</td><td>30</td><td>50</td></tr>
 <tr><td class="k">1 + ln tf</td><td>1.00</td><td>1.69</td><td>2.61</td><td>3.30</td><td>4.40</td><td>4.91</td></tr>
 </table>
-<p>FLOW 試驗摘要同時提到 semaglutide 7 次、cardiovascular 13 次：raw tf 說後者重要近兩倍，log 給 2.95 對 3.56、只差兩成，較接近人的判斷。log 的加分逐次遞減（第 2 次 +0.69、第 30 次 +0.03），單一詞無法獨占向量：同篇在 <code>nnn</code> 下由小數「0」（tf 38）主宰、前 5 詞佔 22.5%，<code>lnn</code> 壓到 7.8%。raw tf 還不公平地偏好長文件：q01 前 10 名平均長度 339 → 275。最有效的單一改動：MAP <b>0.451 → 0.574</b>（+27%，14/15 題提高），tf 與 idf 也同量級。<b>詞頻增加，重要性不等比例增加。</b></p>
+<ul class="rq1l">
+<li><b>例子</b>：FLOW 試驗摘要提到 semaglutide 7 次、cardiovascular 13 次。raw tf 說後者重要近兩倍；log 給 2.95 對 3.56、只差兩成，較接近人的判斷。</li>
+<li><b>機制</b>：log 的加分逐次遞減（第 2 次 +0.69、第 30 次 +0.03），單一詞無法獨占向量：同篇在 <code>nnn</code> 下由小數「0」（tf 38）主宰、前 5 詞佔 22.5%，<code>lnn</code> 壓到 7.8%。</li>
+<li><b>長文不公平</b>：文件愈長 tf 愈大，raw tf 等於替長文加分；q01 前 10 名平均長度 339 → 275（全集合 211）。</li>
+<li><b>效果</b>：最有效的單一改動，MAP <b>0.451 → 0.574</b>（+27%，14/15 題提高）；壓平後 tf 與 idf 同量級，RQ2 的 idf 才量得出來。</li>
+<li><b>結論</b>：詞頻增加，重要性不等比例增加。</li>
+</ul>
 </div>
 </section>
 
