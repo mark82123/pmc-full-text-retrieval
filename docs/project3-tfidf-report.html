@@ -55,6 +55,10 @@ figure{margin:0;min-width:0}figure svg{width:100%;height:auto;display:block;bord
 .appc .inner{padding:8mm 10mm 4mm}.appc table.cm td,.appc table.cm th{white-space:normal;vertical-align:top}.appc table.cm td.k{white-space:normal;font-weight:600}
 .appc .formula{font-family:var(--mono);font-size:7.6pt;background:var(--soft);border-radius:4px;padding:4px 7px;margin:2px 0 4px;line-height:1.4}.appc .formula .mu{font-family:var(--sans);font-size:7pt}
 .appc table.cm2{table-layout:auto}.appc table.cm2 td.k{white-space:nowrap}.appc table.cm2 .sc{display:inline-block;width:3em;font-family:var(--mono);color:var(--accent);font-weight:500}
+.appe .demo{display:grid;grid-template-columns:1fr 1fr;gap:6px 7mm}.appe .card{background:var(--soft);border-radius:5px;padding:5px 9px 6px}.appe .card h4{margin:0 0 3px;font-size:9.4pt;font-family:var(--serif)}.appe .card h4 span{font-family:var(--mono);color:var(--accent);font-weight:500;margin-right:6px}
+.appe .card p{margin:0 0 2px;font-size:8.4pt;line-height:1.33}.appe .card p b{color:var(--accent)}.appe .card p.say{border-top:1px solid var(--line);padding-top:3px;margin-top:3px;font-weight:600;color:var(--ink)}
+.appe .steps{display:flex;gap:10px;align-items:center;background:var(--soft);border-radius:5px;padding:4px 10px;margin:4px 0 8px;font-size:8.6pt}.appe .steps b{font-family:var(--mono);color:var(--accent)}
+.appe pre{font-family:var(--mono);font-size:7.6pt;background:var(--code);border-radius:4px;padding:5px 8px;margin:3px 0 0;line-height:1.4;white-space:pre}
 @media print{body{background:none;padding:0}.page{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:0;overflow:hidden}@page{size:A4 portrait;margin:0}}
 table.cos{font-size:.86em}table.cos td,table.cos th{padding:1.5px 2px}table.cos th:first-child{white-space:normal}
 .two.tbl{grid-template-columns:52mm 1fr}
@@ -347,6 +351,47 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 </div>
 </div>
 <p class="mu" style="font-size:7.6pt;margin-top:8px">資料來源：NLM Technical Bulletin 2024 年 3–4 月號「MTIX」；Giustini 等，Automated indexing in MEDLINE and the Medical Text Indexer (MTI), 2000–2025: a scoping review，<i>J Med Libr Assoc</i>（2026）；Funk ME, Reid CA. Indexing consistency in MEDLINE. <i>Bull Med Libr Assoc</i> 1983;71(2):176–183；NLM「Introduction to MeSH Indexing」。</p>
+</div></section>
+<section class="page appendix appb appe"><div class="inner">
+<h2><span>附錄 E</span>課堂 demo 講稿：六個步驟展示向量空間檢索系統（約 15 分鐘）</h2>
+<div class="steps"><span>每個 demo 同一節奏：</span><b>① 問</b><span>「你猜會怎樣？」</span><b>② 按</b><span>只按一個按鈕</span><b>③ 驗</b><span>用畫面上的數字驗證</span><span style="margin-left:auto">網址 <code>http://172.27.156.215:8090/#vsm</code>，投影前每一節先按過一次</span></div>
+<div class="demo">
+<div class="card"><h4><span>Demo 1</span>一篇文件變成向量　<small>第 2 節 · 2 分鐘</small></h4>
+<p><b>操作</b>　PMID 留空按 Show vectors，勾 nnn、lnn、ltn 三張卡並排。</p>
+<p><b>看什麼</b>　nnn 的榜首是數字「0」，出現 38 次、佔向量 9%；lnn 把它壓到 4.6；ltn 的榜首換成 ascvd，因為它只出現在 29 篇。</p>
+<p class="say">向量空間模型的第一步不是算相似度，而是決定「哪些詞代表這篇文件」。</p></div>
+<div class="card"><h4><span>Demo 2</span>查詢也是向量，分數就是內積　<small>第 3 節 · 3 分鐘</small></h4>
+<p><b>操作</b>　點 q01 連結，Doc scheme 先選 nnn 按 Search，再改 ltc 按一次。</p>
+<p><b>看什麼</b>　每筆結果下方的貢獻長條：nnn 下 weight、loss 這種常見詞吃掉大半分數；ltc 下 semaglutide 一個詞佔最大塊。右側 rel 1 / rel 2 標籤讓觀眾直接數相關數。</p>
+<p class="say">分數 = Σ 查詢詞權重 × 文件詞權重，換權重就是換「誰說了算」。</p></div>
+<div class="card"><h4><span>Demo 3</span>改一個字母，整張榜單重排　<small>第 4 節 · 3 分鐘</small></h4>
+<p><b>操作</b>　填 q03「GLP-1 receptor agonists and cardiovascular outcomes」，按「RQ2 有無 IDF」。先請觀眾猜 lnn 的前 10 名會出現什麼。</p>
+<p><b>看什麼</b>　lnn 欄跑出腎臟、酒精、脫髮、睡眠呼吸中止；ltn 欄 9 篇綠色。表格 overlap 0.40、τ 0.05，兩張榜單幾乎無關。</p>
+<p class="say">glp、receptor、agonist 出現在八成文件，沒有 idf 時分數分給每一篇，剩下的只有雜訊。</p></div>
+<div class="card"><h4><span>Demo 4</span>長文件的優勢與正規化的代價　<small>第 4 節 · 2 分鐘</small></h4>
+<p><b>操作</b>　填 q10「polycystic ovary syndrome」，按「RQ4 L2 正規化」。</p>
+<p><b>看什麼</b>　ltn 前 10 名平均長度 230，ltc 降到 165，但 ltc 把一篇只有 30 個詞的更正啟事推到第一名；nDCG@10 從 0.775 掉到 0.528。</p>
+<p class="say">正規化不是免費的：它懲罰長文件，也獎勵「短到沒有別的詞稀釋」的文件。</p></div>
+<div class="card"><h4><span>Demo 5</span>長尾 idf 的陷阱（現場輸入）　<small>第 3 節 · 2 分鐘</small></h4>
+<p><b>操作</b>　輸入「semaglutide hepatocyte」，Doc scheme 選 ltc。</p>
+<p><b>看什麼</b>　第 3 名只命中 hepatocyte 兩次（分數 0.150），贏過第 6 名命中 semaglutide 十三次的文章（0.099）；hepatocyte 的 idf 5.6 是 semaglutide 1.44 的 4 倍。</p>
+<p class="say">idf 只看稀有、不看意義：一個罕見詞的一次出現可以壓過主題詞的十幾次。這是已知限制，也是討論題。</p></div>
+<div class="card"><h4><span>Demo 6</span>怎麼證明哪種比較好　<small>第 5、6 節 · 3 分鐘</small></h4>
+<p><b>操作</b>　先看查詢表的 relevant / via MeSH / manual 欄，點一題的「relevant set」；再勾全部 scheme、k = 10 按 Evaluate；最後勾 condensed 重跑。</p>
+<p><b>看什麼</b>　ltn MAP 0.661、ltc nDCG@10 0.698、bm25 P@5 0.973 各自粗體；condensed 後數字幾乎不動；第 6 節的結論文字跟著即時生成。</p>
+<p class="say">相關判斷來自標籤加 118 篇人工判讀、不碰正文，所以結果不偏向任何權重。</p></div>
+</div>
+<h3>現場技巧</h3>
+<ul>
+<li>Demo 3 與 5 最有戲劇性，放在中段；Demo 6 收尾，直接接到第 1 頁的結論表。</li>
+<li>第 3 節的 0 / 1 / 2 按鈕可順手示範人工判讀，示範完按 × 還原，否則評估數字會變。</li>
+<li>報告第 1 頁的 RQ2 圖與 RQ4 表就是 Demo 3、4 的靜態版本，demo 後翻回報告對照，讓觀眾知道數字從哪裡來。</li>
+<li>備援：網頁若出問題，終端機下列指令得到一模一樣的數字（服務以 <code>python3 app.py --host 0.0.0.0</code> 啟動，預設埠 8090）。</li>
+</ul>
+<pre>python3 cli.py vsm search  "semaglutide hepatocyte" --scheme ltc
+python3 cli.py vsm compare "GLP-1 receptor agonists and cardiovascular outcomes" --schemes lnn,ltn
+python3 cli.py vsm compare "polycystic ovary syndrome" --schemes ltn,ltc
+python3 cli.py vsm eval --k 10</pre>
 </div></section>
 </body>
 </html>
