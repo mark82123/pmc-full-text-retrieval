@@ -78,7 +78,7 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 <div><b>2×2×2 + 4</b><small>因素設計：tf raw/log × idf 有/無 × L2 有/無 = 8 種；另加 btn、atc、lpc、BM25</small></div>
 <div><b>15</b><small>評估查詢；相關集由 MeSH / 關鍵詞規則 + 118 篇人工判讀產生（30–318 篇）</small></div>
 <div><b>0.661</b><small>最佳 MAP：ltn（log TF × IDF）；raw TF 0.451</small></div>
-<div><b>118</b><small>篇人工判讀，補回 37 篇漏標的相關文件；指標高 0.03–0.11，排序不變</small></div>
+<div><b>118</b><small>篇 AI 助理判讀（作者未複核），補回 37 篇漏標的相關文件；指標高 0.03–0.11，排序不變</small></div>
 </div>
 <p class="legend"><b>權重代號怎麼讀</b>　SMART 三字母依位置：<span class="pos"><b>l</b><i>①tf</i></span><span class="pos"><b>t</b><i>②df</i></span><span class="pos"><b>c</b><i>③正規化</i></span>　① tf：<b>n</b> 原始次數 · <b>l</b> 1+ln tf · <b>a</b> 增強 · <b>b</b> 布林　② df：<b>n</b> 不乘 · <b>t</b> idf · <b>p</b> 機率 idf　③ 正規化：<b>n</b> 無 · <b>c</b> cosine　例：<code>nnn</code> 原始 tf、<code>lnn</code> log tf、<code>ltn</code> log tf × idf、<code>ltc</code> 再加 cosine（完整對照表：第 2 頁附錄）</p>
 
@@ -219,7 +219,7 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 </div></section>
 <section class="page appendix appb"><div class="inner">
 <h2><span>附錄 B</span>評估查詢 q01–q15：怎麼定義、怎麼在網頁上重現、怎麼讀數據</h2>
-<p><b>定義方式</b>　每題 = 查詢文字 + 設計意圖 + 相關規則。規則由一到兩個「概念群」組成，每群是一組 MeSH 標題 / 作者關鍵詞的正則表示式；一篇文件的標籤把<b>每一群</b>都命中才算相關，命中的是 MeSH major topic 給 grade 2、否則 grade 1。規則只看標籤、不看標題摘要正文，所以不偏向任何 weighting。再以六種 scheme（nnn、lnn、btn、ltn、ltc、bm25）各取前 10 名做 pooling，規則判 0 的 118 篇逐篇人工判讀，補回 37 篇漏標的相關文件（「人工」欄）。</p>
+<p><b>定義方式</b>　每題 = 查詢文字 + 設計意圖 + 相關規則。規則由一到兩個「概念群」組成，每群是一組 MeSH 標題 / 作者關鍵詞的正則表示式；一篇文件的標籤把<b>每一群</b>都命中才算相關，命中的是 MeSH major topic 給 grade 2、否則 grade 1。規則只看標籤、不看標題摘要正文，所以不偏向任何 weighting。再以六種 scheme（nnn、lnn、btn、ltn、ltc、bm25）各取前 10 名做 pooling，規則判 0 的 118 篇由 AI 助理逐篇讀標題與摘要判讀（作者未逐篇複核），補回 37 篇漏標的相關文件（「人工」欄）。</p>
 <table class="t qt"><colgroup><col style="width:4%"><col style="width:27%"><col style="width:26%"><col style="width:6%"><col style="width:8.5%"><col style="width:5.5%"><col style="width:5.5%"><col style="width:6%"><col style="width:5.5%"><col style="width:6%"></colgroup>
 <tr><th>id</th><th>查詢文字 / 設計意圖</th><th>相關規則（概念群；全部群都命中 → 相關）</th><th class="n">相關<br>g2 / g1</th><th class="n">MeSH /<br>關鍵詞 /<br>人工</th><th class="n">AP<br>nnn</th><th class="n">AP<br>ltn</th><th class="n">AP<br>bm25</th><th class="n">P@10<br>ltn</th><th class="n">R@10<br>ltn</th></tr>
 <tr><td class="c">q01</td><td><b>semaglutide weight loss in obesity</b><br><span class="mu">藥 + 病況，兩者在語料都常見</span></td><td class="rule">(semaglutide | wegovy | ozempic) AND (obes | overweight | weight loss …)</td><td class="n">318<br><span class="mu">189/129</span></td><td class="n">232/85/4</td><td class="n">0.45</td><td class="n">0.60</td><td class="n"><b>0.61</b></td><td class="n">1.0</td><td class="n">0.03</td></tr>
@@ -319,7 +319,7 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 </div></section>
 <section class="page appendix appb appd"><div class="inner"><h2><span>附錄 D</span>NLM 的 MeSH 索引現在怎麼做、可靠嗎、對本報告的相關判斷有什麼影響</h2>
 <h3>D0　本報告的相關判斷：方法與限制</h3>
-<p>資料集沒有現成標籤，依作業指示用<b>主題標籤</b>：每個查詢定義若干概念群（正規表示式），文件的每一群至少命中一個 MeSH 標題或作者關鍵詞即相關，命中 major-topic MeSH 為 grade 2；只看標籤不看文字，故不偏向任何 weighting，並可在介面手動覆寫。為補標籤漏標，對每題把六個 scheme 的前 10 名 pooling，規則判 0 的 <b>118 篇</b>由作者讀摘要逐篇判定：37 篇補為相關、81 篇確認不相關（逐題見附錄 B）；各指標上升 0.03–0.11，結論方向不變。限制：163 篇（5.4%）無任何標籤；57% 有 MeSH；規則與人工判讀皆由作者一人完成、只判讀前 10 名；相關集偏大（30–318）、R@k 絕對值低。另一觀察：純數字 token（佔詞彙 11.5%）df 小、idf 高，會混入 ltn 向量前列，移除數字可改善。</p>
+<p>資料集沒有現成標籤，依作業指示用<b>主題標籤</b>：每個查詢定義若干概念群（正規表示式），文件的每一群至少命中一個 MeSH 標題或作者關鍵詞即相關，命中 major-topic MeSH 為 grade 2；只看標籤不看文字，故不偏向任何 weighting，並可在介面手動覆寫。為補標籤漏標，對每題把六個 scheme 的前 10 名 pooling，規則判 0 的 <b>118 篇</b>由 AI 助理（Claude）讀標題與摘要逐篇判定：37 篇補為相關、81 篇確認不相關（逐題見附錄 B；清單在 <code>docs/manual_judgements_review.md</code>，作者尚未逐篇複核）；各指標上升 0.03–0.11，結論方向不變。限制：163 篇（5.4%）無任何標籤；57% 有 MeSH；規則由作者與 AI 助理共同撰寫，判讀由 AI 助理完成、作者未逐篇複核、只判讀前 10 名；相關集偏大（30–318）、R@k 絕對值低。另一觀察：純數字 token（佔詞彙 11.5%）df 小、idf 高，會混入 ltn 向量前列，移除數字可改善。</p>
 <div class="two">
 <div>
 <h3>D1　現行做法</h3>
@@ -379,7 +379,7 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 <div class="card"><h4><span>Demo 6</span>怎麼證明哪種比較好　<small>第 5、6 節 · 3 分鐘</small></h4>
 <p><b>操作</b>　先看查詢表的 relevant / via MeSH / manual 欄，點一題的「relevant set」；再勾全部 scheme、k = 10 按 Evaluate；最後勾 condensed 重跑。</p>
 <p><b>看什麼</b>　ltn MAP 0.661、ltc nDCG@10 0.698、bm25 P@5 0.973 各自粗體；condensed 後數字幾乎不動；第 6 節的結論文字跟著即時生成。</p>
-<p class="say">相關判斷來自標籤加 118 篇人工判讀、不碰正文，所以結果不偏向任何權重。</p></div>
+<p class="say">相關判斷來自標籤規則加 118 篇 AI 助理判讀（附錄 D0），不碰檢索用的權重，所以結果不偏向任何 scheme。</p></div>
 </div>
 <h3>現場技巧</h3>
 <ul>
