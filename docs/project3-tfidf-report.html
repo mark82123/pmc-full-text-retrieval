@@ -12,7 +12,7 @@
 body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--sans);font-size:9.15pt;line-height:1.3;padding:24px 16px}
 .page{background:var(--paper);width:210mm;min-height:297mm;max-width:100%;margin:0 auto;box-shadow:0 2px 12px rgba(20,30,60,.12);display:flex;flex-direction:column}
 .inner{padding:5mm 10mm 0;flex:1;min-width:0}
-footer{display:flex;justify-content:space-between;gap:12px;padding:0 10mm 4mm;font-size:7.34pt;color:var(--muted);font-family:var(--mono);line-height:1.3}
+footer{display:flex;justify-content:space-between;gap:12px;padding:0 10mm 3mm;font-size:7.34pt;color:var(--muted);font-family:var(--mono);line-height:1.3}
 h1{font-family:var(--serif);font-size:16.95pt;line-height:1.25;margin:2px 0 3px}
 h2{font-family:var(--serif);font-size:10.40pt;margin:0 0 3px;padding-bottom:1px;border-bottom:1.5px solid var(--rule)}
 h2 span{font-family:var(--mono);font-weight:500;color:var(--accent);font-size:8.81pt;margin-right:6px}
@@ -22,6 +22,7 @@ p{margin:0 0 2px}
 .facts{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:4px 0 6px}
 .facts div{background:var(--soft);border-radius:4px;padding:1px 7px}
 .facts b{display:block;font-family:var(--mono);font-size:10.73pt;font-weight:500;color:var(--accent);line-height:1.2}
+.legend{margin:0 0 4px;padding:1px 7px;background:var(--soft);border-radius:4px;font-size:7.3pt;line-height:1.22}.legend>b{color:var(--accent)}.pos{display:inline-flex;flex-direction:column;align-items:center;margin:0 1px;vertical-align:middle;line-height:1}.pos b{font-family:var(--mono);font-size:9.5pt;color:var(--accent)}.pos i{font-style:normal;font-size:6pt;color:var(--muted)}
 .facts small{font-size:7.34pt;color:var(--muted);line-height:1.2;display:block}
 section{margin-bottom:4px;min-width:0}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:0 6mm;align-items:start}.two>*{min-width:0}
@@ -58,11 +59,12 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 <div class="facts">
 <div><b>3,000</b><small>PubMed 摘要（GLP-1，含 MeSH）；平均 211 索引詞（24–672）</small></div>
 <div><b>15,823</b><small>詞幹；45% 只出現在 1 篇（idf 8.01），42 個詞出現在 ≥ 1,000 篇</small></div>
-<div><b>12</b><small>weighting schemes：nnn、lnn、btn、ntn、ltn、nnc、lnc、ntc、ltc、atc、lpc + BM25</small></div>
+<div><b>12</b><small>weighting schemes：11 種 SMART 組合（代號見下）+ BM25 對照</small></div>
 <div><b>15</b><small>評估查詢；相關集由 MeSH / 關鍵詞規則 + 118 篇人工判讀產生（30–318 篇）</small></div>
 <div><b>0.661</b><small>最佳 MAP：ltn（log TF × IDF）；raw TF 0.451</small></div>
 <div><b>0.65 ms</b><small>一次查詢（倒排權重向量）；19 個單元測試</small></div>
 </div>
+<p class="legend"><b>權重代號怎麼讀</b>　SMART 三字母依位置：<span class="pos"><b>l</b><i>①tf</i></span><span class="pos"><b>t</b><i>②df</i></span><span class="pos"><b>c</b><i>③正規化</i></span>　① tf：<b>n</b> 原始次數 · <b>l</b> 1+ln tf · <b>a</b> 增強 · <b>b</b> 布林　② df：<b>n</b> 不乘 · <b>t</b> idf · <b>p</b> 機率 idf　③ 正規化：<b>n</b> 無 · <b>c</b> cosine　例：<code>nnn</code> 原始 tf、<code>lnn</code> log tf、<code>ltn</code> log tf × idf、<code>ltc</code> 再加 cosine</p>
 
 <section>
 <h2><span>RQ1</span>原始 TF 與 Log TF 的差異，如何影響詞項權重？</h2>
@@ -74,7 +76,7 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 </table>
 <ul class="rq1l">
 <li><b>例子</b>：FLOW 試驗摘要提到 semaglutide 7 次、cardiovascular 13 次。raw tf 說後者重要近兩倍；log 給 2.95 對 3.56、只差兩成，較接近人的判斷。</li>
-<li><b>機制</b>：log 的加分逐次遞減（第 2 次 +0.69、第 30 次 +0.03），單一詞無法獨占向量：同篇在 <code>nnn</code> 下由小數「0」（tf 38）主宰、前 5 詞佔 22.5%，<code>lnn</code> 壓到 7.8%。</li>
+<li><b>機制</b>：log 的加分逐次遞減（第 2 次 +0.69、第 30 次 +0.03），單一詞無法獨占向量：原始 tf 下（<code>nnn</code>）同篇由出現 38 次的「0」主宰、前 5 詞佔 22.5%；log tf（<code>lnn</code>）壓到 7.8%。</li>
 <li><b>長文不公平</b>：文件愈長 tf 愈大，raw tf 等於替長文加分；q01 前 10 名平均長度 339 → 275（全集合 211）。</li>
 <li><b>效果</b>：最有效的單一改動，MAP <b>0.451 → 0.574</b>（+27%，14/15 題提高）；壓平後 tf 與 idf 同量級，RQ2 的 idf 才量得出來。</li>
 <li><b>結論</b>：詞頻增加，重要性不等比例增加。</li>
@@ -146,7 +148,7 @@ q03「GLP-1 receptor agonists and cardiovascular outcomes」沒有 idf 時排名
 </section>
 
 </div>
-<footer><span>python3 cli.py vsm info | terms | doc | search | compare | eval | queries | relevant | judge | svg　·　/#vsm</span><span>tests/test_project3.py（19）· 全部 72 個測試通過 · 118 篇人工判讀 · 2026-10-27</span></footer>
+<footer><span style="white-space:nowrap">cli.py vsm info|terms|doc|search|compare|eval|queries|judge|svg · /#vsm</span><span style="white-space:nowrap">72 tests pass · 118 篇人工判讀 · 2026-10-27</span></footer>
 </section>
 </body>
 </html>
