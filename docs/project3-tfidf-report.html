@@ -11,7 +11,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--sans);font-size:9.15pt;line-height:1.3;padding:24px 16px}
 .page{background:var(--paper);width:210mm;min-height:297mm;max-width:100%;margin:0 auto;box-shadow:0 2px 12px rgba(20,30,60,.12);display:flex;flex-direction:column}
-.inner{padding:5mm 10mm 1mm;flex:1;min-width:0}
+.inner{padding:5mm 10mm 0;flex:1;min-width:0}
 footer{display:flex;justify-content:space-between;gap:12px;padding:0 10mm 4mm;font-size:7.34pt;color:var(--muted);font-family:var(--mono);line-height:1.3}
 h1{font-family:var(--serif);font-size:16.95pt;line-height:1.25;margin:2px 0 3px}
 h2{font-family:var(--serif);font-size:10.40pt;margin:0 0 3px;padding-bottom:1px;border-bottom:1.5px solid var(--rule)}
@@ -45,7 +45,7 @@ figure{margin:0;min-width:0}figure svg{width:100%;height:auto;display:block;bord
 @media print{body{background:none;padding:0}.page{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:0;overflow:hidden}@page{size:A4 portrait;margin:0}}
 table.cos{font-size:.86em}table.cos td,table.cos th{padding:1.5px 2px}table.cos th:first-child{white-space:normal}
 .two.tbl{grid-template-columns:52mm 1fr}
-.two.rq1{grid-template-columns:58mm 1fr}.two.rq2{grid-template-columns:84mm 1fr}.two.rq2 table{table-layout:fixed}.two.rq2 td,.two.rq2 th{overflow:hidden;white-space:nowrap}.two.rq2 th:first-child{width:38%}.two.rq3{grid-template-columns:1fr 60mm}.two.rq4{grid-template-columns:1fr 60mm}
+.two.rq1{display:block}.two.rq1::after{content:"";display:block;clear:both}.two.rq1 table{float:left;width:58mm;margin:0 4mm 0 0}.two.rq2{grid-template-columns:84mm 1fr}.two.rq2 table{table-layout:fixed}.two.rq2 td,.two.rq2 th{overflow:hidden;white-space:nowrap}.two.rq2 th:first-child{width:38%}.two.rq3{grid-template-columns:1fr 60mm}.two.rq4{grid-template-columns:1fr 60mm}
 table.t.small{font-size:7.2pt}table.t.small td,table.t.small th{padding:1px 3px}
 body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 </style>
@@ -72,8 +72,7 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 <tr><td class="k">raw tf</td><td>1</td><td>2</td><td>5</td><td>10</td><td>30</td><td>50</td></tr>
 <tr><td class="k">1 + ln tf</td><td>1.00</td><td>1.69</td><td>2.61</td><td>3.30</td><td>4.40</td><td>4.91</td></tr>
 </table>
-<p>raw tf 讓出現 30 次的詞是出現 1 次的 30 倍，log 只給 4.4 倍。一篇 FLOW 試驗摘要（422 索引詞、max tf 38）在 <code>nnn</code> 下由小數的「0」（tf 38）主宰、前 5 詞佔向量 22.5%；<code>lnn</code> 壓到 7.8%。
-檢索上 raw → log 是效果最大的單一改動：MAP <b>0.451 → 0.574</b>（+27%，15 題全部提高）、nDCG@10 0.545 → 0.656、MRR 0.791 → 0.933；q01 前 10 名平均長度 339 → 275（raw tf 偏好能重複同一詞的長文件）。<b>詞頻增加，重要性不等比例增加。</b></p>
+<p>FLOW 試驗摘要同時提到 semaglutide 7 次、cardiovascular 13 次：raw tf 說後者重要近兩倍，log 給 2.95 對 3.56、只差兩成，較接近人的判斷。log 的加分逐次遞減（第 2 次 +0.69、第 30 次 +0.03），單一詞無法獨占向量：同篇在 <code>nnn</code> 下由小數「0」（tf 38）主宰、前 5 詞佔 22.5%，<code>lnn</code> 壓到 7.8%。raw tf 還不公平地偏好長文件：q01 前 10 名平均長度 339 → 275。最有效的單一改動：MAP <b>0.451 → 0.574</b>（+27%，14/15 題提高），tf 與 idf 也同量級。<b>詞頻增加，重要性不等比例增加。</b></p>
 </div>
 </section>
 
@@ -137,7 +136,7 @@ q03「GLP-1 receptor agonists and cardiovascular outcomes」沒有 idf 時排名
 
 <section>
 <h2><span>方法與限制</span>相關性判斷</h2>
-<p>資料集沒有現成標籤，依作業指示用<b>主題標籤</b>：每個查詢定義若干概念群（正規表示式），文件的每一群至少命中一個 MeSH 標題或作者關鍵詞即相關，命中 major-topic MeSH 為 grade 2；只看標籤不看文字，故不偏向任何 weighting，並可在介面手動覆寫。為補標籤漏標，對每題把六個 scheme 的前 10 名 pooling，規則判 0 的 <b>118 篇</b>由作者讀摘要逐篇判定：37 篇補為相關（q03 心血管試驗 5、q09 副作用主題 7、q13 / q14 無標籤的 OSA 試驗與成本效益分析各 4）、81 篇確認不相關；各指標上升 0.03–0.11，結論方向不變。限制：163 篇（5.4%）無任何標籤（condensed-list 評估排序不變）；57% 有 MeSH；規則與人工判讀皆由作者一人完成，且只判讀了前 10 名；相關集偏大（30–318）、R@k 絕對值低。另一觀察：純數字 token（佔詞彙 11.5%）df 小、idf 高，會混入 ltn 向量前列；移除數字是最直接的 modified TF-IDF。</p>
+<p>資料集沒有現成標籤，依作業指示用<b>主題標籤</b>：每個查詢定義若干概念群（正規表示式），文件的每一群至少命中一個 MeSH 標題或作者關鍵詞即相關，命中 major-topic MeSH 為 grade 2；只看標籤不看文字，故不偏向任何 weighting，並可在介面手動覆寫。為補標籤漏標，對每題把六個 scheme 的前 10 名 pooling，規則判 0 的 <b>118 篇</b>由作者讀摘要逐篇判定：37 篇補為相關（q03 心血管試驗 5、q09 副作用主題 7、q13 / q14 無標籤的 OSA 試驗與成本效益分析各 4）、81 篇確認不相關；各指標上升 0.03–0.11，結論方向不變。限制：163 篇（5.4%）無任何標籤（condensed-list 評估排序不變）；57% 有 MeSH；規則與人工判讀皆由作者一人完成，且只判讀了前 10 名；相關集偏大（30–318）、R@k 絕對值低。另一觀察：純數字 token（佔詞彙 11.5%）df 小、idf 高，會混入 ltn 向量前列；移除數字是最直接的改良。</p>
 </section>
 
 </div>
