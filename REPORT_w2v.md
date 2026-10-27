@@ -5,7 +5,7 @@
 語料：1,000 篇 PubMed 摘要（查詢 *GLP-1*，`data/pubmed_glp1.jsonl`，與 Zipf 分析共用）
 程式：`ir/word2vec.py`（CBOW / Skip-gram，negative sampling）、`ir/tsne.py`（PCA、t-SNE）、`ir/engine.py`（多模型管理、評估）、`static/w2v.js`（網頁 Word2Vec 分頁）。全部為純 Python 標準函式庫 + 原生 JavaScript，沒有 numpy、gensim、scikit-learn。
 
-本報告的每個數字都可以在網頁的 **Word2Vec** 分頁（`python3 app.py` → http://127.0.0.1:8080/#w2v）或 `python3 cli.py w2v …` 重新算出；最後一節列出對應指令。
+本報告的每個數字都可以在網頁的 **Word2Vec** 分頁（`python3 app.py` → http://127.0.0.1:8090/#w2v）或 `python3 cli.py w2v …` 重新算出；最後一節列出對應指令。
 
 ---
 
@@ -286,7 +286,7 @@ loss    = −log σ(h·v_target) − Σ_k log σ(−h·v_neg)
 ## 10. 重現方式
 
 ```bash
-python3 app.py                     # 網頁：http://127.0.0.1:8080/#w2v（第 1–8 節一一對應）
+python3 app.py                     # 網頁：http://127.0.0.1:8090/#w2v（第 1–8 節一一對應）
 python3 cli.py w2v vocab           # 第 1–3 節：前處理、詞彙表、樣本數
 python3 cli.py w2v examples "GLP-1 receptor agonists reduce body weight in adults with obesity" --window 2
 python3 cli.py w2v train --model sg --dim 50 --window 5 --epochs 10        # 第 4 節（約 4 分鐘）

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Web front-end for the full-text retrieval tool (standard library only).
 
-    python3 app.py [--data data] [--port 8000]
+    python3 app.py [--data data] [--port 8090]
 
 Endpoints
     GET  /                       single-page UI
@@ -268,7 +268,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="PMC full-text retrieval tool - web UI")
     ap.add_argument("--data", default=str(ROOT / "data"), help="directory with PMC XML files")
     ap.add_argument("--host", default="127.0.0.1")
-    ap.add_argument("--port", type=int, default=8080)
+    ap.add_argument("--port", type=int, default=8090)
     args = ap.parse_args()
     engine = Engine(args.data)
     n = engine.load()
