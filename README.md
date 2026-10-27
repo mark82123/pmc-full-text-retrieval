@@ -26,6 +26,7 @@ plus a small vanilla-JavaScript front-end. No packages need to be installed.
 
 ```
 python3 app.py            # web UI  ->  http://127.0.0.1:8090/   (default port 8090; use --port N to change)
+python3 app.py --host 0.0.0.0   # also reachable from other machines / the Windows host, e.g. http://<WSL-IP>:8090/
 python3 cli.py search "cancer immunotherapy"
 python3 cli.py fetch 32895440 PMC7536103     # download from NCBI by PMID / PMC id and index
 python3 -m unittest discover -s tests -v
