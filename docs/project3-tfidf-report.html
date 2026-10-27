@@ -57,7 +57,7 @@ figure{margin:0;min-width:0}figure svg{width:100%;height:auto;display:block;bord
 .appc table.cm2{table-layout:auto}.appc table.cm2 td.k{white-space:nowrap}.appc table.cm2 .sc{display:inline-block;width:3em;font-family:var(--mono);color:var(--accent);font-weight:500}
 .appe .demo{display:grid;grid-template-columns:1fr 1fr;gap:6px 7mm}.appe .card{background:var(--soft);border-radius:5px;padding:5px 9px 6px}.appe .card h4{margin:0 0 3px;font-size:9.4pt;font-family:var(--serif)}.appe .card h4 span{font-family:var(--mono);color:var(--accent);font-weight:500;margin-right:6px}
 .appe .card p{margin:0 0 2px;font-size:8.4pt;line-height:1.33}.appe .card p b{color:var(--accent)}.appe .card p.say{border-top:1px solid var(--line);padding-top:3px;margin-top:3px;font-weight:600;color:var(--ink)}
-.appe .steps{display:flex;gap:10px;align-items:center;background:var(--soft);border-radius:5px;padding:4px 10px;margin:4px 0 8px;font-size:8.6pt}.appe .steps b{font-family:var(--mono);color:var(--accent)}
+.appe .steps{display:flex;gap:10px;align-items:center;background:var(--soft);border-radius:5px;padding:4px 10px;margin:4px 0 8px;font-size:8.6pt}.appe .steps span{white-space:nowrap}.appe .steps b{font-family:var(--mono);color:var(--accent);margin-right:4px}
 .appe pre{font-family:var(--mono);font-size:7.6pt;background:var(--code);border-radius:4px;padding:5px 8px;margin:3px 0 0;line-height:1.4;white-space:pre}
 @media print{body{background:none;padding:0}.page{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:0;overflow:hidden}@page{size:A4 portrait;margin:0}}
 table.cos{font-size:.86em}table.cos td,table.cos th{padding:1.5px 2px}table.cos th:first-child{white-space:normal}
@@ -354,7 +354,7 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 </div></section>
 <section class="page appendix appb appe"><div class="inner">
 <h2><span>附錄 E</span>課堂 demo 講稿：六個步驟展示向量空間檢索系統（約 15 分鐘）</h2>
-<div class="steps"><span>每個 demo 同一節奏：</span><b>① 問</b><span>「你猜會怎樣？」</span><b>② 按</b><span>只按一個按鈕</span><b>③ 驗</b><span>用畫面上的數字驗證</span><span style="margin-left:auto">網址 <code>http://172.27.156.215:8090/#vsm</code>，投影前每一節先按過一次</span></div>
+<div class="steps"><span>每個 demo 同一節奏：</span><span><b>① 問</b>「你猜會怎樣？」</span><span><b>② 按</b>只按一個按鈕</span><span><b>③ 驗</b>用畫面上的數字驗證</span><span style="margin-left:auto">共 6 個 demo，約 15 分鐘</span></div>
 <div class="demo">
 <div class="card"><h4><span>Demo 1</span>一篇文件變成向量　<small>第 2 節 · 2 分鐘</small></h4>
 <p><b>操作</b>　PMID 留空按 Show vectors，勾 nnn、lnn、ltn 三張卡並排。</p>
@@ -383,6 +383,7 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 </div>
 <h3>現場技巧</h3>
 <ul>
+<li>網址 <code>http://172.27.156.215:8090/#vsm</code>（WSL 的 IP 以 <code>hostname -I</code> 確認）；投影前把六節都先按過一次，結果載好才不會等。</li>
 <li>Demo 3 與 5 最有戲劇性，放在中段；Demo 6 收尾，直接接到第 1 頁的結論表。</li>
 <li>第 3 節的 0 / 1 / 2 按鈕可順手示範人工判讀，示範完按 × 還原，否則評估數字會變。</li>
 <li>報告第 1 頁的 RQ2 圖與 RQ4 表就是 Demo 3、4 的靜態版本，demo 後翻回報告對照，讓觀眾知道數字從哪裡來。</li>
