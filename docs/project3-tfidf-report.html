@@ -43,6 +43,12 @@ figure{margin:0;min-width:0}figure svg{width:100%;height:auto;display:block;bord
 .cols{columns:2;column-gap:6mm}
 .muted{color:var(--muted)}
 @media (max-width:640px){.two,.three,.facts{grid-template-columns:1fr 1fr}.cols{columns:1}.page{min-height:0}.inner{padding:6mm 5mm}}
+.appendix{margin-top:18px;font-size:9pt;line-height:1.32}.appendix .inner{padding:9mm 11mm 4mm}.appendix h2{font-size:12.5pt;margin:0 0 6px}.appendix h2 span{font-size:10pt}
+.appendix h3{font-family:var(--serif);font-size:10.4pt;margin:10px 0 4px}.appendix p{margin:0 0 5px}.appendix table.t{font-size:8.6pt;line-height:1.35;margin:2px 0 6px}.appendix table.t th,.appendix table.t td{padding:3px 6px}
+.appendix table.t{table-layout:fixed}.appendix table.t td.f{font-family:var(--mono);font-size:8pt;overflow-wrap:anywhere}.appendix table.a2 td:nth-child(8),.appendix table.a2 td:nth-child(9),.appendix th.r{text-align:right;font-variant-numeric:tabular-nums}.appendix table.t td.c{font-family:var(--mono)}.appendix table.a2 td.c{white-space:nowrap}.appendix td.pos1{font-weight:600;background:var(--soft);white-space:nowrap}
+.appendix .big{display:flex;gap:18px;align-items:center;margin:2px 0 4px}.appendix .big .pos{margin:0 3px}.appendix .big .pos b{font-size:22pt}.appendix .big .pos i{font-size:8pt}.appendix .big .arrow{color:var(--muted)}
+.appendix .box{background:var(--soft);border-radius:4px;padding:5px 9px;margin:4px 0 8px}
+@media print{.appendix{page-break-before:always;margin-top:0}}
 @media print{body{background:none;padding:0}.page{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:0;overflow:hidden}@page{size:A4 portrait;margin:0}}
 table.cos{font-size:.86em}table.cos td,table.cos th{padding:1.5px 2px}table.cos th:first-child{white-space:normal}
 .two.tbl{grid-template-columns:52mm 1fr}
@@ -64,7 +70,7 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 <div><b>0.661</b><small>最佳 MAP：ltn（log TF × IDF）；raw TF 0.451</small></div>
 <div><b>0.65 ms</b><small>一次查詢（倒排權重向量）；19 個單元測試</small></div>
 </div>
-<p class="legend"><b>權重代號怎麼讀</b>　SMART 三字母依位置：<span class="pos"><b>l</b><i>①tf</i></span><span class="pos"><b>t</b><i>②df</i></span><span class="pos"><b>c</b><i>③正規化</i></span>　① tf：<b>n</b> 原始次數 · <b>l</b> 1+ln tf · <b>a</b> 增強 · <b>b</b> 布林　② df：<b>n</b> 不乘 · <b>t</b> idf · <b>p</b> 機率 idf　③ 正規化：<b>n</b> 無 · <b>c</b> cosine　例：<code>nnn</code> 原始 tf、<code>lnn</code> log tf、<code>ltn</code> log tf × idf、<code>ltc</code> 再加 cosine</p>
+<p class="legend"><b>權重代號怎麼讀</b>　SMART 三字母依位置：<span class="pos"><b>l</b><i>①tf</i></span><span class="pos"><b>t</b><i>②df</i></span><span class="pos"><b>c</b><i>③正規化</i></span>　① tf：<b>n</b> 原始次數 · <b>l</b> 1+ln tf · <b>a</b> 增強 · <b>b</b> 布林　② df：<b>n</b> 不乘 · <b>t</b> idf · <b>p</b> 機率 idf　③ 正規化：<b>n</b> 無 · <b>c</b> cosine　例：<code>nnn</code> 原始 tf、<code>lnn</code> log tf、<code>ltn</code> log tf × idf、<code>ltc</code> 再加 cosine（完整對照表：第 2 頁附錄）</p>
 
 <section>
 <h2><span>RQ1</span>原始 TF 與 Log TF 的差異，如何影響詞項權重？</h2>
@@ -150,5 +156,51 @@ q03「GLP-1 receptor agonists and cardiovascular outcomes」沒有 idf 時排名
 </div>
 <footer><span style="white-space:nowrap">cli.py vsm info|terms|doc|search|compare|eval|queries|judge|svg · /#vsm</span><span style="white-space:nowrap">72 tests pass · 118 篇人工判讀 · 2026-10-27</span></footer>
 </section>
+<section class="page appendix"><div class="inner">
+<h2><span>附錄 A</span>SMART 權重代號對照表（tf · df · norm）</h2>
+<p>每個 weighting scheme 是三個字母，<b>依位置讀</b>：第 1 字母是 tf 怎麼算、第 2 字母是 df 怎麼用、第 3 字母是正規化。三個因素獨立，權重 = ① × ② 再做 ③，查詢端全程固定為 <code>nnc</code>（原始 tf、不乘 idf、cosine）。</p>
+<div class="big">
+  <span class="pos"><b>l</b><i>① tf</i></span><span class="pos"><b>t</b><i>② df</i></span><span class="pos"><b>c</b><i>③ norm</i></span>
+  <span class="arrow">→</span><span><code>ltc</code> = (1 + ln tf) × ln(N / df)，再除以向量長度（cosine）。同理 <code>nnn</code> = 原始 tf、不乘 idf、不正規化。</span>
+</div>
+
+<h3>A1　三個位置各自可填的字母</h3>
+<table class="t a1"><colgroup><col style="width:19%"><col style="width:4%"><col style="width:10%"><col style="width:20%"><col style="width:28%"><col style="width:19%"></colgroup>
+<tr><th>位置</th><th>字</th><th>名稱</th><th>公式</th><th>直覺 / 用意</th><th>本報告用到的 scheme</th></tr>
+<tr><td class="pos1" rowspan="4">① tf<br><small>詞在這篇出現幾次（局部）</small></td><td class="c">n</td><td>natural</td><td class="f">tf</td><td>出現幾次算幾分；高頻詞獨占向量、偏好長文件（RQ1）</td><td class="c">nnn ntn nnc ntc</td></tr>
+<tr><td class="c">l</td><td>logarithm</td><td class="f">1 + ln tf</td><td>加分逐次遞減：tf 30 只得 4.4、不是 30（RQ1）</td><td class="c">lnn ltn lnc ltc lpc</td></tr>
+<tr><td class="c">a</td><td>augmented</td><td class="f">0.5 + 0.5 · tf / max tf</td><td>以該篇最大 tf 為基準，另一種壓平長文件的方法</td><td class="c">atc</td></tr>
+<tr><td class="c">b</td><td>boolean</td><td class="f">1</td><td>只看有沒有出現，忽略次數</td><td class="c">btn</td></tr>
+<tr><td class="pos1" rowspan="3">② df<br><small>詞出現在幾篇文件（全域）</small></td><td class="c">n</td><td>none</td><td class="f">1</td><td>不管詞多常見</td><td class="c">nnn lnn nnc lnc</td></tr>
+<tr><td class="c">t</td><td>idf</td><td class="f">ln(N / df)</td><td>常見詞降權、稀有詞升權：df 1,172 → 0.94，df 29 → 4.64（RQ2）</td><td class="c">btn ntn ltn ntc ltc atc</td></tr>
+<tr><td class="c">p</td><td>prob idf</td><td class="f">max(0, ln((N − df) / df))</td><td>出現超過一半文件的詞權重直接歸 0</td><td class="c">lpc</td></tr>
+<tr><td class="pos1" rowspan="2">③ norm<br><small>向量要不要正規化</small></td><td class="c">n</td><td>none</td><td class="f">w</td><td>分數 = 內積；長文件向量長、分數高（RQ4）</td><td class="c">nnn lnn btn ntn ltn</td></tr>
+<tr><td class="c">c</td><td>cosine</td><td class="f">w / ‖d‖</td><td>除以向量長度，分數 = cosine 相似度，長度不再有利（RQ4）</td><td class="c">nnc lnc ntc ltc atc lpc</td></tr>
+</table>
+
+<h3>A2　本報告的 12 個 scheme</h3>
+<table class="t a2"><colgroup><col style="width:7%"><col style="width:8%"><col style="width:10%"><col style="width:9%"><col style="width:21%"><col style="width:22%"><col style="width:11%"><col style="width:6%"><col style="width:6%"></colgroup>
+<tr><th>代號</th><th>① tf</th><th>② df</th><th>③ norm</th><th>白話</th><th>公式</th><th>用在</th><th class="r">MAP</th><th class="r">nDCG@10</th></tr>
+<tr><td class="c">nnn</td><td>n 原始</td><td>n 無</td><td>n 無</td><td>raw TF</td><td class="f">tf</td><td>RQ1 RQ3 RQ4</td><td>0.451</td><td>0.545</td></tr>
+<tr><td class="c">lnn</td><td>l 對數</td><td>n 無</td><td>n 無</td><td>log TF</td><td class="f">1 + ln tf</td><td>RQ1 RQ2</td><td>0.574</td><td>0.656</td></tr>
+<tr><td class="c">btn</td><td>b 布林</td><td>t idf</td><td>n 無</td><td>IDF only</td><td class="f">idf</td><td>RQ3</td><td>0.546</td><td>0.640</td></tr>
+<tr><td class="c">ntn</td><td>n 原始</td><td>t idf</td><td>n 無</td><td>raw TF × IDF</td><td class="f">tf · idf</td><td>RQ1 RQ3</td><td>0.599</td><td>0.642</td></tr>
+<tr class="sel"><td class="c">ltn</td><td>l 對數</td><td>t idf</td><td>n 無</td><td>log TF × IDF</td><td class="f">(1 + ln tf) · idf</td><td>RQ1–RQ4</td><td><b>0.661</b></td><td>0.692</td></tr>
+<tr><td class="c">nnc</td><td>n 原始</td><td>n 無</td><td>c cosine</td><td>raw TF, L2</td><td class="f">tf / ‖d‖</td><td>RQ4</td><td>0.487</td><td>0.603</td></tr>
+<tr><td class="c">lnc</td><td>l 對數</td><td>n 無</td><td>c cosine</td><td>log TF, L2</td><td class="f">(1 + ln tf) / ‖d‖</td><td>RQ2</td><td>0.574</td><td>0.663</td></tr>
+<tr><td class="c">ntc</td><td>n 原始</td><td>t idf</td><td>c cosine</td><td>raw TF × IDF, L2</td><td class="f">tf · idf / ‖d‖</td><td>因素格</td><td>0.609</td><td>0.675</td></tr>
+<tr class="sel"><td class="c">ltc</td><td>l 對數</td><td>t idf</td><td>c cosine</td><td>log TF × IDF, L2（教科書標準）</td><td class="f">(1 + ln tf) · idf / ‖d‖</td><td>RQ2 RQ4 變形</td><td>0.650</td><td><b>0.698</b></td></tr>
+<tr><td class="c">atc</td><td>a 增強</td><td>t idf</td><td>c cosine</td><td>augmented TF × IDF, L2</td><td class="f">(0.5 + 0.5 tf / max tf) · idf / ‖d‖</td><td>變形</td><td>0.603</td><td>0.668</td></tr>
+<tr><td class="c">lpc</td><td>l 對數</td><td>p 機率 idf</td><td>c cosine</td><td>log TF × prob IDF, L2</td><td class="f">(1 + ln tf) · max(0, ln((N − df) / df)) / ‖d‖</td><td>變形</td><td>0.654</td><td>0.695</td></tr>
+<tr><td class="c">bm25</td><td colspan="3">不屬於 SMART：tf 飽和 + 長度修正 + 機率 idf</td><td>Okapi BM25（對照組）</td><td class="f">k1 = 1.2，b = 0.75</td><td>變形</td><td>0.656</td><td>0.683</td></tr>
+</table>
+<p><small>MAP、nDCG@10 為 15 題平均、k = 10、含 118 篇人工判讀；粗體為該欄最高。對照實驗每組只改一個字母：RQ1 nnn→lnn、ntn→ltn；RQ2 lnn→ltn、lnc→ltc；RQ3 nnn / btn / ntn / ltn；RQ4 ltn→ltc、nnn→nnc。</small></p>
+
+<h3>A3　① tf 與 ② df 的關係：都取 log，但方向與層級不同</h3>
+<div class="box">
+<p><b>相同</b>：1 + ln tf 與 ln(N / df) 都是「對一個計數取對數」，背後同一個想法：計數加倍，證據不該加倍。</p>
+<p><b>不同</b>：tf 是<b>局部</b>量（這篇文件裡的次數），權重隨 tf <b>遞增</b>，回答「這篇在講它嗎」；df 是<b>全域</b>量（整個語料出現在幾篇），權重隨 df <b>遞減</b>，回答「這個詞能區分文件嗎」。兩者各自獨立，所以 SMART 放在不同位置相乘；log tf 把 tf 壓到與 idf 同一量級，idf 的效果才顯現（RQ2）。</p>
+</div>
+</div></section>
 </body>
 </html>
