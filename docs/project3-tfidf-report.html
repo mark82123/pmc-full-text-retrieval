@@ -52,6 +52,9 @@ figure{margin:0;min-width:0}figure svg{width:100%;height:auto;display:block;bord
 .appb{font-size:8.4pt;line-height:1.3}.appb .inner{padding:8mm 10mm 4mm}.appb h3{margin:7px 0 3px}.appb p{margin:0 0 3px}.appb table.t{font-size:7.4pt;line-height:1.25;margin:2px 0 4px}.appb table.t th,.appb table.t td{padding:2px 4px}
 .appb td.rule{font-family:var(--mono);font-size:6.6pt;overflow-wrap:anywhere}.appb .mu{color:var(--muted)}.appb td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.appb th.n{text-align:right;white-space:normal;line-height:1.15}.appb table.qt{font-size:7.1pt;line-height:1.2}.appb table.qt td{padding:1.5px 4px}.appb td.c{font-family:var(--mono)}
 .appb ul{padding-left:14px;margin:0 0 3px}.appb li{margin:0 0 1px}.appb .two{grid-template-columns:1fr 1fr;gap:0 5mm}
+.appc .inner{padding:8mm 10mm 4mm}.appc table.cm td,.appc table.cm th{white-space:normal;vertical-align:top}.appc table.cm td.k{white-space:normal;font-weight:600}
+.appc .formula{font-family:var(--mono);font-size:7.6pt;background:var(--soft);border-radius:4px;padding:4px 7px;margin:2px 0 4px;line-height:1.4}.appc .formula .mu{font-family:var(--sans);font-size:7pt}
+.appc table.cm2{table-layout:auto}.appc table.cm2 td.k{white-space:nowrap}.appc table.cm2 .sc{display:inline-block;width:3em;font-family:var(--mono);color:var(--accent);font-weight:500}
 @media print{body{background:none;padding:0}.page{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:0;overflow:hidden}@page{size:A4 portrait;margin:0}}
 table.cos{font-size:.86em}table.cos td,table.cos th{padding:1.5px 2px}table.cos th:first-child{white-space:normal}
 .two.tbl{grid-template-columns:52mm 1fr}
@@ -243,6 +246,59 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 <li><b>overlap@10 / Kendall τ</b>：兩個 scheme 前 10 名的交集比例與名次一致性；τ ≈ 0 表示榜單幾乎重排。</li>
 <li><b>mean length</b>：前 10 名平均索引詞數（全集合 211）；偏高 = 偏好長文件（RQ4）。</li>
 <li><b>讀表範例</b>：q03 AP nnn 0.19 → ltn 0.53，是 idf 把 cardiovascular 拉過 glp / receptor / agonist（RQ2）；q09 三者都只有 0.31，nausea、vomiting 幾乎每篇試驗都提到，標籤卻只標以此為主題的文章，是文字訊號與標籤分歧最大的一題；q15 ltc 0.44 > ltn 0.36，短查詢在正規化後較不被長文件淹沒；q14 是唯一 log tf 沒幫上的題（0.65 對 0.66）。</li>
+</ul>
+</div>
+</div>
+</div></section>
+<section class="page appendix appb appc"><div class="inner">
+<h2><span>附錄 C</span>評估 12 種 scheme 用了哪些指標；BM25 怎麼處理資料、最接近哪一種</h2>
+
+<h3>C1　評估指標一覽（15 題各算一次再平均；「相關」= grade ≥ 1；k 預設 10）</h3>
+<table class="t cm"><colgroup><col style="width:13%"><col style="width:32%"><col style="width:24%"><col style="width:31%"></colgroup>
+<tr><th>指標</th><th>定義</th><th>回答的問題</th><th>讀法與注意</th></tr>
+<tr><td class="k">P@5、P@10、P@20</td><td>前 k 名中相關文件的比例</td><td>榜首乾不乾淨</td><td>與相關集大小無關；相關集大的題容易 1.0。本報告 ltn / bm25 P@10 0.96</td></tr>
+<tr><td class="k">R@5、R@10、R@20</td><td>前 k 名找回了相關集的幾分之幾</td><td>找回了多少</td><td>被相關集大小封頂（q01 318 篇 → R@10 ≤ 0.03），只在同一題內比 scheme</td></tr>
+<tr><td class="k">RR → MRR</td><td>1 / 第一篇相關文件的名次，再平均</td><td>第一筆要翻多久</td><td>只看一篇；atc 1.000 代表 15 題第 1 名全相關</td></tr>
+<tr><td class="k">AP → MAP</td><td>每命中一篇相關文件就量一次 precision，加總後除以相關總數（未檢回者貢獻 0）</td><td>整條排名的品質</td><td><b>主指標</b>：對相關文件排前排後都敏感，也看得到沒找回的。ltn 0.661 最高</td></tr>
+<tr><td class="k">R-prec</td><td>前 R 名的 precision，R = 該題相關集大小</td><td>P 與 R 的交會點</td><td>與 MAP 高度相關，做為交叉驗證（ltn 0.634）</td></tr>
+<tr><td class="k">nDCG@5 / 10 / 20</td><td>DCG = Σ (2<sup>grade</sup> − 1) / log₂(名次 + 1)，除以理想排序的 DCG</td><td>分級相關 + 名次折扣</td><td>唯一用到 grade 2 / 1 的指標；grade 2 排在前面才高。ltc 0.698 最高</td></tr>
+<tr><td class="k">condensed 版</td><td>先移除沒有任何標籤的 163 篇再算上面各項</td><td>標籤缺漏的影響</td><td>各值略升、scheme 排序不變（ltn 0.661、nnn 0.453）</td></tr>
+<tr><td class="k">對照實驗專用</td><td>overlap@10（前 10 名交集比例）、Kendall τ（名次一致性）、mean length（前 10 名平均索引詞數）、mean max tf</td><td>排名變了多少、往哪邊變</td><td>不涉及相關性，純粹比兩個 scheme 的榜單；τ ≈ 0 = 幾乎重排，mean length 對照全集合 211</td></tr>
+</table>
+<p class="mu" style="font-size:7.4pt">怎麼選主指標：P@k 只看頭、R@k 被相關集封頂、MRR 只看一篇，三者各有盲點；MAP 同時反映排序與找回，所以 RQ3 / RQ5 以 MAP 為主、nDCG@10 為輔，其餘列出供交叉檢查。結論句「MAP 選 ltn、nDCG@10 選 ltc、P@5 選 BM25、MRR 選 atc」就是從這張表的欄位來的。</p>
+
+<div class="two" style="margin-top:4px">
+<div>
+<h3>C2　BM25 怎麼處理資料</h3>
+<p class="formula">score(q, d) = Σ<sub>t∈q</sub> qtf<sub>t</sub> · idf(t) · <span class="frac">tf · (k₁ + 1)</span> / <span class="frac">tf + k₁ · (1 − b + b · |d| / avgdl)</span><br><span class="mu">k₁ = 1.2，b = 0.75，avgdl = 211；idf(t) = ln(1 + (N − df + 0.5) / (df + 0.5))；查詢端用原始 qtf、不正規化</span></p>
+<ul>
+<li><b>tf 飽和</b>（取代 SMART 第 ① 位）：權重有上限 k₁ + 1 = 2.2，壓得比 1 + ln tf 更兇。tf = 1 → 1.00、5 → 1.77、30 → 2.12（log 給 2.61、4.40）；「出現幾次」幾乎退化成「有沒有出現」，接近 b（布林）與 l 之間。</li>
+<li><b>長度正規化</b>（取代第 ③ 位）：分母的 k₁ 項乘上 (1 − b + b·|d|/avgdl)。b = 0 完全不管長度（= n），b = 1 完全按長度打折；0.75 是「部分正規化」。兩倍長的文件 tf = 5 只剩 1.55，一半長的升到 1.91。它懲罰長度的方式是「同樣的 tf 在長文件裡算少一點」，不是 cosine 的「整支向量除以長度」。</li>
+<li><b>機率型 idf</b>（取代第 ② 位）：ln(1 + (N − df + 0.5)/(df + 0.5)) 與 ln(N/df) 幾乎重合（df 1 → 7.60 vs 8.01，df 100 以上完全相同），且不像 p（prob idf）會把過半文件出現的詞歸 0。</li>
+</ul>
+</div>
+<div>
+<h3>C3　BM25 與哪一種 SMART scheme 最接近</h3>
+<table class="t num cm2"><tr><th>scheme</th><th>overlap@10<br>vs bm25</th><th>Kendall τ</th><th>前 10 名<br>平均長度</th><th>MAP</th></tr>
+<tr class="sel"><td class="k"><span class="sc">bm25</span>（自身）</td><td>1.00</td><td>+1.00</td><td>205</td><td>0.656</td></tr>
+<tr class="sel"><td class="k"><span class="sc">ltn</span>log TF × IDF</td><td><b>0.63</b></td><td><b>+0.23</b></td><td>262</td><td>0.661</td></tr>
+<tr><td class="k"><span class="sc">ltc</span>log TF × IDF, L2</td><td>0.58</td><td>+0.19</td><td>186</td><td>0.650</td></tr>
+<tr><td class="k"><span class="sc">lpc</span>log TF × prob IDF, L2</td><td>0.56</td><td>+0.17</td><td>187</td><td>0.654</td></tr>
+<tr><td class="k"><span class="sc">lnc</span>log TF, L2</td><td>0.56</td><td>+0.14</td><td>165</td><td>0.574</td></tr>
+<tr><td class="k"><span class="sc">lnn</span>log TF</td><td>0.55</td><td>+0.10</td><td>266</td><td>0.574</td></tr>
+<tr><td class="k"><span class="sc">atc</span>augmented TF × IDF, L2</td><td>0.52</td><td>−0.02</td><td>170</td><td>0.603</td></tr>
+<tr><td class="k"><span class="sc">ntc</span>raw TF × IDF, L2</td><td>0.50</td><td>+0.05</td><td>201</td><td>0.609</td></tr>
+<tr><td class="k"><span class="sc">ntn</span>raw TF × IDF</td><td>0.43</td><td>−0.05</td><td>274</td><td>0.599</td></tr>
+<tr><td class="k"><span class="sc">nnc</span>raw TF, L2</td><td>0.43</td><td>−0.01</td><td>195</td><td>0.487</td></tr>
+<tr><td class="k"><span class="sc">btn</span>IDF only</td><td>0.40</td><td>−0.14</td><td>224</td><td>0.546</td></tr>
+<tr><td class="k"><span class="sc">nnn</span>raw TF</td><td>0.32</td><td>−0.19</td><td>288</td><td>0.451</td></tr>
+</table>
+<p class="mu" style="font-size:7.4pt">overlap@10 與 τ 為 15 題平均，以 bm25 的前 10 名為基準。</p>
+<ul>
+<li><b>結構上</b>：BM25 = 飽和 tf × 機率 idf × 部分長度正規化，三個位置分別介於 l 與 b、等於 t、介於 n 與 c 之間，所以它落在 <b>ltn 與 ltc 之間</b>。</li>
+<li><b>實測上</b>：排名最像 ltn（overlap 0.63、τ +0.23），其次 ltc；前 10 名平均長度 205 正好夾在 ltn 262 與 ltc 186 之間，MAP 0.656 也夾在 0.661 與 0.650 之間。</li>
+<li><b>離它最遠</b>的是 nnn（overlap 0.32、τ −0.19）：BM25 把 tf 飽和得最徹底，而 nnn 完全不壓 tf。</li>
+<li><b>意義</b>：在這份語料上 BM25 沒有贏過調好的 TF-IDF，它的價值在於用一組參數同時處理 RQ1（飽和）、RQ2（idf）、RQ4（長度）三件事；b = 0.75 在摘要與全文混合時最穩（RQ4）。</li>
 </ul>
 </div>
 </div>
