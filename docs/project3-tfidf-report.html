@@ -65,7 +65,7 @@ body{font-size:8.35pt;line-height:1.28}.facts b{font-size:10pt}
 <div class="facts">
 <div><b>3,000</b><small>PubMed 摘要（GLP-1，含 MeSH）；平均 211 索引詞（24–672）</small></div>
 <div><b>15,823</b><small>詞幹；45% 只出現在 1 篇（idf 8.01），42 個詞出現在 ≥ 1,000 篇</small></div>
-<div><b>2×2×2</b><small>因素設計：tf raw/log × idf 有/無 × L2 有/無；另加 atc、lpc、BM25 三個變形</small></div>
+<div><b>2×2×2 + 4</b><small>因素設計：tf raw/log × idf 有/無 × L2 有/無 = 8 種；另加 btn、atc、lpc、BM25</small></div>
 <div><b>15</b><small>評估查詢；相關集由 MeSH / 關鍵詞規則 + 118 篇人工判讀產生（30–318 篇）</small></div>
 <div><b>0.661</b><small>最佳 MAP：ltn（log TF × IDF）；raw TF 0.451</small></div>
 <div><b>118</b><small>篇人工判讀，補回 37 篇漏標的相關文件；指標高 0.03–0.11，排序不變</small></div>
