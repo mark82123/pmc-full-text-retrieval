@@ -41,6 +41,20 @@ Project #3 (term weighting / vector space model; collection = data/vsm/*.jsonl)
     python3 cli.py vsm judge q01 PMID42892933 2          manual relevance judgement (grade 0 / 1 / 2, "-" removes)
     python3 cli.py vsm collect "GLP-1" -n 3000 --name glp1_3000   download the collection (with MeSH) into data/vsm/
     python3 cli.py vsm svg report/                       figures for the report
+
+Project #4 (Reuters-21578: TF-IDF vs word embeddings; collection = data/reuters/reuters_modapte.jsonl)
+    python3 cli.py reuters build <dir with reut2-*.sgm>  parse the SGML files, keep the ModApte split, write the jsonl
+    python3 cli.py reuters info                          dataset / split / topic statistics, test vocabulary, models, coverage
+    python3 cli.py reuters train --model sg --dim 100 --epochs 5 [--window 5] [--min-count 5] [--seed 1]   word2vec on the train split
+    python3 cli.py reuters models  |  reuters use NAME   the models in data/reuters/w2v/; make one active
+    python3 cli.py reuters similar oil petroleum profit loss [--models m1,m2] [-n 5]    top-n neighbours + co-occurrence + topics
+    python3 cli.py reuters pairs "oil,petroleum;profit,loss"                           cosine of word pairs
+    python3 cli.py reuters search "petroleum production" [--method tfidf|w2v-avg|w2v-tfidf|hybrid] [--model m] [--alpha 0.5] [-k 10]
+    python3 cli.py reuters compare "petroleum production" [--methods tfidf,w2v-tfidf,hybrid] [-k 10]
+    python3 cli.py reuters eval [--methods ..] [--models m1,m2] [-k 10] [--alpha 0.5]   P@k / MRR / nDCG@k / MAP, by kind and topic
+    python3 cli.py reuters alpha [--model m]            hybrid weight sweep
+    python3 cli.py reuters queries  |  reuters relevant c03 [--method ..]  |  reuters doc R14854
+    python3 cli.py reuters svg report/                   figures for the report
 """
 
 from __future__ import annotations
@@ -168,6 +182,159 @@ def _vsm(eng: Engine, args) -> None:
         return
 
 
+def _reuters(eng: Engine, args) -> None:
+    """Project #4 sub-commands."""
+    a = args.action
+    words = " ".join(args.words)
+    if a == "build":
+        if not args.words:
+            raise SystemExit("usage: reuters build <directory with reut2-*.sgm>")
+        r = eng.reuters_build(args.words[0])
+        print(f"{r['parsed']} stories parsed; ModApte {r['modapte']} (train {r['train']}, test {r['test']}) -> {r['file']}")
+        return
+    if a == "info":
+        i = eng.reuters_info()
+        ds, te = i["dataset"], i["test"]
+        print(f"{i['file']}: {ds['documents']} ModApte documents ({', '.join(f'{k} {v}' for k, v in ds['splits'].items())}), "
+              f"{ds['topics_total']} distinct topics, {ds['without_body']} without a body (BRIEF)")
+        print(f"{'topic':<8}{'name':<34}{'all':>6}{'train':>7}{'test':>6}{'test only-topic':>17}")
+        for r in ds["rows"]:
+            print(f"{r['topic']:<8}{r['name']:<34}{r['total']:>6}{r.get('train', 0):>7}{r.get('test', 0):>6}{r.get('test_only', 0):>17}")
+        print("topics per document: " + ", ".join(f"{x['topics']}: {x['documents']}" for x in ds["topics_per_document"][:6]) + " …")
+        print(f"\ntest split as the search collection: {te['documents']} documents, {te['tokens']} word tokens -> {te['index_terms']} terms "
+              f"(stop words removed {te['stopword_tokens']}), vocabulary {te['vocabulary']} (df = 1: {te['hapax_df']}), length {te['min_length']}–{te['max_length']} (mean {te['avg_length']}), built in {i['build_time_s']} s")
+        print("highest df: " + ", ".join(f"{t['term']} ({t['df']})" for t in i["test_top_df"][:15]))
+        print("\nmethods:")
+        for m in i["methods"]:
+            print(f"  {m['letter']:<3}{m['method']:<12}{m['name']:<34}{m['formula']}")
+        print("\nmodels (data/reuters/w2v/):" if i["models"] else "\nno word2vec model yet: python3 cli.py reuters train --model sg --dim 100 --epochs 5")
+        for m in i["models"]:
+            print(f"  {'*' if m['active'] else ' '} {m['name']:<26} vocab {m['vocabulary']:<6} loss {m['final_loss']}  {m['train_seconds']} s  {m.get('trained', '')}")
+        if i.get("coverage"):
+            c = i["coverage"]
+            print(f"\ncoverage of the active model ({c['model']}): {c['types_covered']} of {c['collection_vocabulary']} test-split words ({c['types_share']:.1%}), "
+                  f"{c['tokens_share']:.1%} of the tokens; {c['documents_without_vector']} documents without any known word")
+        return
+    if a == "train":
+        job = eng.reuters_train({"model": args.model or "sg", "dim": args.dim, "window": args.window, "negative": args.negative,
+                                 "min_count": args.min_count, "epochs": args.epochs, "seed": args.seed, "name": args.name}, block=True)
+        if job["state"] != "done":
+            raise SystemExit(f"training failed: {job.get('message')}")
+        m = eng.reuters_models[job["name"]][0]
+        print(f"trained {job['name']} on {job['documents']} documents / {job['sentences']} sentences: vocabulary {len(m.vocab)}, "
+              f"loss {m.loss_history}, {m.train_seconds} s -> data/reuters/w2v/{job['name']}.json")
+        return
+    if a == "models":
+        for m in eng.reuters_models_info():
+            print(f"{'*' if m['active'] else ' '} {m['name']:<26} {m['model']:<10} dim {m['dim']:<4} window {m['window']:<3} min_count {m['min_count']:<3} "
+                  f"epochs {m['epochs']:<3} vocab {m['vocabulary']:<6} loss {m['final_loss']}  {m['train_seconds']} s")
+        if not eng.reuters_models:
+            print("no model yet")
+        return
+    if a == "use":
+        print(eng.reuters_select(args.words[0] if args.words else ""))
+        return
+    if a == "similar":
+        r = eng.reuters_neighbours(words, args.models, args.n)
+        for w in r["words"]:
+            prof = ", ".join(f"{t['topic']} {t['share']:.0%}" for t in w["topic_profile"]["topics"] if t["documents"])
+            print(f"\n{w['word']}  (df train {w['df_train']}, df test {w['topic_profile']['df']}; topics of the test documents containing it: {prof or '-'})")
+            for mrow in w["models"]:
+                if not mrow["in_model"]:
+                    print(f"  [{mrow['model']}] not in the vocabulary"); continue
+                print(f"  [{mrow['model']}] count {mrow['count']}")
+                for nb in mrow["neighbours"]:
+                    print(f"     {nb['word']:<18} cos {nb['similarity']:.3f}  count {nb['count']:<6} same doc {nb['both']:<5} jaccard {nb['jaccard']:.3f} pmi {nb['pmi']}  top topic {nb['top_topic'] or '-'} {nb['top_topic_share']:.0%}")
+            if "overlap" in w:
+                print(f"  neighbours shared by all models: {w['overlap']} of {r['n']}")
+        return
+    if a == "pairs":
+        r = eng.reuters_similarity(words, args.model)
+        print(f"model {r['model']}")
+        for p_ in r["pairs"]:
+            print(f"  {p_['a']:<14} {p_['b']:<14} cos {p_['similarity'] if p_['in_model'] else '(not in vocabulary)'}   same doc {p_.get('both', '-')}  pmi {p_.get('pmi', '-')}")
+        return
+    if a == "search":
+        r = eng.reuters_search(words, args.method, args.model, args.alpha, args.k)
+        print(f"{r['letter']} {r['method_name']}" + (f" · model {r['model']}" if r["model"] else "") + (f" · α = {r['alpha']}" if r["alpha"] is not None else ""))
+        print("query terms: " + ", ".join(f"{t['word']}->{t['term']}(df {t['df']}, idf {t['idf']}{'' if t.get('in_model', True) else ', OOV'})" if t["term"] else f"{t['word']}[stop]" for t in r["terms"]))
+        print(f"{r['total']} documents scored in {r['time_ms']} ms" + (f"; query {r['query_id']} (topic {r['topic']}): P@10 {r['measures']['P@10']:.2f}, RR {r['measures']['RR']:.2f}, nDCG@10 {r['measures']['nDCG@10']:.3f}" if r.get("measures") else "") + "\n")
+        for d in r["results"]:
+            g = f" rel={d['grade']}" if d.get("grade") is not None else ""
+            print(f"#{d['rank']:<3}{d['doc_id']:<8} {d['score']:.4f}{g}  topics={','.join(d['topics']) or '-'}  words in doc: {','.join(d['query_words_in_doc']) or '-'}  {d['title'][:60]}")
+            for x in d.get("explain", []):
+                if x["in_model"] and x["nearest"]:
+                    print(f"        {x['word']:<12}{'in doc' if x['in_doc'] else 'absent'}  nearest in doc: " + ", ".join(f"{n['word']} {n['similarity']:.2f}" for n in x["nearest"]))
+        return
+    if a == "compare":
+        r = eng.reuters_compare(words, args.methods, args.model, args.alpha, args.k)
+        print(f"query: {r['query']}  terms {r['query_terms']}" + (f"  model {r['model']}" if r["model"] else ""))
+        print(f"{'method':<12}{'overlap':>8}{'tau':>7}{'lex-overlap':>12}{'no q-word':>10}" + ("   P@10  nDCG@10" if r["query_id"] else ""))
+        for m in r["methods"]:
+            ms = m["measures"]
+            print(f"{m['method']:<12}{m['overlap']:>8.2f}{m['tau']:>7.2f}{m['mean_lexical_overlap']:>12.2f}{m['no_query_word']:>10}" + (f"   {ms['P@10']:.2f}  {ms['nDCG@10']:.3f}" if ms else ""))
+        for m in r["methods"]:
+            print(f"\n[{m['letter']} {m['method']}] {m['name']}")
+            for t in m["top"]:
+                print(f"  #{t['rank']:<3}{t['doc_id']:<8}{t['score']:.4f} (rank under {r['base']}: {t['rank_base'] or '-'})" + (f" rel={t['grade']}" if t["grade"] is not None else "") + f"  [{','.join(t['topics']) or '-'}]  {t['title'][:58]}")
+        return
+    if a == "eval":
+        r = eng.reuters_eval(args.methods, args.models, args.k, args.alpha)
+        keys = ["P@5", "P@10", "R@10", "MRR", "MAP", "nDCG@10", "nDCG@20"]
+        print(f"{len(r['queries'])} queries over {r['documents']} test documents\n")
+        print(f"{'run':<34}" + "".join(f"{k_:>9}" for k_ in keys))
+        for run in r["runs"]:
+            print(f"{run['label']:<34}" + "".join(f"{run['mean'][k_]:>9.3f}" for k_ in keys))
+        print("\nP@10 / nDCG@10 by query kind:")
+        print(f"{'run':<34}" + "".join(f"{k_['kind']:>16}" for k_ in r["kinds"]))
+        for run in r["runs"]:
+            print(f"{run['label']:<34}" + "".join(f"{run['by_kind'][k_['kind']]['P@10']:>7.2f}/{run['by_kind'][k_['kind']]['nDCG@10']:.3f}" if k_["kind"] in run["by_kind"] else f"{'-':>16}" for k_ in r["kinds"]))
+        print("\nP@10 / nDCG@10 by topic:")
+        print(f"{'run':<34}" + "".join(f"{t['topic']:>16}" for t in r["topics"]))
+        for run in r["runs"]:
+            print(f"{run['label']:<34}" + "".join(f"{run['by_topic'][t['topic']]['P@10']:>7.2f}/{run['by_topic'][t['topic']]['nDCG@10']:.3f}" if t["topic"] in run["by_topic"] else f"{'-':>16}" for t in r["topics"]))
+        print("\nper query (P@10):")
+        print(f"{'query':<6}" + "".join(f"{run['label'][:14]:>15}" for run in r["runs"]))
+        for i, q in enumerate(r["queries"]):
+            print(f"{q['id']:<6}" + "".join(f"{run['per_query'][i]['P@10']:>15.2f}" for run in r["runs"]) + f"   {q['kind']:<9}{q['text']}")
+        return
+    if a == "alpha":
+        r = eng.reuters_alpha_sweep(args.model, args.k)
+        print(f"hybrid α·TF-IDF + (1 − α)·weighted embedding ({r['model']}); best nDCG@10 at α = {r['best_alpha']}")
+        for row in r["rows"]:
+            print(f"  α {row['alpha']:.1f}  P@10 {row['P@10']:.3f}  MRR {row['MRR']:.3f}  MAP {row['MAP']:.3f}  nDCG@10 {row['nDCG@10']:.3f}")
+        return
+    if a == "queries":
+        r = eng.reuters_query_list()
+        print(f"{len(r['queries'])} queries over {r['documents']} test documents ({r['file']})")
+        for q in r["queries"]:
+            print(f"  {q['id']}  {q['topic']:<6}{q['kind']:<9}relevant {q['relevant']:>5} (grade 2: {q['grade2']})  {q['text']}   — {q['description']}")
+        return
+    if a == "relevant":
+        r = eng.reuters_relevant(args.words[0] if args.words else "c03", args.method, args.model, args.alpha)
+        m = r["measures"]
+        print(f"{r['query']['id']}: {r['query']['text']} — {r['total_relevant']} relevant; under {r['method']}: P@10 {m['P@10']:.2f}, RR {m['RR']:.2f}, nDCG@10 {m['nDCG@10']:.3f}")
+        for d in r["relevant"]:
+            print(f"  rank {d['rank'] or '-':>5}  grade {d['grade']}  {d['doc_id']:<8} [{','.join(d['topics'])}]  {d['title'][:70]}")
+        return
+    if a == "doc":
+        d = eng.reuters_doc(args.words[0] if args.words else "R14854", args.model, args.method)
+        print(f"{d['doc_id']} [{','.join(d['topics']) or '-'}] {d['title']}\n{d['length']} terms, {d['unique_terms']} distinct" + (f", {d['in_model']} in the model {d['model']}; OOV: {', '.join(d['oov'][:12])}" if d.get("model") else ""))
+        for p_ in d["body"][:3]:
+            print("  " + p_[:300])
+        for w in d.get("words", []):
+            print(f"   {w['word']:<18} tf {w['tf']:<3} df {w['df']:<5} idf {w['idf']:<7} weight {w['weight']:<8} {'' if w['in_model'] else 'OOV'}")
+        return
+    if a == "svg":
+        from ir.svgplot import reuters_figures
+        out = Path(args.words[0] if args.words else "report")
+        out.mkdir(parents=True, exist_ok=True)
+        for name, svg in reuters_figures(eng).items():
+            (out / name).write_text(svg, encoding="utf-8")
+            print("wrote", out / name)
+        return
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="PMC full-text retrieval tool (CLI)")
     ap.add_argument("--data", default=str(ROOT / "data"))
@@ -202,6 +369,14 @@ def main() -> None:
     wv.add_argument("-n", type=int, default=5); wv.add_argument("-k", type=int, default=10)
     wv.add_argument("--method", default="pca", choices=["pca", "tsne"]); wv.add_argument("--perplexity", type=float, default=15)
     wv.add_argument("--svg", help="directory to write the map (SVG) to")
+    ru = sub.add_parser("reuters"); ru.add_argument("action", choices=["build", "info", "train", "models", "use", "similar", "pairs", "search",
+                                                                       "compare", "eval", "alpha", "queries", "relevant", "doc", "svg"])
+    ru.add_argument("words", nargs="*"); ru.add_argument("--method", default="w2v-tfidf"); ru.add_argument("--methods", default="")
+    ru.add_argument("--model", default=""); ru.add_argument("--models", default=""); ru.add_argument("--alpha", type=float, default=0.5)
+    ru.add_argument("-k", type=int, default=10); ru.add_argument("-n", type=int, default=5)
+    ru.add_argument("--dim", type=int, default=100); ru.add_argument("--window", type=int, default=5); ru.add_argument("--negative", type=int, default=5)
+    ru.add_argument("--min-count", dest="min_count", type=int, default=5); ru.add_argument("--epochs", type=int, default=5)
+    ru.add_argument("--seed", type=int, default=1); ru.add_argument("--name", default="")
     vm = sub.add_parser("vsm"); vm.add_argument("action", choices=["info", "terms", "doc", "search", "compare", "eval", "queries",
                                                                      "relevant", "judge", "collect", "svg"]); vm.add_argument("words", nargs="*")
     vm.add_argument("--scheme", default="ltc"); vm.add_argument("--qscheme", default="nnc"); vm.add_argument("--schemes", default="")
@@ -384,6 +559,8 @@ def main() -> None:
             print(f"  {r['word']:<24}distance={r['distance']}  cf={r['cf']}")
     elif args.cmd == "vsm":
         _vsm(eng, args)
+    elif args.cmd == "reuters":
+        _reuters(eng, args)
     elif args.cmd == "w2v":
         _w2v(eng, args)
 

@@ -28,12 +28,20 @@ from .relevance import QuerySet
 from . import evaluation
 from .tsne import knn_preservation, pca2, tsne
 from .word2vec import WORD_RE, Word2Vec, count_training_examples, neighbour_overlap, sentences_from_texts, training_examples
+from . import reuters as reuters_mod
+from .embedding import (DEFAULT_ALPHA, DEFAULT_METHOD, METHODS, METHOD_LETTERS, METHOD_NAMES, DocEmbedder, WordTokenizer,
+                        cooccurrence, hybrid_scores, word_topic_profile)
 
 W2V_FILE = "word2vec.json"                     # legacy single-model file
 W2V_DIR = "w2v"                                # data/w2v/<name>.json, one file per trained model
 W2V_DEFAULT = "sg-d50-w5-m5-e10"               # active model at start-up when it exists
 VSM_DIR = "vsm"                                # data/vsm/: Project #3 abstract collection(s) + evaluation queries
 VSM_QUERIES = "queries_glp1.json"
+REUTERS_DIR = "reuters"                        # data/reuters/: Project #4 Reuters-21578 ModApte collection
+REUTERS_FILE = "reuters_modapte.jsonl"
+REUTERS_QUERIES = "queries_reuters.json"
+REUTERS_W2V_DIR = "w2v"                        # data/reuters/w2v/<name>.json: embeddings trained on the train split
+REUTERS_W2V_DEFAULT = "sg-d100-w5-m5-e5"
 # query words that are expanded by the engine itself (prefix* / fuzzy~2) are not spell-checked
 _EXPANDED_WORD_RE = re.compile(r"\S*(?:\*|~[1-3]?)(?=[\s)]|$)")
 
@@ -86,6 +94,13 @@ class Engine:
         self._vsm: dict = {}                           # Project #3 vector space models by (options), see vsm()
         self._vsm_queries: QuerySet | None = None
         self._vsm_eval_cache: dict = {}
+        self._reuters_docs: dict[str, list[Document]] = {}   # Project #4: ModApte documents by split
+        self._reuters_vs: dict = {}                    # (split, stemming) -> VectorSpace over the Reuters documents
+        self._reuters_queries = None
+        self.reuters_models: dict[str, tuple[Word2Vec, dict]] = {}
+        self.reuters_active: str = ""
+        self._reuters_emb: dict = {}                   # model name -> DocEmbedder (test split)
+        self._reuters_eval_cache: dict = {}
 
     # ------------------------------------------------------------------ #
     def load(self) -> int:
@@ -97,6 +112,7 @@ class Engine:
             self._add(d)
         self.build_time = time.time() - t0
         self._load_w2v_models()
+        self._load_reuters_models()
         return self.index.n_docs
 
     @staticmethod
@@ -606,14 +622,20 @@ class Engine:
                         epochs=clamp("epochs", 1, 50, 5), seed=clamp("seed", 1, 10 ** 6, 1),
                         remove_stopwords=flag(params.get("remove_stopwords", True)))
 
-    def w2v_train(self, params: dict, block: bool = False) -> dict:
+    def w2v_train(self, params: dict, block: bool = False, corpus: str = "pubmed") -> dict:
         """Queue a training job (several can be queued; they run one after
-        another in a background thread).  With *block* the job runs now."""
+        another in a background thread).  With *block* the job runs now.
+        corpus = "pubmed" (the abstract collection, Project #2) or "reuters"
+        (the Reuters-21578 ModApte train split, Project #4)."""
         model = self._w2v_params(params)
         name = re.sub(r"[^A-Za-z0-9._-]+", "-", str(params.get("name", "")).strip())[:60] or model.name()
-        name_, docs = self.collection_docs()
+        if corpus == "reuters":
+            docs = self.reuters_docs("train")
+            name_ = "Reuters-21578 ModApte train split"
+        else:
+            name_, docs = self.collection_docs()
         job = {"id": self._w2v_job_seq + 1, "name": name, "state": "queued", "progress": 0.0, "epoch": 0, "loss": None,
-               "params": model.params(), "documents": len(docs), "collection": name_}
+               "params": model.params(), "documents": len(docs), "collection": name_, "corpus": corpus}
         self._w2v_job_seq += 1
         self.w2v_jobs.append(job)
         self.w2v_jobs[:] = self.w2v_jobs[-20:]
@@ -621,20 +643,27 @@ class Engine:
         def run() -> None:
             job.update(state="running", started=time.time())
             try:
-                sentences = self._w2v_sentences(model.remove_stopwords)
+                sentences = self._reuters_sentences(model.remove_stopwords) if corpus == "reuters" else self._w2v_sentences(model.remove_stopwords)
                 job["sentences"] = len(sentences)
 
                 def progress(frac: float, epoch: int, alpha: float, loss: float) -> None:
                     job.update(progress=round(frac, 4), epoch=epoch, loss=round(loss, 4), alpha=round(alpha, 5))
 
                 model.train(sentences, progress)
+                out_dir = self._reuters_w2v_dir() if corpus == "reuters" else self._w2v_dir()
                 meta = {"name": name, "collection": name_, "documents": len(docs), "sentences": len(sentences),
-                        "trained": time.strftime("%Y-%m-%d %H:%M:%S"), "file": f"{W2V_DIR}/{name}.json"}
-                self._w2v_dir().mkdir(parents=True, exist_ok=True)
-                model.save(self._w2v_dir() / f"{name}.json", {k: v for k, v in meta.items() if k != "file"})
-                self.w2v_models[name] = (model, meta)
-                self.w2v, self.w2v_meta = model, meta
-                self._w2v_cache.clear()
+                        "trained": time.strftime("%Y-%m-%d %H:%M:%S"), "file": str((out_dir / f"{name}.json").relative_to(self.data_dir))}
+                out_dir.mkdir(parents=True, exist_ok=True)
+                model.save(out_dir / f"{name}.json", {k: v for k, v in meta.items() if k != "file"})
+                if corpus == "reuters":
+                    self.reuters_models[name] = (model, meta)
+                    self.reuters_active = name
+                    self._reuters_emb.pop(name, None)
+                    self._reuters_eval_cache = {k: v for k, v in self._reuters_eval_cache.items() if k[1] != name}
+                else:
+                    self.w2v_models[name] = (model, meta)
+                    self.w2v, self.w2v_meta = model, meta
+                    self._w2v_cache.clear()
                 job.update(state="done", progress=1.0, finished=time.time())
             except Exception as e:  # reported to the UI
                 job.update(state="error", message=f"{type(e).__name__}: {e}", finished=time.time())
@@ -1108,3 +1137,356 @@ class Engine:
         self._vsm, self._vsm_queries, self._vsm_eval_cache = {}, None, {}
         return {"query": term, "pubmed_matches": total, "requested": n, "fetched": len(records), "file": str(path),
                 "with_mesh": sum(1 for r in records if r.get("mesh")), "documents": self.vsm().N}
+
+    # ================================================================== #
+    # Project #4: Reuters-21578, TF-IDF vs word-embedding retrieval
+    # ================================================================== #
+    def _reuters_dir(self) -> Path:
+        return self.data_dir / REUTERS_DIR
+
+    def _reuters_w2v_dir(self) -> Path:
+        return self._reuters_dir() / REUTERS_W2V_DIR
+
+    def reuters_available(self) -> bool:
+        return (self._reuters_dir() / REUTERS_FILE).is_file()
+
+    def reuters_build(self, sgm_dir: str) -> dict:
+        """Parse the 22 reut2-*.sgm files, keep the ModApte documents and
+        write data/reuters/reuters_modapte.jsonl."""
+        recs = reuters_mod.load_sgml_dir(sgm_dir)
+        ma = reuters_mod.modapte(recs)
+        reuters_mod.write_jsonl(ma, self._reuters_dir() / REUTERS_FILE)
+        self._reuters_docs, self._reuters_vs, self._reuters_queries, self._reuters_emb, self._reuters_eval_cache = {}, {}, None, {}, {}
+        return {"parsed": len(recs), "modapte": len(ma), "train": sum(r["split"] == "train" for r in ma),
+                "test": sum(r["split"] == "test" for r in ma), "file": str(self._reuters_dir() / REUTERS_FILE)}
+
+    def reuters_docs(self, split: str = "test") -> list[Document]:
+        """The ModApte documents of one split ("train" / "test" / "all")."""
+        if not self.reuters_available():
+            raise ValueError("the Reuters-21578 collection is not built yet: python3 cli.py reuters build <dir with reut2-*.sgm>")
+        if "all" not in self._reuters_docs:
+            self._reuters_docs["all"] = reuters_mod.load_documents(self._reuters_dir() / REUTERS_FILE)
+            self._reuters_docs["train"] = [d for d in self._reuters_docs["all"] if d.split == "train"]
+            self._reuters_docs["test"] = [d for d in self._reuters_docs["all"] if d.split == "test"]
+        if split not in self._reuters_docs:
+            raise ValueError(f"unknown split '{split}' (train / test / all)")
+        return self._reuters_docs[split]
+
+    def reuters_vs(self, split: str = "test", stemming: bool = False) -> VectorSpace:
+        """TF-IDF vector space over one split.  stemming=False uses the
+        word2vec tokens (WordTokenizer) so that TF-IDF and the embeddings
+        share the vocabulary; stemming=True is the Project #3 pipeline."""
+        key = (split, stemming)
+        if key not in self._reuters_vs:
+            t0 = time.time()
+            tok = Tokenizer() if stemming else WordTokenizer()
+            vs = VectorSpace(self.reuters_docs(split), tokenizer=tok)
+            vs.name, vs.build_time = f"Reuters-21578 ModApte {split}", time.time() - t0      # type: ignore[attr-defined]
+            self._reuters_vs[key] = vs
+        return self._reuters_vs[key]
+
+    def reuters_queries(self) -> reuters_mod.TopicQuerySet:
+        if self._reuters_queries is None:
+            self._reuters_queries = reuters_mod.TopicQuerySet(self._reuters_dir() / REUTERS_QUERIES, self.reuters_vs().docs)
+        return self._reuters_queries
+
+    def _reuters_sentences(self, remove_stopwords: bool = True) -> list[list[str]]:
+        return sentences_from_texts([d.title + "\n" + d.abstract_text() for d in self.reuters_docs("train")], remove_stopwords)
+
+    # ---- embedding models --------------------------------------------- #
+    def _load_reuters_models(self) -> None:
+        self.reuters_models = {}
+        paths = sorted(self._reuters_w2v_dir().glob("*.json")) if self._reuters_w2v_dir().is_dir() else []
+        for path in paths:
+            try:
+                m, meta = Word2Vec.load(path)
+            except (ValueError, KeyError, OSError) as e:
+                print(f"[warn] could not load {path}: {e}")
+                continue
+            meta = {**meta, "name": path.stem, "file": str(path.relative_to(self.data_dir))}
+            self.reuters_models[path.stem] = (m, meta)
+        if self.reuters_active not in self.reuters_models:
+            self.reuters_active = REUTERS_W2V_DEFAULT if REUTERS_W2V_DEFAULT in self.reuters_models else (
+                max(self.reuters_models, key=lambda n: self.reuters_models[n][1].get("trained", "")) if self.reuters_models else "")
+
+    def reuters_model(self, name: str | None = None) -> tuple[str, Word2Vec]:
+        if not self.reuters_models:
+            self._load_reuters_models()                   # the engine may be used without load() (CLI helpers, tests)
+        name = name or self.reuters_active
+        if not name or name not in self.reuters_models:
+            if name:
+                raise ValueError(f"no Reuters embedding called '{name}' (available: {', '.join(sorted(self.reuters_models)) or 'none'})")
+            raise ValueError("no word2vec model trained on the Reuters train split yet: python3 cli.py reuters train --model sg --dim 100 --epochs 5")
+        return name, self.reuters_models[name][0]
+
+    def reuters_select(self, name: str) -> dict:
+        self.reuters_model(name)
+        self.reuters_active = name
+        return {"active": name}
+
+    def reuters_embedder(self, model: str | None = None) -> DocEmbedder:
+        name, m = self.reuters_model(model)
+        if name not in self._reuters_emb:
+            self._reuters_emb[name] = DocEmbedder(self.reuters_vs(), m, name)
+        return self._reuters_emb[name]
+
+    def reuters_models_info(self) -> list[dict]:
+        out = []
+        for name, (m, meta) in sorted(self.reuters_models.items()):
+            row = {**m.info(), **meta, "active": name == self.reuters_active,
+                   "final_loss": m.loss_history[-1] if m.loss_history else None}
+            if name in self._reuters_emb:
+                row["coverage"] = self._reuters_emb[name].coverage()
+            out.append(row)
+        return out
+
+    def reuters_train(self, params: dict, block: bool = False) -> dict:
+        self.reuters_docs("train")
+        return self.w2v_train(params, block=block, corpus="reuters")
+
+    # ---- information --------------------------------------------------- #
+    def reuters_info(self) -> dict:
+        docs_all = self.reuters_docs("all")
+        vs = self.reuters_vs()
+        st = vs.vocabulary_stats()
+        stats = reuters_mod.topic_statistics(docs_all)
+        test_stats = reuters_mod.topic_statistics(self.reuters_docs("test"))
+        out = {"file": _relpath(self._reuters_dir() / REUTERS_FILE, self.data_dir.parent), "dataset": stats,
+               "test": {k: v for k, v in st.items() if k not in ("top_df", "top_cf")},
+               "test_top_df": st["top_df"][:20], "test_top_cf": st["top_cf"][:20],
+               "test_without_body": test_stats["without_body"], "build_time_s": round(getattr(vs, "build_time", 0.0), 2),
+               "topics": [{"topic": t, "name": n, "name_zh": z} for t, n, z in reuters_mod.TOPICS],
+               "methods": [{"method": k, "name": n, "letter": l, "formula": f} for k, n, l, f in METHODS],
+               "default_method": DEFAULT_METHOD, "default_alpha": DEFAULT_ALPHA,
+               "query_kinds": [{"kind": k, "name": n, "description": d} for k, n, d in reuters_mod.QUERY_KINDS],
+               "models": self.reuters_models_info(), "active": self.reuters_active,
+               "queries": len(self.reuters_queries().queries)}
+        if self.reuters_active:
+            out["coverage"] = self.reuters_embedder().coverage()
+        return out
+
+    def reuters_doc(self, doc_id: str, model: str | None = None, method: str = DEFAULT_METHOD, top: int = 20) -> dict:
+        vs = self.reuters_vs()
+        if doc_id.isdigit():
+            doc_id = "R" + doc_id
+        if doc_id not in vs.docs:
+            raise ValueError(f"document {doc_id} is not in the test split")
+        d = vs.docs[doc_id]
+        out = {"doc_id": doc_id, "title": d.title, "body": d.abstract, "topics": d.topics, "places": d.places, "split": d.split,
+               "length": vs.length[doc_id], "unique_terms": len(vs.tf[doc_id]), "max_tf": vs.max_tf[doc_id]}
+        if self.reuters_models:
+            emb = self.reuters_embedder(model)
+            _, rows = emb.embed_counts(vs.tf[doc_id], method if method != "w2v-avg" else "w2v-avg")
+            out["model"] = emb.name
+            out["words"] = rows[:top]
+            out["in_model"] = sum(1 for r in rows if r["in_model"])
+            out["oov"] = [r["word"] for r in rows if not r["in_model"]][:30]
+        return out
+
+    # ---- word level ---------------------------------------------------- #
+    def reuters_neighbours(self, words: str = "", models: str = "", n: int = 5) -> dict:
+        """Top-n nearest neighbours of every word in every model, with the
+        document co-occurrence of each (word, neighbour) pair in the train
+        split and the topic profile of the word in the test split."""
+        ws = self._words(words) or ["oil", "petroleum", "crude", "opec", "profit", "loss", "earnings", "acquisition", "takeover",
+                                    "merger", "grain", "wheat", "cereal", "trade", "tariff", "deficit", "bank", "dollar"]
+        names = [x for x in self._words(models) if x] or ([self.reuters_active] if self.reuters_active else [])
+        if not names:
+            raise ValueError("no Reuters embedding model yet")
+        train_vs = self.reuters_vs("train")
+        test_vs = self.reuters_vs("test")
+        topics = reuters_mod.TOPIC_IDS
+        out_words = []
+        for w in ws:
+            row = {"word": w, "models": [], "topic_profile": word_topic_profile(test_vs, w, topics), "df_train": train_vs.df.get(w, 0)}
+            for name in names:
+                _, m = self.reuters_model(name)
+                if w not in m:
+                    row["models"].append({"model": name, "in_model": False, "neighbours": []})
+                    continue
+                nb = []
+                for x, sim in m.most_similar(w, n):
+                    co = cooccurrence(train_vs, w, x)
+                    prof = word_topic_profile(test_vs, x, topics)
+                    top_t = max(prof["topics"], key=lambda t: t["share"]) if prof["topics"] else None
+                    nb.append({"word": x, "similarity": sim, "count": m.counts[m.index[x]], "both": co["both"], "jaccard": co["jaccard"],
+                               "pmi": co["pmi"], "share_of_word": co["share_of_a"],
+                               "top_topic": top_t["topic"] if top_t and top_t["documents"] else "", "top_topic_share": top_t["share"] if top_t else 0.0})
+                row["models"].append({"model": name, "in_model": True, "count": m.counts[m.index[w]], "neighbours": nb})
+            if len(names) >= 2 and all(x["in_model"] for x in row["models"]):
+                sets = [{nb["word"] for nb in x["neighbours"]} for x in row["models"]]
+                row["overlap"] = len(set.intersection(*sets))
+            out_words.append(row)
+        return {"n": n, "models": names, "words": out_words, "topics": topics}
+
+    def reuters_similarity(self, pairs: str, model: str | None = None) -> dict:
+        """Cosine of word pairs, e.g. "oil,petroleum;profit,loss"."""
+        name, m = self.reuters_model(model)
+        train_vs = self.reuters_vs("train")
+        rows = []
+        for pair in [p for p in re.split(r"[;\n]+", pairs) if p.strip()]:
+            ab = [w.strip().lower() for w in pair.split(",") if w.strip()]
+            if len(ab) != 2:
+                continue
+            a, b = ab
+            if a in m and b in m:
+                co = cooccurrence(train_vs, a, b)
+                rows.append({"a": a, "b": b, "similarity": round(m.similarity(a, b), 3), "both": co["both"], "pmi": co["pmi"], "in_model": True})
+            else:
+                rows.append({"a": a, "b": b, "similarity": None, "in_model": False})
+        return {"model": name, "pairs": rows}
+
+    # ---- document level ------------------------------------------------ #
+    def _reuters_run(self, query: str, method: str, model: str | None, alpha: float) -> tuple[list[tuple[str, float]], dict]:
+        if method == "tfidf-stem":
+            ranked, info = self.reuters_vs(stemming=True).rank(query, "ltc", "ltc")
+            return ranked, {"terms": info["terms"]}
+        if method == "tfidf":
+            ranked, info = self.reuters_vs().rank(query, "ltc", "ltc")
+            return ranked, {"terms": info["terms"]}
+        emb = self.reuters_embedder(model)
+        if method in ("w2v-avg", "w2v-tfidf"):
+            return emb.rank(query, method)
+        if method == "hybrid":
+            tf_rank, _ = self.reuters_vs().rank(query, "ltc", "ltc")
+            em_rank, info = emb.rank(query, "w2v-tfidf")
+            return hybrid_scores(tf_rank, em_rank, alpha), info
+        raise ValueError(f"unknown method '{method}' (expected one of {', '.join(METHOD_NAMES)})")
+
+    def reuters_rank_ids(self, query: str, method: str, model: str | None = None, alpha: float = DEFAULT_ALPHA) -> list[str]:
+        return [d for d, _ in self._reuters_run(query, method, model, alpha)[0]]
+
+    def _reuters_grades(self, query: str) -> tuple[str, dict[str, int]]:
+        qs = self.reuters_queries()
+        q = qs.by_text(query)
+        return (q.id, qs.qrels(q.id)) if q else ("", {})
+
+    def reuters_search(self, query: str, method: str = DEFAULT_METHOD, model: str | None = None, alpha: float = DEFAULT_ALPHA, k: int = 10) -> dict:
+        if not query.strip():
+            raise ValueError("empty query")
+        t0 = time.time()
+        vs = self.reuters_vs()
+        ranked, info = self._reuters_run(query, method, model, alpha)
+        qid, qrels = self._reuters_grades(query)
+        emb = self.reuters_embedder(model) if self.reuters_models else None
+        qtf = emb.query_counts(query)[0] if emb else Counter()
+        results = []
+        for i, (doc_id, score) in enumerate(ranked[:k], 1):
+            d = vs.docs[doc_id]
+            qwords = [t for t in qtf if t in vs.tf[doc_id]]
+            row = {"rank": i, "doc_id": doc_id, "score": round(score, 4), "title": d.title, "topics": d.topics, "places": d.places,
+                   "length": vs.length[doc_id], "body": d.abstract[:2], "grade": qrels.get(doc_id, 0) if qid else None,
+                   "query_words_in_doc": qwords, "lexical_overlap": round(len(qwords) / len(qtf), 2) if qtf else 0.0}
+            if emb and method != "tfidf-stem":
+                row["explain"] = emb.explain(qtf, doc_id, "w2v-avg" if method == "w2v-avg" else "w2v-tfidf")
+            results.append(row)
+        out = {"query": query, "method": method, "method_name": METHOD_NAMES.get(method, method), "letter": METHOD_LETTERS.get(method, ""),
+               "model": emb.name if emb and method not in ("tfidf", "tfidf-stem") else None, "alpha": alpha if method == "hybrid" else None,
+               "terms": info.get("terms", []), "qrows": info.get("qrows", []), "empty": info.get("empty", False),
+               "total": len(ranked), "k": k, "results": results, "query_id": qid, "time_ms": round((time.time() - t0) * 1000, 1),
+               "collection": getattr(vs, "name", "")}
+        if qid:
+            out["topic"] = self.reuters_queries().get(qid).topic
+            out["measures"] = evaluation.evaluate_run([d for d, _ in ranked], qrels, ks=(5, 10, 20))
+        return out
+
+    def reuters_compare(self, query: str, methods: str = "", model: str | None = None, alpha: float = DEFAULT_ALPHA, k: int = 10) -> dict:
+        """The same query under several methods: top-k, overlap and Kendall
+        tau against the first method, lexical overlap of the top-k, P@k / nDCG@k."""
+        if not query.strip():
+            raise ValueError("empty query")
+        names = [m for m in self._words(methods) if m] or ["tfidf", "w2v-avg", "w2v-tfidf", "hybrid"]
+        vs = self.reuters_vs()
+        qid, qrels = self._reuters_grades(query)
+        emb = self.reuters_embedder(model) if self.reuters_models else None
+        qtf = emb.query_counts(query)[0] if emb else Counter(vs.query_terms(query)[0])
+        runs = {m: [d for d, _ in self._reuters_run(query, m, model, alpha)[0]] for m in names}
+        scores = {m: dict(self._reuters_run(query, m, model, alpha)[0][:k]) for m in names}
+        base = names[0]
+        out = []
+        for m in names:
+            top = runs[m][:k]
+            lex = [len([t for t in qtf if t in vs.tf[d]]) / len(qtf) if qtf else 0.0 for d in top]
+            out.append({"method": m, "name": METHOD_NAMES.get(m, m), "letter": METHOD_LETTERS.get(m, ""), "total": len(runs[m]),
+                        "overlap": round(evaluation.overlap_at_k(runs[base], runs[m], k), 3),
+                        "tau": round(evaluation.kendall_tau(runs[base], runs[m], k), 3),
+                        "mean_lexical_overlap": round(sum(lex) / len(lex), 3) if lex else 0.0,
+                        "no_query_word": sum(1 for x in lex if x == 0),
+                        "measures": evaluation.evaluate_run(runs[m], qrels, ks=(5, 10, 20)) if qid else None,
+                        "top": [{"rank": i, "doc_id": d, "score": round(scores[m].get(d, 0.0), 4), "title": vs.docs[d].title,
+                                 "topics": vs.docs[d].topics, "grade": qrels.get(d, 0) if qid else None,
+                                 "query_words": [t for t in qtf if t in vs.tf[d]],
+                                 "rank_base": next((j for j, x in enumerate(runs[base], 1) if x == d), 0)} for i, d in enumerate(top, 1)]})
+        return {"query": query, "k": k, "base": base, "query_id": qid, "model": emb.name if emb else None, "alpha": alpha,
+                "methods": out, "query_terms": list(qtf)}
+
+    def reuters_eval(self, methods: str = "", models: str = "", k: int = 10, alpha: float = DEFAULT_ALPHA) -> dict:
+        """P@k / MRR / nDCG@k (and MAP, R@k) of every method over the topic
+        queries, with the means per query kind and per topic.  Embedding
+        methods are evaluated with every model in *models* (default: the
+        active one)."""
+        qs = self.reuters_queries()
+        names = [m for m in self._words(methods) if m] or [m for m, _, _, _ in METHODS]
+        model_names = [m for m in self._words(models) if m] or ([self.reuters_active] if self.reuters_active else [])
+        rows = []
+        for method in names:
+            for mname in (model_names if method not in ("tfidf", "tfidf-stem") else [None]):
+                if method not in ("tfidf", "tfidf-stem") and not mname:
+                    continue
+                key = (method, mname, k, alpha if method == "hybrid" else None)
+                if key not in self._reuters_eval_cache:
+                    per = []
+                    for q in qs.queries:
+                        run = self.reuters_rank_ids(q.text, method, mname, alpha)
+                        m = evaluation.evaluate_run(run, qs.qrels(q.id), ks=(5, 10, 20))
+                        per.append({"id": q.id, "topic": q.topic, "kind": q.kind, **{kk: (round(v, 4) if isinstance(v, float) else v) for kk, v in m.items()}})
+                    mean = {kk: round(v, 4) for kk, v in evaluation.mean_measures(per).items()}
+                    by_kind = {kd: {kk: round(v, 4) for kk, v in evaluation.mean_measures([p for p in per if p["kind"] == kd]).items()}
+                               for kd, _, _ in reuters_mod.QUERY_KINDS if any(p["kind"] == kd for p in per)}
+                    by_topic = {t: {kk: round(v, 4) for kk, v in evaluation.mean_measures([p for p in per if p["topic"] == t]).items()}
+                                for t in reuters_mod.TOPIC_IDS if any(p["topic"] == t for p in per)}
+                    label = method if method in ("tfidf", "tfidf-stem") else f"{method} · {mname}"
+                    self._reuters_eval_cache[key] = {"method": method, "model": mname, "label": label, "name": METHOD_NAMES.get(method, method),
+                                                     "letter": METHOD_LETTERS.get(method, ""), "alpha": alpha if method == "hybrid" else None,
+                                                     "mean": mean, "per_query": per, "by_kind": by_kind, "by_topic": by_topic}
+                rows.append(self._reuters_eval_cache[key])
+        return {"k": k, "alpha": alpha, "queries": qs.summary(), "documents": self.reuters_vs().N, "runs": rows,
+                "kinds": [{"kind": kd, "name": n} for kd, n, _ in reuters_mod.QUERY_KINDS],
+                "topics": [{"topic": t, "name": n} for t, n, _ in reuters_mod.TOPICS], "notes": qs.notes}
+
+    def reuters_alpha_sweep(self, model: str | None = None, k: int = 10, steps: int = 10) -> dict:
+        """nDCG@k / MAP / P@k of the hybrid for α = 0 … 1 (α = 1 is pure TF-IDF, α = 0 the weighted embedding)."""
+        qs = self.reuters_queries()
+        name, _ = self.reuters_model(model)
+        emb = self.reuters_embedder(name)
+        vs = self.reuters_vs()
+        pre = [(vs.rank(q.text, "ltc", "ltc")[0], emb.rank(q.text, "w2v-tfidf")[0], qs.qrels(q.id)) for q in qs.queries]
+        rows = []
+        for i in range(steps + 1):
+            a = i / steps
+            per = [evaluation.evaluate_run([d for d, _ in hybrid_scores(t, e, a)], rel, ks=(5, 10, 20)) for t, e, rel in pre]
+            mean = evaluation.mean_measures(per)
+            rows.append({"alpha": a, "P@10": round(mean["P@10"], 4), "MRR": round(mean["MRR"], 4), "MAP": round(mean["MAP"], 4),
+                         "nDCG@10": round(mean["nDCG@10"], 4)})
+        best = max(rows, key=lambda r: r["nDCG@10"])
+        return {"model": name, "k": k, "rows": rows, "best_alpha": best["alpha"]}
+
+    def reuters_query_list(self) -> dict:
+        qs = self.reuters_queries()
+        return {"queries": qs.summary(), "documents": self.reuters_vs().N, "notes": qs.notes,
+                "file": _relpath(qs.path, self.data_dir.parent),
+                "kinds": [{"kind": kd, "name": n, "description": d} for kd, n, d in reuters_mod.QUERY_KINDS]}
+
+    def reuters_relevant(self, qid: str, method: str = DEFAULT_METHOD, model: str | None = None, alpha: float = DEFAULT_ALPHA, limit: int = 60) -> dict:
+        qs = self.reuters_queries()
+        q = qs.get(qid)
+        if q is None:
+            raise ValueError(f"unknown query {qid}")
+        vs = self.reuters_vs()
+        run = self.reuters_rank_ids(q.text, method, model, alpha)
+        pos = {d: i for i, d in enumerate(run, 1)}
+        rel = qs.qrels(q.id)
+        rows = [{"doc_id": d, "grade": g, "rank": pos.get(d, 0), "title": vs.docs[d].title, "topics": vs.docs[d].topics} for d, g in rel.items()]
+        rows.sort(key=lambda r: (r["rank"] or 10 ** 9))
+        return {"query": q.spec(), "method": method, "relevant": rows[:limit], "total_relevant": len(rows), "retrieved": len(run),
+                "measures": evaluation.evaluate_run(run, rel, ks=(5, 10, 20))}

@@ -45,6 +45,9 @@ class Document:
     pubtypes: list[str] = field(default_factory=list)
     article_type: str = ""
     source: str = ""            # file path
+    topics: list[str] = field(default_factory=list)         # Reuters-21578 TOPICS categories (Project #4)
+    places: list[str] = field(default_factory=list)         # Reuters-21578 PLACES
+    split: str = ""             # Reuters-21578 ModApte split: "train" / "test"
 
     # -------------------------------------------------------------- #
     def units(self) -> list[tuple[str, str]]:

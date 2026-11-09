@@ -188,3 +188,31 @@ def vsm_figures(engine) -> dict[str, str]:
                                               f"Length of the retrieved documents (collection mean {vs.avg_length:.0f} index terms) (RQ4)",
                                               "index terms", width=760, height=300, decimals=0)
     return out
+
+
+def reuters_figures(engine) -> dict[str, str]:
+    """Figures of the Project #4 report (file name -> SVG)."""
+    out: dict[str, str] = {}
+    ev = engine.reuters_eval("", "", 10)
+    runs = ev["runs"]
+    labels = [f"{r['letter']} {r['method']}" if r["method"] in ("tfidf", "tfidf-stem") else f"{r['letter']} {r['method']}\n{r['model']}" for r in runs]
+    short = [f"{r['letter']} {r['method']}" for r in runs]
+    out["emb_eval.svg"] = bar_chart(short, [{"name": "P@10", "values": [r["mean"]["P@10"] for r in runs]},
+                                            {"name": "nDCG@10", "values": [r["mean"]["nDCG@10"] for r in runs]},
+                                            {"name": "MRR", "values": [r["mean"]["MRR"] for r in runs]}],
+                                    f"P@10, nDCG@10 and MRR per method ({len(ev['queries'])} topic queries, {ev['documents']} test documents)",
+                                    "mean over queries", width=760, height=330, ymax=1.15, decimals=2)
+    kinds = [k["kind"] for k in ev["kinds"]]
+    out["emb_eval_by_kind.svg"] = bar_chart([k["name"] for k in ev["kinds"]],
+                                            [{"name": s, "values": [r["by_kind"].get(k, {}).get("P@10", 0.0) for k in kinds]} for s, r in zip(short, runs)],
+                                            "P@10 by query kind: how far the query wording is from the documents' vocabulary", "P@10", width=760, height=330, ymax=1.15)
+    topics = [t["topic"] for t in ev["topics"]]
+    out["emb_eval_by_topic.svg"] = bar_chart(topics, [{"name": s, "values": [r["by_topic"].get(t, {}).get("nDCG@10", 0.0) for t in topics]} for s, r in zip(short, runs)],
+                                             "nDCG@10 by topic", "nDCG@10", width=760, height=330, ymax=1.15)
+    sw = engine.reuters_alpha_sweep()
+    out["emb_alpha.svg"] = line_plot([{"name": "nDCG@10", "points": [(r["alpha"], r["nDCG@10"]) for r in sw["rows"]]},
+                                      {"name": "P@10", "points": [(r["alpha"], r["P@10"]) for r in sw["rows"]]},
+                                      {"name": "MAP", "points": [(r["alpha"], r["MAP"]) for r in sw["rows"]]}],
+                                     f"Hybrid α·TF-IDF + (1 − α)·weighted embedding ({sw['model']})", "α  (0 = embedding only, 1 = TF-IDF only)", "mean over queries",
+                                     width=620, height=340)
+    return out

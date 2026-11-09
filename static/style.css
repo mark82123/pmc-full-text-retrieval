@@ -341,3 +341,17 @@ table.qtab td:last-child{white-space:nowrap}
 table.num td.best{font-weight:700;color:var(--accent)}
 .rq p{margin:6px 0}
 .rq .n{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em;background:var(--code);padding:0 4px;border-radius:4px}
+
+/* Project #4: word-embedding retrieval tab */
+.tag{display:inline-block;font-size:10.5px;font-weight:600;padding:0 6px;border-radius:999px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);margin-left:4px;vertical-align:middle}
+.tag.ctx{background:#fef3c7;border-color:#fcd34d;color:#92400e}.tag.rare{background:var(--surface3)}.tag.topic{background:#dbeafe;border-color:#93c5fd;color:#1e3a8a}.tag.lex{background:#dcfce7;border-color:#86efac;color:#166534}.tag.sem{background:#ede9fe;border-color:#c4b5fd;color:#4c1d95}
+.tchip{display:inline-block;font-size:11px;font-weight:600;padding:0 7px;border-radius:999px;border:1px solid var(--line);background:var(--surface2);margin-right:3px}
+.tchip.earn,.tchip.acq,.tchip.crude,.tchip.grain,.tchip.trade,.emb-res .qw.in,.tag.ctx,.tag.topic,.tag.lex,.tag.sem{color:#1d2333}
+.tchip.earn{background:#dcfce7;border-color:#86efac}.tchip.acq{background:#dbeafe;border-color:#93c5fd}.tchip.crude{background:#fee2e2;border-color:#fca5a5}.tchip.grain{background:#fef3c7;border-color:#fcd34d}.tchip.trade{background:#ede9fe;border-color:#c4b5fd}
+.nbtab{font-size:12px;min-width:330px}.nbtab td,.nbtab th{padding:3px 5px}.nbtab .w{font-weight:600;white-space:nowrap}
+#en-out .vcols{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}#en-out .vcol{overflow:visible}#en-out .vcol .tscroll{margin-top:2px}
+.emb-res .explain{font-size:12px;margin-top:4px;border-collapse:collapse}.emb-res .explain td{padding:1px 8px 1px 0;border:0;text-align:left;white-space:normal}
+.emb-res .qw{display:inline-block;font-size:11.5px;padding:0 6px;border-radius:999px;border:1px solid var(--line);margin-right:3px}.emb-res .qw.in{background:#dcfce7;border-color:#86efac}.emb-res .qw.out{background:var(--surface3);color:var(--muted);text-decoration:line-through}
+.profile{display:flex;height:9px;border-radius:5px;overflow:hidden;background:var(--track);margin:3px 0;max-width:260px}.profile i{display:block;height:100%}
+.pbar{display:inline-block;height:8px;background:var(--bar);border-radius:3px;vertical-align:middle}
+

@@ -1,0 +1,145 @@
+{
+ "notes": "Evaluation queries for the Reuters-21578 ModApte test split. Every query is written for one TOPICS category; a document is relevant when it carries that topic (grade 2 when the topic is its only topic, grade 1 otherwise). The 'kind' field groups the queries by how far their wording is from the vocabulary of the relevant stories: topic word / Reuters vocabulary / synonym or paraphrase / semantic description. Topics were assigned by Reuters and Carnegie Group indexers in 1987, independently of any retrieval method.",
+ "queries": [
+  {
+   "id": "e01",
+   "text": "quarterly net profit results",
+   "topic": "earn",
+   "kind": "topic",
+   "description": "earnings report vocabulary (net, profit, qtr)"
+  },
+  {
+   "id": "e02",
+   "text": "company reports earnings per share",
+   "topic": "earn",
+   "kind": "domain",
+   "description": "Reuters earnings tables use shr / net / revs"
+  },
+  {
+   "id": "e03",
+   "text": "corporate financial performance for the year",
+   "topic": "earn",
+   "kind": "synonym",
+   "description": "paraphrase: none of the words net / profit / earnings"
+  },
+  {
+   "id": "e04",
+   "text": "income statement with revenue and sales figures",
+   "topic": "earn",
+   "kind": "semantic",
+   "description": "describes the content of an earnings story"
+  },
+  {
+   "id": "a01",
+   "text": "acquisition of a company",
+   "topic": "acq",
+   "kind": "topic",
+   "description": "topic word acquisition"
+  },
+  {
+   "id": "a02",
+   "text": "takeover bid for shares",
+   "topic": "acq",
+   "kind": "domain",
+   "description": "Reuters uses takeover, bid, stake"
+  },
+  {
+   "id": "a03",
+   "text": "merger agreement between two firms",
+   "topic": "acq",
+   "kind": "synonym",
+   "description": "merger / firms instead of acquisition / company"
+  },
+  {
+   "id": "a04",
+   "text": "buying a controlling stake in a business",
+   "topic": "acq",
+   "kind": "semantic",
+   "description": "describes an acquisition without saying so"
+  },
+  {
+   "id": "c01",
+   "text": "crude oil prices",
+   "topic": "crude",
+   "kind": "topic",
+   "description": "topic words crude oil"
+  },
+  {
+   "id": "c02",
+   "text": "OPEC barrel output quota",
+   "topic": "crude",
+   "kind": "domain",
+   "description": "Reuters oil-market vocabulary (opec, bpd, barrel)"
+  },
+  {
+   "id": "c03",
+   "text": "petroleum production and output",
+   "topic": "crude",
+   "kind": "synonym",
+   "description": "petroleum instead of oil — the lexical-mismatch example of the assignment"
+  },
+  {
+   "id": "c04",
+   "text": "energy exploration and drilling",
+   "topic": "crude",
+   "kind": "semantic",
+   "description": "describes the oil business without oil / crude"
+  },
+  {
+   "id": "g01",
+   "text": "grain exports",
+   "topic": "grain",
+   "kind": "topic",
+   "description": "topic word grain"
+  },
+  {
+   "id": "g02",
+   "text": "wheat and corn harvest",
+   "topic": "grain",
+   "kind": "domain",
+   "description": "sub-topics of grain (wheat, corn) — the word grain itself is absent"
+  },
+  {
+   "id": "g03",
+   "text": "cereal crop production forecast",
+   "topic": "grain",
+   "kind": "synonym",
+   "description": "cereal instead of grain"
+  },
+  {
+   "id": "g04",
+   "text": "agriculture department crop report",
+   "topic": "grain",
+   "kind": "semantic",
+   "description": "USDA crop reports are grain stories"
+  },
+  {
+   "id": "t01",
+   "text": "international trade dispute",
+   "topic": "trade",
+   "kind": "topic",
+   "description": "topic word trade"
+  },
+  {
+   "id": "t02",
+   "text": "trade deficit and surplus",
+   "topic": "trade",
+   "kind": "domain",
+   "description": "Reuters trade-balance vocabulary"
+  },
+  {
+   "id": "t03",
+   "text": "import tariffs and export restrictions",
+   "topic": "trade",
+   "kind": "synonym",
+   "description": "tariffs / imports / exports instead of trade"
+  },
+  {
+   "id": "t04",
+   "text": "protectionism and talks between countries",
+   "topic": "trade",
+   "kind": "semantic",
+   "description": "describes a trade story without the word trade"
+  }
+ ]
+}

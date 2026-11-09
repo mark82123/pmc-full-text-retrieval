@@ -13,7 +13,7 @@
     <span class="logo">⌕</span>
     <div>
       <h1>PMC Full-Text Retrieval Tool</h1>
-      <p class="sub">AI Information Retrieval 人工智慧資訊檢索 · Project #1 + #2 + #3 · PMC full text · PubMed abstracts · Zipf · word2vec · spelling correction · TF-IDF vector space</p>
+      <p class="sub">AI Information Retrieval 人工智慧資訊檢索 · Project #1 + #2 + #3 + #4 · PMC full text · PubMed abstracts · Zipf · word2vec · spelling correction · TF-IDF vector space · Reuters-21578 word-embedding retrieval</p>
     </div>
   </div>
   <nav class="tabs">
@@ -22,6 +22,7 @@
     <button class="tab" data-tab="zipf">Zipf 分析</button>
     <button class="tab" data-tab="w2v">Word2Vec</button>
     <button class="tab" data-tab="vsm">TF-IDF 檢索</button>
+    <button class="tab" data-tab="emb">Word Embedding 檢索</button>
     <button class="tab" data-tab="spell">Edit Distance</button>
     <button class="tab" data-tab="upload">Add Documents</button>
     <button class="tab" data-tab="algo">前處理與演算法</button>
@@ -321,6 +322,116 @@
     </div>
   </section>
 
+  <section id="tab-emb" class="panel">
+    <div class="card help">
+      <h2>Reuters-21578：從 TF-IDF 到 Word Embedding 的新聞檢索實驗（Project #4）</h2>
+      <p>以 Reuters-21578 的 <b>ModApte</b> 切分為實驗資料：9,603 篇 train 新聞用來訓練 word2vec（<code>ir/word2vec.py</code>，skip-gram 與 CBOW），3,299 篇 test 新聞是檢索集合；
+        相關性以 <b>TOPICS</b> 欄位判斷（earn、acq、crude、grain、trade）。<code>ir/embedding.py</code> 以同一組詞（小寫、去停用詞、不做 stemming）建立四種文件表示並以 cosine 排序：
+        <b>A</b> TF-IDF、<b>B</b> TF-IDF 加權詞向量平均、<b>C</b> 詞向量平均、<b>D</b> A 與 B 的分數融合；另附 Project #3 的 Porter-stemmed TF-IDF（A₀）作對照。
+        <code>ir/evaluation.py</code> 計算 P@10、MRR、nDCG@10。重點：詞向量相近 ≠ 適合檢索同一批文件，所以 word-level（第 3 節）與 document-level（第 4–6 節）分開分析。</p>
+      <nav class="subnav" id="emb-nav">
+        <a href="#emb-s1">1 資料集</a><a href="#emb-s2">2 詞向量模型</a><a href="#emb-s3">3 Word-level：最近鄰</a>
+        <a href="#emb-s4">4 Document-level：檢索</a><a href="#emb-s5">5 方法對照</a><a href="#emb-s6">6 評估</a><a href="#emb-s7">7 RQ 結論</a>
+        <a href="/static/project4-guide.html" target="_blank" style="border-color:var(--accent-line);background:var(--accent-soft)">✓ 驗收導讀（因果檢核）</a>
+      </nav>
+    </div>
+
+    <!-- 1 dataset -->
+    <div class="card" id="emb-s1">
+      <h2>1. 資料集：Reuters-21578 ModApte</h2>
+      <p class="hint">22 個 SGML 檔（reut2-000 … 021，21,578 則 1987 年路透新聞）由 <code>ir/reuters.py</code> 解析：解碼 Latin-1 與實體、移除控制字元與 "Reuter" 署名、把硬換行的段落接回完整句子。
+        ModApte = <code>TOPICS="YES"</code> 且 <code>LEWISSPLIT</code> 為 TRAIN / TEST 的文件。TOPICS 由路透與 Carnegie Group 的編目員人工指派，與任何檢索方法無關，因此可作相關性判斷：grade 2 = 該主題是文件唯一主題，grade 1 = 多個主題之一。</p>
+      <div id="emb-info"><p class="muted">loading…</p></div>
+    </div>
+
+    <!-- 2 models -->
+    <div class="card" id="emb-s2">
+      <h2>2. 詞向量模型（在 train 切分上訓練）</h2>
+      <p class="hint">純 Python word2vec（negative sampling、dynamic window、sub-sampling；Project #2 的實作）。模型存在 <code>data/reuters/w2v/</code>，可同時保留多個以比較 CBOW / skip-gram、維度、視窗與 epochs。
+        下方「覆蓋率」= test 集合中有向量的詞型 / 詞元比例：不在 train 詞彙（或 min_count 以下）的詞（OOV）在嵌入法中會被忽略。</p>
+      <div id="emb-models"><p class="muted">loading…</p></div>
+      <div class="row" style="margin-top:10px;gap:10px">
+        <span class="muted">訓練新模型：</span>
+        <label>架構 <select id="et-arch"><option value="sg">skip-gram</option><option value="cbow">CBOW</option></select></label>
+        <label>dim <input id="et-dim" type="number" min="10" max="300" value="100" style="width:64px"></label>
+        <label>window <input id="et-window" type="number" min="1" max="15" value="5" style="width:56px"></label>
+        <label>min_count <input id="et-min" type="number" min="1" max="100" value="5" style="width:56px"></label>
+        <label>epochs <input id="et-epochs" type="number" min="1" max="50" value="5" style="width:56px"></label>
+        <label>seed <input id="et-seed" type="number" min="1" value="1" style="width:56px"></label>
+        <button id="et-go" class="primary small">Train</button>
+        <span class="muted" id="et-note">約 763K 詞元 / epoch；CBOW d100 5 epochs 約 6 分鐘，skip-gram 約 20 分鐘（純 Python）。</span>
+      </div>
+      <div id="emb-jobs"></div>
+    </div>
+
+    <!-- 3 word level -->
+    <div class="card" id="emb-s3">
+      <h2>3. Word-level：每個詞的 Top-5 最近鄰</h2>
+      <p class="hint">每個詞在各模型中 cosine 最高的 5 個詞。為了判斷「為什麼近」，每個鄰近詞另附：<b>同篇</b> = 兩詞在 train 集合中共同出現的文件數、<b>PMI</b>（文件層級的點互資訊）、<b>主題</b> = test 集合中含該鄰近詞的文件最常帶的主題。
+        自動標記只是提示：<span class="tag ctx">情境共現</span> 同篇多且 PMI 高（常在同一類新聞出現，不必然同義）、<span class="tag rare">稀有</span> 訓練次數少（向量不穩定）、<span class="tag topic">同主題</span> 鄰近詞與查詢詞的主要主題相同。</p>
+      <div class="try"><input id="en-words" value="oil petroleum crude opec profit loss earnings acquisition takeover merger grain wheat cereal trade tariff deficit">
+        <label>n <select id="en-n"><option>5</option><option>10</option></select></label>
+        <button id="en-go" class="primary">Nearest neighbours</button></div>
+      <div class="chips model-picks" id="en-models"></div>
+      <div id="en-out"></div>
+      <h4 style="margin:14px 0 4px">詞對的 cosine（向量相近 ≠ 同義：profit / loss）</h4>
+      <div class="try"><input id="ep-pairs" value="oil,petroleum; oil,crude; profit,loss; profit,earnings; acquisition,takeover; acquisition,merger; grain,wheat; grain,cereal; trade,tariff; trade,deficit; rise,fall; buy,sell">
+        <button id="ep-go" class="primary small">Cosine</button></div>
+      <div id="ep-out"></div>
+    </div>
+
+    <!-- 4 document level search -->
+    <div class="card" id="emb-s4">
+      <h2>4. Document-level：新聞檢索系統</h2>
+      <p class="hint">查詢 → 同樣的前處理 → 依方法建立查詢向量 → 與每篇 test 新聞的向量算 cosine → 排序。每筆結果列出文件的 TOPICS、相關等級（若是評估查詢）、<b>查詢詞是否出現在文件中</b>（詞彙匹配），
+        以及嵌入法「為什麼配到」：每個查詢詞在該文件中 cosine 最高的詞（語意／情境匹配）。方法 D 的 α 是 TF-IDF 分數的權重（1 = 純 TF-IDF，0 = 純 B）。</p>
+      <div class="try"><input id="eq" value="petroleum production and output" placeholder="query">
+        <label>方法 <select id="eq-method"></select></label>
+        <label>模型 <select id="eq-model"></select></label>
+        <label>α <input id="eq-alpha" type="number" min="0" max="1" step="0.1" value="0.5" style="width:60px"></label>
+        <label>k <select id="eq-k"><option>10</option><option>20</option><option>50</option></select></label>
+        <button id="eq-go" class="primary">Search</button></div>
+      <div class="examples" id="eq-examples"></div>
+      <div id="eq-out"></div>
+    </div>
+
+    <!-- 5 compare -->
+    <div class="card" id="emb-s5">
+      <h2>5. 同一查詢、不同文件表示法並排</h2>
+      <p class="hint">overlap@k 與 Kendall τ 以第一個方法為基準；<b>詞彙重疊</b> = 前 k 名文件平均含有的查詢詞比例；<b>無查詢詞</b> = 前 k 名中完全不含任何查詢詞的文件數（只有嵌入法才可能找到這類文件——它們是語意匹配，也是誤配的來源）。</p>
+      <div class="row" style="margin-bottom:8px"><span class="muted">預設實驗：</span>
+        <button class="small" data-exp="tfidf,w2v-tfidf" title="核心比較">A vs B（核心）</button>
+        <button class="small" data-exp="tfidf-stem,tfidf" title="stemming">A₀ vs A（stemming）</button>
+        <button class="small" data-exp="w2v-avg,w2v-tfidf" title="weighting">C vs B（加權）</button>
+        <button class="small" data-exp="tfidf,w2v-tfidf,hybrid" title="fusion">A / B / D（融合）</button></div>
+      <div class="try"><input id="ec-q" value="petroleum production and output" placeholder="query">
+        <label>k <select id="ec-k"><option>10</option><option>20</option></select></label>
+        <button id="ec-go" class="primary">Compare</button></div>
+      <div class="chips model-picks" id="ec-methods"></div>
+      <div id="ec-out"></div>
+    </div>
+
+    <!-- 6 evaluation -->
+    <div class="card" id="emb-s6">
+      <h2>6. 評估：P@10、MRR、nDCG@10（20 個主題查詢）</h2>
+      <p class="hint">每個主題 4 個查詢，依用字與相關新聞詞彙的距離分四種：<b>主題詞</b>（oil、grain、trade…）、<b>路透慣用詞</b>（takeover、barrel、tariff…）、<b>同義／改寫</b>（petroleum、cereal、firms…）、<b>情境描述</b>（energy exploration、crop report…）。
+        相關集 = test 集合中帶該主題的文件（earn 1,087、acq 719、crude 189、grain 149、trade 117）。注意 TF-IDF 只對含查詢詞的文件給分，未檢回的相關文件會壓低 MAP 與 R@k；P@10、MRR、nDCG@10 只看排名前段，是本專案的主要指標。</p>
+      <div id="ee-queries"><p class="muted">loading…</p></div>
+      <div class="row" style="margin:10px 0"><span class="muted">方法：</span><div class="chips model-picks" id="ee-methods"></div></div>
+      <div class="row" style="margin:0 0 10px"><span class="muted">模型：</span><div class="chips model-picks" id="ee-models"></div>
+        <label>α <input id="ee-alpha" type="number" min="0" max="1" step="0.1" value="0.5" style="width:60px"></label>
+        <button id="ee-go" class="primary small">Evaluate</button></div>
+      <div id="ee-out"></div>
+      <div id="ee-rel"></div>
+    </div>
+
+    <!-- 7 research questions -->
+    <div class="card" id="emb-s7">
+      <h2>7. 研究問題（由目前的數據計算）</h2>
+      <div id="er-out"><p class="muted">先執行第 3 節的最近鄰與第 6 節的評估。</p></div>
+    </div>
+  </section>
+
   <section id="tab-spell" class="panel">
     <div class="card help">
       <h2>Edit distance — 動態規劃</h2>
@@ -531,5 +642,6 @@
 <script src="/static/project2.js"></script>
 <script src="/static/w2v.js"></script>
 <script src="/static/tfidf.js"></script>
+<script src="/static/embed.js"></script>
 </body>
 </html>

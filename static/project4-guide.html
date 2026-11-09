@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project #4 驗收導讀 — 因果關係檢核</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#1d2333;--muted:#5f6778;--line:#dfe3ea;--accent:#1f5fbf;--soft:#eef3fb;--ok:#15803d;--okbg:#dcfce7;--warn:#b45309;--warnbg:#fef3c7;--bad:#b91c1c;--badbg:#fee2e2;--code:#eef0f4;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;--mono:ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14.5px;line-height:1.55}
+header{background:#1d2333;color:#fff;padding:22px 28px}
+header h1{margin:0 0 6px;font-size:22px}header p{margin:0;color:#c7cdd8;font-size:13.5px}
+header a{color:#9cc3ff}
+main{max-width:1180px;margin:0 auto;padding:18px 20px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:0 0 14px}
+h2{font-size:17px;margin:0 0 8px}h3{font-size:15px;margin:14px 0 4px}
+code{font-family:var(--mono);font-size:.9em;background:var(--code);padding:0 4px;border-radius:4px}
+.muted{color:var(--muted)}
+.chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.chain .step{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px}
+.chain .step b{display:block;color:var(--accent)}
+.chain .arrow{color:var(--muted);font-size:18px}
+.req{border-left:4px solid var(--accent);padding-left:14px;margin:14px 0 6px}
+.req .quote{color:var(--muted);font-size:13px}
+.ce{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0}
+.ce>div{background:var(--soft);border-radius:8px;padding:8px 12px;font-size:13.5px}
+.ce b.lab{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--accent);margin-right:6px}
+ol.steps{margin:6px 0 4px;padding-left:22px}ol.steps li{margin:3px 0}
+a.deep{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(--accent)}
+.check{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px dashed var(--line);border-radius:8px;padding:8px 12px;margin:8px 0 2px;font-size:13.5px}
+.check input{margin-top:4px;transform:scale(1.2)}
+.auto{display:inline-block;font-size:11.5px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);background:var(--code);color:var(--muted);margin-left:6px;vertical-align:middle}
+.auto.ok{background:var(--okbg);color:var(--ok);border-color:#86efac}.auto.bad{background:var(--badbg);color:var(--bad);border-color:#fca5a5}.auto.warn{background:var(--warnbg);color:var(--warn);border-color:#fcd34d}
+.fail{font-size:13px;color:var(--muted);margin:4px 0 0}.fail b{color:var(--bad)}
+table{border-collapse:collapse;width:100%;font-size:13px;margin:6px 0}
+th,td{padding:4px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:var(--soft)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.progress{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);padding:8px 20px;font-size:13.5px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.progress .bar{flex:1;min-width:200px;height:10px;background:var(--code);border-radius:5px;overflow:hidden}.progress .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.toc{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;margin-top:6px}.toc a{text-decoration:none;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:1px 10px;background:var(--soft)}
+.note{background:var(--warnbg);border-left:4px solid #fcd34d;padding:8px 12px;border-radius:0 8px 8px 0;font-size:13.5px;margin:8px 0}
+@media (max-width:760px){.ce{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Project #4 驗收導讀：用因果關係確認網站是否滿足規格</h1>
+  <p>每一項規格要求都拆成「<b>因</b>：系統做了什麼」→「<b>果</b>：如果做對了，網站上必然看得到什麼」→「<b>驗證</b>：點哪裡、看什麼數字」。標了「自動核對」的項目由本頁直接呼叫 <code>/api/reuters/*</code> 比對；其餘請依步驟到 <a href="/#emb" target="_blank">Word Embedding 檢索分頁</a> 確認後勾選。勾選狀態存在瀏覽器裡。</p>
+</header>
+<div class="progress"><span>人工確認進度</span><div class="bar"><i id="bar"></i></div><span id="prog">0 / 0</span><span class="muted">｜ 自動核對：<span id="autosum">檢查中…</span></span><button id="reset" style="font:inherit;font-size:12px;padding:2px 8px">清除勾選</button></div>
+<main>
+
+<div class="card">
+  <h2>0. 整條因果鏈（先看全貌）</h2>
+  <p>Project #4 的論證是一條鏈：每一環成立，下一環的數字才可信。導讀依這條鏈排序，前面的環節沒確認，後面的結論就沒有意義。</p>
+  <div class="chain">
+    <div class="step"><b>資料</b>Reuters-21578 ModApte<br>train 9,603 / test 3,299</div><span class="arrow">→</span>
+    <div class="step"><b>相關性</b>TOPICS 標籤<br>與檢索方法無關</div><span class="arrow">→</span>
+    <div class="step"><b>前處理</b>同一組詞給 TF-IDF 與詞向量<br>否則比較不公平</div><span class="arrow">→</span>
+    <div class="step"><b>word2vec</b>CBOW 與 skip-gram<br>在 train 上訓練</div><span class="arrow">→</span>
+    <div class="step"><b>Word-level</b>Top-5 鄰近詞 + 證據<br>相近 ≠ 同義</div><span class="arrow">→</span>
+    <div class="step"><b>文件表示</b>A TF-IDF / B 加權向量<br>C 平均 / D 融合</div><span class="arrow">→</span>
+    <div class="step"><b>檢索系統</b>輸入查詢、cosine 排序<br>可解釋每筆結果</div><span class="arrow">→</span>
+    <div class="step"><b>評估</b>P@10 · MRR · nDCG@10<br>依查詢種類分析</div><span class="arrow">→</span>
+    <div class="step"><b>結論</b>何時 B 優於 A、何時不是<br>不預設詞向量必勝</div>
+  </div>
+  <div class="toc">
+    <a href="#r1">1 資料集</a><a href="#r2">2 相關性</a><a href="#r3">3 TF-IDF 與 cosine</a><a href="#r4">4 Word2Vec</a><a href="#r5">5 Top-5 鄰近詞</a><a href="#r6">6 文件表示</a><a href="#r7">7 檢索系統</a><a href="#r8">8 評估指標</a><a href="#r9">9 核心比較 A vs B</a><a href="#r10">10 CBOW vs SG</a><a href="#r11">11 差異分析</a><a href="#r12">12 交付物</a>
+  </div>
+</div>
+
+<!-- 1 -->
+<div class="card" id="r1">
+  <div class="req"><h2>1. 使用 Reuters-21578 的 ModApte 資料切分</h2><p class="quote">規格：「Reuters-21578 的 ModApte 資料切分。」</p></div>
+  <div class="ce">
+    <div><b class="lab">因</b><code>ir/reuters.py</code> 解析 22 個 SGML 檔，只保留 <code>TOPICS="YES"</code> 且 <code>LEWISSPLIT</code> 為 TRAIN / TEST 的文件；train 用來訓練詞向量，test 是檢索集合。</div>
+    <div><b class="lab">果</b>若切分正確，第 1 節的數字必須是 ModApte 的標準值：train <b>9,603</b>、test <b>3,299</b>、合計 12,902；否則就不是 ModApte（例如全部 21,578 或 Lewis split 的 13,625）。<span class="auto" id="a-split">自動核對</span></div>
+  </div>
+  <ol class="steps">
+    <li>開啟 <a class="deep" href="/#emb-s1" target="_blank">第 1 節 資料集</a>，看第一個方塊：「12,902 ModApte documents · train 9,603 / test 3,299」。</li>
+    <li>主題表中 earn test = 1,087、acq 719、crude 189、grain 149、trade 117（這是文獻中 ModApte test 的標準主題數，可當交叉驗證）。</li>
+    <li>CLI 等價：<code>python3 cli.py reuters info</code>。</li>
+  </ol>
+  <label class="check"><input type="checkbox" data-k="r1"><span>我已確認資料集是 ModApte（9,603 / 3,299），且五個推薦主題的文件數符合。</span></label>
+  <p class="fail">若不符：<b>數字不是 9,603 / 3,299</b> 代表 jsonl 不是用 <code>cli.py reuters build</code> 從官方 SGML 產生，後面所有評估都要重跑。</p>
+</div>
+
+<!-- 2 -->
+<div class="card" id="r2">
+  <div class="req"><h2>2. 以 topics 欄位作為相關性判斷；選 earn / acq / crude / grain / trade</h2><p class="quote">規格：「以 topics 欄位作為主題相關性判斷的依據，建議選擇 earn、acq、crude、grain、trade。」</p></div>
+  <div class="ce">
+    <div><b class="lab">因</b>每個查詢對應一個主題；test 文件帶該主題即相關（唯一主題 = grade 2，多主題之一 = grade 1）。TOPICS 由路透編目員 1987 年指派，不看查詢字、不看任何方法。</div>
+    <div><b class="lab">果</b>因此 (a) 相關文件數與方法無關——第 6 節每個查詢的 relevant 欄在任何方法下都一樣；(b) 同主題的 4 個查詢 relevant 數相同（earn 四題都是 1,087）；(c) 20 個查詢只落在那五個主題。<span class="auto" id="a-queries">自動核對</span></div>
+  </div>
+  <ol class="steps">
+    <li>開啟 <a class="deep" href="/#emb-s6" target="_blank">第 6 節 評估</a> 的查詢表：topic 欄只有五種顏色標籤；同主題四列的 relevant 相同。</li>
+    <li>在 <a class="deep" href="/#emb-s4" target="_blank">第 4 節</a> 搜尋 <code>crude oil prices</code>：每筆結果的 <b>rel 2 / rel 1 / not rel</b> 標籤應與該文件的 TOPICS 標籤一致（有 crude 才是 rel）。</li>
+    <li>切換方法（A → B），結果列表會變，但同一篇文件的 rel 標籤不會變。</li>
+  </ol>
+  <label class="check"><input type="checkbox" data-k="r2"><span>我已確認相關性完全來自 TOPICS，與方法無關，而且只用五個推薦主題。</span></label>
+  <p class="fail">若不符：<b>同一篇文件在不同方法下 rel 標籤不同</b>，表示相關性摻入了文字比對，比較就失去獨立基準。</p>
+</div>
+
+<!-- 3 -->
+<div class="card" id="r3">
+  <div class="req"><h2>3. 實作 TF、DF、IDF、TF-IDF 與 Cosine Similarity</h2><p class="quote">學習目標 1。</p></div>
+  <div class="ce">
+    <div><b class="lab">因</b>沿用 Project #3 的 <code>ir/tfidf.py</code>（tf、df、idf = ln(N/df)、ltc 權重、L2 正規化，分數 = 內積 = cosine），並以 <code>WordTokenizer</code> 讓它用與詞向量<b>完全相同的詞</b>（不 stemming）。</div>
+    <div><b class="lab">果</b>搜尋結果上方的查詢分析條會列出每個詞的 df 與 idf；df 高的詞 idf 必低（said df 2,026 → idf 0.49；petroleum df 90 → 3.60）。TF-IDF 方法的 cosine 分數在 0–1 之間，且「scored documents」只會是含查詢詞的文件數（例如 c03 只有 284 篇），因為 TF-IDF 沒有詞就沒有分數——這正是它的本質。</div>
+  </div>
+  <ol class="steps">
+    <li><a class="deep" href="/#emb-s4" target="_blank">第 4 節</a> 方法選 <b>A tfidf</b>，查詢 <code>petroleum production and output</code>：查詢條顯示 petroleum df 90 · idf 3.60，production df 180 · idf 2.91，output df 92 · idf 3.58；摘要列顯示「284 of 3,299 documents scored」。</li>
+    <li>第 1 節右側「test 集合 df 最高的詞」：said、mln、dlrs 的 df 最大 → 這些詞在 TF-IDF 中權重最低（RQ 文字有引用）。</li>
+    <li>對照 Project #3 分頁（<a class="deep" href="/#vsm-s1" target="_blank">/#vsm</a>）可看到 tf / idf 曲線與公式。</li>
+  </ol>
+  <label class="check"><input type="checkbox" data-k="r3"><span>我已確認 df / idf 的因果（df 越大 idf 越小）在畫面上成立，且 TF-IDF 只為含查詢詞的文件打分。</span></label>
+</div>
+
+<!-- 4 -->
+<div class="card" id="r4">
+  <div class="req"><h2>4. 理解 Word2Vec；實作 CBOW 與 Skip-Gram 的訓練流程</h2><p class="quote">學習目標 2、3。</p></div>
+  <div class="ce">
+    <div><b class="lab">因</b><code>ir/word2vec.py</code>（Project #2 自行實作：negative sampling、dynamic window、sub-sampling）在 Reuters train 切分上訓練；第 2 節的表單可排程新模型，模型存在 <code>data/reuters/w2v/</code>。</div>
+    <div><b class="lab">果</b>模型表至少要同時有一個 skip-gram 與一個 CBOW，且所有模型 vocabulary 相同（同一份 train、同一 min_count → 9,996）；loss 隨 epoch 下降（10 epochs 的 CBOW loss 1.65 低於 5 epochs 的 1.95）；skip-gram 訓練時間明顯長於 CBOW（每個中心詞產生多個樣本）。<span class="auto" id="a-models">自動核對</span></div>
+  </div>
+  <ol class="steps">
+    <li>開啟 <a class="deep" href="/#emb-s2" target="_blank">第 2 節 詞向量模型</a>：確認 architecture 欄同時出現 skip-gram 與 cbow；vocabulary 全為 9,996。</li>
+    <li>比較 cbow-d100-w5-m5-e5（loss 1.951、6.7 min）與 cbow-d100-w5-m5-e10（1.647、13.5 min）：epochs 加倍 → loss 下降、時間加倍。</li>
+    <li>（選做）用表單訓練一個小模型（dim 20、epochs 1）觀察進度條；完成後會出現在模型表並可設為 active。</li>
+    <li>訓練流程的教學說明（skip-gram 配對、CBOW 平均、negative sampling）在 Project #2 分頁 <a class="deep" href="/#w2v" target="_blank">/#w2v</a> 第 2 節的「訓練樣本產生器」。</li>
+  </ol>
+  <label class="check"><input type="checkbox" data-k="r4"><span>我已確認兩種架構都訓練成功、在同一份 train 上、詞彙一致，loss 與時間的因果合理。</span></label>
+</div>
+
+<!-- 5 -->
+<div class="card" id="r5">
+  <div class="req"><h2>5. 列出每個詞的 Top-5 Nearest Neighbors，並回答三個問題</h2><p class="quote">規格：「哪些鄰近詞具有合理的語意或使用情境關係？哪些是因為常出現在相似新聞情境？哪些不符合預期，原因為何？向量相近不代表同義。」</p></div>
+  <div class="ce">
+    <div><b class="lab">因</b>第 3 節對每個詞在每個模型算 cosine 最高的 5 個詞，並為每個鄰近詞附上三個<b>證據</b>：同篇（train 中共同出現的文件數）、PMI、鄰近詞最常帶的主題；另有詞對 cosine 表。</div>
+    <div><b class="lab">果</b>三個問題各自對應到可觀察的證據：(1) 合理語意 → 同主題且 cosine 高（oil → crude）；(2) 情境共現 → 同篇多、PMI 高、但不是同義（opec → lukman、nazer）；(3) 不符預期 → 稀有詞（count &lt; 40，兩模型 Top-5 零重疊：cereal、tariff）或語料用法偏移（petroleum → 公司名）。詞對表中 profit / loss、rise / fall 的 cosine 高於 0.75，直接驗證「相近 ≠ 同義」。</div>
+  </div>
+  <ol class="steps">
+    <li>開啟 <a class="deep" href="/#emb-s3" target="_blank">第 3 節</a>，按 Nearest neighbours（預設 16 個詞、兩個模型）。</li>
+    <li>看 <b>oil</b>：Top-5 含 crude、gas、petroleum，標「同主題」且主題欄為 crude → 問題 (1)。</li>
+    <li>看 <b>opec</b>（skip-gram）：lukman、nazer、ceiling 標「情境共現」，同篇 6–42、PMI 3.8–4.7 → 問題 (2)。</li>
+    <li>看 <b>petroleum</b>：鄰近詞是 king / xon / esso（skip-gram）或 mines / columbia / mining（CBOW），主題欄多為 acq；頂端主題色條顯示含 petroleum 的文件只有 44% 是 crude → 問題 (3) 的原因就在證據裡。看 <b>cereal</b>：count 24、標「稀有」、兩模型共同鄰居 0 / 5。</li>
+    <li>下方詞對表：profit–loss 0.79、rise–fall 0.87、buy–sell 0.77 → 反義卻相近。</li>
+  </ol>
+  <label class="check"><input type="checkbox" data-k="r5"><span>我已確認 Top-5 鄰近詞有列出，且三個問題都能從畫面上的證據（同篇、PMI、主題、count）回答，不是只憑 cosine。</span></label>
+  <p class="fail">若不符：<b>只看到 cosine 沒有證據欄</b>，就無法區分「同義」與「同情境」——這是老師特別提醒的誤解。</p>
+</div>
+
+<!-- 6 -->
+<div class="card" id="r6">
+  <div class="req"><h2>6. 使用訓練完成的詞向量表示文件（方法 A、B、C、D）</h2><p class="quote">學習目標 4；老師指定的核心比較：方法 A TF-IDF、方法 B TF-IDF Weighted Word Embedding。</p></div>
+  <div class="ce">
+    <div><b class="lab">因</b><code>ir/embedding.py</code>：A TF-IDF；C 詞向量平均；B Σ (1+ln tf)·idf·v 加權平均；D α·cos<sub>A</sub> + (1−α)·cos<sub>B</sub>。四者使用同一組詞、同一 cosine；OOV 詞跳過並報告覆蓋率。</div>
+    <div><b class="lab">果</b>(a) 嵌入法對<b>每一篇</b>文件都有向量 → 摘要列顯示「3,299 of 3,299 documents scored」（TF-IDF 只有含詞的文件）；(b) 查詢條會標出 OOV 詞；(c) B 的查詢詞權重與 idf 成正比（petroleum 3.60 &gt; output 3.58 &gt; production 2.91）；(d) 第 2 節覆蓋率：46% 詞型 / 93% 詞元 → 多數 OOV 是只出現一次的專有名詞。<span class="auto" id="a-methods">自動核對</span></div>
+  </div>
+  <ol class="steps">
+    <li><a class="deep" href="/#emb-s4" target="_blank">第 4 節</a> 方法下拉選單應有五個選項：A₀ tfidf-stem、A tfidf、C w2v-avg、B w2v-tfidf、D hybrid。</li>
+    <li>選 <b>B</b> 查 <code>petroleum production and output</code>：摘要列「3,299 of 3,299 scored」，查詢條顯示 query word weights 與 idf 一致。</li>
+    <li>查一個全 OOV 的字串（例如 <code>zyxwv</code>）：出現「no query word is in the embedding vocabulary → empty ranking」。</li>
+    <li>第 2 節模型表的 coverage 欄出現 46.0% / 93.0%（第一次使用後）。</li>
+  </ol>
+  <label class="check"><input type="checkbox" data-k="r6"><span>我已確認四種文件表示都存在、使用同一組詞，B 的權重確實來自 TF-IDF，OOV 有被處理與揭露。</span></label>
+</div>
+
+<!-- 7 -->
+<div class="card" id="r7">
+  <div class="req"><h2>7. 建立可輸入查詢並依相關程度排序的新聞檢索系統</h2><p class="quote">學習目標 5。</p></div>
+  <div class="ce">
+    <div><b class="lab">因</b>第 4 節：查詢 → 前處理 → 依方法建向量 → 與每篇 test 新聞算 cosine → 排序 → 前 k 名；每筆列出 TOPICS、rel 等級、查詢詞是否在文件中、以及每個查詢詞在該文件中最相近的詞。</div>
+    <div><b class="lab">果</b>分數由高到低單調遞減；B 方法下可能出現「SEMANTIC MATCH ONLY」的結果（文件不含任何查詢詞卻排進前 10），而 A 方法下絕不會出現——這是兩種表示法最直接的可觀察差異。每筆結果的「nearest words in this document」解釋了為什麼配到（petroleum → oil 0.77）。</div>
+  </div>
+  <ol class="steps">
+    <li><a class="deep" href="/#emb-s4" target="_blank">第 4 節</a>：方法 B、查詢 <code>petroleum production and output</code>，k = 10。確認 cos 分數遞減；找出帶「semantic match only」的結果（API 庫存週報），展開 text 看它確實不含 petroleum / production / output。</li>
+    <li>切到方法 A：每筆結果至少有一個查詢詞是綠色（在文件中）。</li>
+    <li>輸入自己的查詢（例如 <code>bank lowers prime rate</code>），確認系統能即時回應（右上角 time ms）。</li>
+  </ol>
+  <label class="check"><input type="checkbox" data-k="r7"><span>我已確認檢索系統可輸入任意查詢、依 cosine 排序，並能解釋每筆結果為何被配到。</span></label>
+</div>
+
+<!-- 8 -->
+<div class="card" id="r8">
+  <div class="req"><h2>8. 使用 Precision@10、MRR 或 nDCG 比較檢索效果</h2><p class="quote">學習目標 6。</p></div>
+  <div class="ce">
+    <div><b class="lab">因</b><code>ir/evaluation.py</code>（Project #3）對 20 個查詢計算 P@5、P@10、R@10、MRR、MAP、nDCG@10、nDCG@20；第 6 節表格可勾選方法與模型，並依查詢種類、主題、逐題拆解。</div>
+    <div><b class="lab">果</b>(a) 指標彼此有邏輯關係：P@10 ≤ 1、MRR ≥ P@10 通常成立（第一名容易命中）、R@10 極低（earn 有 1,087 篇相關，前 10 名最多 1%）；(b) MAP 對 TF-IDF 特別低（0.34 vs 0.64）是因為 TF-IDF 沒檢回的相關文件算 0——所以頁面明說主要指標是 P@10 / MRR / nDCG@10。<span class="auto" id="a-eval">自動核對</span></div>
+  </div>
+  <ol class="steps">
+    <li><a class="deep" href="/#emb-s6" target="_blank">第 6 節</a> 按 Evaluate（預設勾選全部方法 + sg-d100 與 cbow-d100）：表格最佳值粗體。</li>
+    <li>檢查 R@10 一欄都在 0.03 左右、MAP 一欄 TF-IDF 明顯低；讀表格下方的說明理解原因。</li>
+    <li>切換 Measure 下拉，查看「by query kind」「by topic」「per query」三張表與 α 掃描圖。</li>
+  </ol>
+  <label class="check"><input type="checkbox" data-k="r8"><span>我已確認三個指定指標都有計算，且理解 MAP / R@10 數字低的原因。</span></label>
+</div>
+
+<!-- 9 -->
+<div class="card" id="r9">
+  <div class="req"><h2>9. 核心比較：方法 A TF-IDF vs 方法 B TF-IDF 加權詞向量</h2><p class="quote">老師：「這個比較能回答：保留 TF-IDF 對重要詞的辨識力，同時引入上下文表示，是否能改善文件檢索？若沒有改善，也是有價值的發現。」</p></div>
+  <div class="ce">
+    <div><b class="lab">因</b>20 個查詢刻意分成四種用字（主題詞 / 路透慣用詞 / 同義改寫 / 情境描述），讓「查詢用字離文件詞彙多遠」成為可控變因。</div>
+    <div><b class="lab">果</b>若詞向量的價值在於語意匹配，則 B 的優勢應<b>隨用字距離增加而放大</b>，在主題詞查詢上則與 A 持平。實測（skip-gram d100）：主題詞 0.92 vs 0.92；慣用詞 0.92 → 0.94；同義改寫 0.64 → 0.80；情境描述 0.44 → 0.80。整體 P@10 0.730 → 0.865、MRR 0.824 → 0.942、nDCG@10 0.605 → 0.735；逐題 B 勝 9、A 勝 5、平手 6。<span class="auto" id="a-ab">自動核對</span></div>
+  </div>
+  <ol class="steps">
+    <li><a class="deep" href="/#emb-s6" target="_blank">第 6 節</a>「P@10 by query kind」表：沿 A tfidf 那一列由左往右讀，數字遞減；B 那一列幾乎持平。</li>
+    <li><a class="deep" href="/#emb-s5" target="_blank">第 5 節</a> 按「A vs B（核心）」預設實驗，查詢 <code>petroleum production and output</code>：A 的 P@10 0.20（前 10 名多是工業產出 ipi、併購）、B 0.80；overlap@k 只有 0.2。</li>
+    <li>反例也要看：查 <code>cereal crop production forecast</code> 或 <code>import tariffs and export restrictions</code>，A 反而較好（cereal / tariff 是稀有詞、向量不穩）。</li>
+    <li><a class="deep" href="/#emb-s7" target="_blank">第 7 節 RQ3</a> 以目前數據寫出 A vs B 的結論，含「不能推論詞向量一定較好」。</li>
+  </ol>
+  <label class="check"><input type="checkbox" data-k="r9"><span>我已確認 A vs B 的差異與「查詢用字距離」的因果一致，並看過 B 不如 A 的反例。</span></label>
+</div>
+
+<!-- 10 -->
+<div class="card" id="r10">
+  <div class="req"><h2>10. 不預設 Skip-Gram 優於 CBOW；參數影響</h2><p class="quote">老師：「不必預設 Skip-Gram 一定優於 CBOW。兩者的效果受資料量、詞頻、參數設定與訓練方式影響。」</p></div>
+  <div class="ce">
+    <div><b class="lab">因</b>六個模型（sg / cbow × d50 / d100、sg 視窗 2、cbow 10 epochs）在同一份 train 訓練、同一組查詢評估；第 6 節可任意勾選模型並列。</div>
+    <div><b class="lab">果</b>若架構是唯一因素，所有 sg 應一致優於所有 cbow，且訓練越久越好。實測不是：sg d100 B 方法 P@10 0.865 vs cbow 0.790，但 cbow 10 epochs（0.770）比 5 epochs 更差、sg 視窗 2 掉到 0.800、sg d50（0.885）不輸 d100——所以差距受參數左右，結論只能說「在此語料與參數下 skip-gram 較好」。詞層級 Top-5 兩架構只重疊 1–3 個，但文件層級差距小得多（文件向量把個別鄰居差異平均掉了）。</div>
+  </div>
+  <ol class="steps">
+    <li><a class="deep" href="/#emb-s6" target="_blank">第 6 節</a> 勾選全部六個模型 → Evaluate，看 B 方法六列的 P@10 排序是否如上。</li>
+    <li>第 3 節每個詞卡片底部的「neighbours shared by all 2 models: n / 5」：多數是 1–3。</li>
+    <li><a class="deep" href="/#emb-s7" target="_blank">第 7 節 RQ4</a> 由勾選的模型即時產生逐題勝負（sg 勝 / CBOW 勝 / 平手）。</li>
+  </ol>
+  <label class="check"><input type="checkbox" data-k="r10"><span>我已確認 CBOW 與 skip-gram 的比較有多組參數對照，結論沒有預設任一方必勝。</span></label>
+</div>
+
+<!-- 11 -->
+<div class="card" id="r11">
+  <div class="req"><h2>11. 分析 TF-IDF 與 Word Embedding 在詞彙匹配、語意相似度、文件排序上的差異（word-level 與 document-level 分開）</h2><p class="quote">學習目標 7；老師：「不要只比較詞向量相似度……只有 document-level 才直接回答 IR 的問題。」</p></div>
+  <div class="ce">
+    <div><b class="lab">因</b>分頁刻意把 word-level（第 3 節）與 document-level（第 4–6 節）分開，第 7 節 RQ1–RQ5 由即時數據生成，第 5 節提供「詞彙重疊」與「無查詢詞」兩個欄位量化語意匹配。</div>
+    <div><b class="lab">果</b>詞彙匹配：A 的前 10 名詞彙重疊必定 &gt; 0、「無查詢詞」永遠 0；語意匹配：B 的「無查詢詞」可 &gt; 0（c03 有 2 篇），這些文件若相關就是收益、不相關就是誤配（鋅、鋁產量）；文件排序：overlap@k 與 Kendall τ 顯示 A、B 的前 10 名重疊常不到一半。加權的因果（C vs B）：不加權時 said、mln 把文件向量拉向同一方向 → MRR 下降（0.912 vs 0.942；CBOW 0.762 vs 0.870）。</div>
+  </div>
+  <ol class="steps">
+    <li><a class="deep" href="/#emb-s5" target="_blank">第 5 節</a> 按「C vs B（加權）」與「A / B / D（融合）」：看詞彙重疊、無查詢詞、overlap@k 三欄。</li>
+    <li><a class="deep" href="/#emb-s7" target="_blank">第 7 節</a>：RQ1（詞層級）、RQ2（詞彙 vs 語意）、RQ3（A vs B）、RQ4（架構）、RQ5（加權與融合、限制）五段都由目前數據填入，改變第 6 節的勾選後文字會更新。</li>
+    <li>α 掃描：D 在 α = 0.2 最佳（nDCG@10 0.757），預設 0.5 反而比純 B 差 → 融合權重不能假設。</li>
+  </ol>
+  <label class="check"><input type="checkbox" data-k="r11"><span>我已確認兩個層次分開分析、三個面向（詞彙匹配、語意相似、排序）各有可觀察的數字，且結論附帶限制。</span></label>
+</div>
+
+<!-- 12 -->
+<div class="card" id="r12">
+  <div class="req"><h2>12. 交付物與可重現性</h2></div>
+  <table>
+    <tr><th>項目</th><th>位置</th><th>怎麼確認</th></tr>
+    <tr><td>書面報告（任務一～五、RQ1–RQ5）</td><td><code>REPORT_embedding.md</code></td><td>每節附 CLI 指令；數字與本頁自動核對結果一致</td></tr>
+    <tr><td>A4 一頁報告 + 附錄</td><td><code>docs/project4-embedding-report.html / .pdf</code></td><td>第 1 頁四節 + 附錄三節（20 題逐題、六模型、詞對 cosine）</td></tr>
+    <tr><td>分頁截圖</td><td><code>docs/screenshots/project4-emb-1…4.png</code></td><td>對應第 1–7 節</td></tr>
+    <tr><td>圖表</td><td><code>report/emb_*.svg</code></td><td><code>python3 cli.py reuters svg report/</code> 重新產生</td></tr>
+    <tr><td>單元測試</td><td><code>tests/test_project4.py</code>（19 個）</td><td><code>python3 -m unittest tests.test_project4 -v</code></td></tr>
+    <tr><td>資料與模型</td><td><code>data/reuters/</code>（jsonl、queries_reuters.json、w2v/*.json）</td><td>第 2 節模型表、第 6 節查詢表檔名</td></tr>
+    <tr><td>純 Python 標準函式庫</td><td>所有 <code>ir/*.py</code></td><td><code>grep -rL "numpy\|gensim\|sklearn" ir/</code> 應列出全部檔案</td></tr>
+  </table>
+  <label class="check"><input type="checkbox" data-k="r12"><span>我已確認交付物齊全，且報告中的數字能用 CLI 重現。</span></label>
+  <div class="note"><b>兩個由作者決定的設計選擇（報告已說明，請確認您同意）：</b>(1) 詞向量只用 train 切分訓練，test 的 OOV 詞型佔 54%（詞元 7%）；(2) 20 個查詢（每主題 4 題）由助理撰寫，差距小於 0.05 不應視為顯著。</div>
+</div>
+
+<div class="card" id="live">
+  <h2>自動核對的即時數據</h2>
+  <div id="live-out" class="muted">呼叫 /api/reuters/info、/api/reuters/queries、/api/reuters/eval 中…</div>
+</div>
+
+</main>
+<script>
+(() => {
+  const $ = s => document.querySelector(s), $$ = s => Array.from(document.querySelectorAll(s));
+  const KEY = 'p4guide';
+  const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+  const boxes = $$('input[type=checkbox][data-k]');
+  const update = () => { const n = boxes.filter(b => b.checked).length; $('#prog').textContent = `${n} / ${boxes.length}`; $('#bar').style.width = (n / boxes.length * 100) + '%'; };
+  boxes.forEach(b => { b.checked = !!saved[b.dataset.k]; b.addEventListener('change', () => { saved[b.dataset.k] = b.checked; localStorage.setItem(KEY, JSON.stringify(saved)); update(); }); });
+  $('#reset').addEventListener('click', () => { boxes.forEach(b => { b.checked = false; saved[b.dataset.k] = false; }); localStorage.setItem(KEY, JSON.stringify(saved)); update(); });
+  update();
+
+  const mark = (id, ok, text) => { const el = $('#' + id); if (!el) return; el.className = 'auto ' + (ok === true ? 'ok' : ok === false ? 'bad' : 'warn'); el.textContent = text; };
+  const f = (v, d = 3) => (v == null ? '–' : Number(v).toFixed(d));
+  const api = async u => { const r = await fetch(u); const j = await r.json(); if (j.error) throw new Error(j.error); return j; };
+  (async () => {
+    const results = [];
+    try {
+      const info = await api('/api/reuters/info');
+      const sp = info.dataset.splits;
+      const okSplit = sp.train === 9603 && sp.test === 3299;
+      mark('a-split', okSplit, okSplit ? `自動核對 ✓ train ${sp.train.toLocaleString()} / test ${sp.test.toLocaleString()}` : `自動核對 ✗ train ${sp.train} / test ${sp.test}`);
+      results.push(okSplit);
+      const sg = info.models.filter(m => m.model === 'skip-gram'), cb = info.models.filter(m => m.model === 'cbow');
+      const vocabs = new Set(info.models.map(m => m.vocabulary));
+      const okModels = sg.length >= 1 && cb.length >= 1 && vocabs.size === 1;
+      mark('a-models', okModels, okModels ? `自動核對 ✓ ${sg.length} skip-gram + ${cb.length} CBOW，詞彙 ${[...vocabs][0].toLocaleString()}` : `自動核對 ✗ sg ${sg.length} / cbow ${cb.length} / 詞彙種類 ${vocabs.size}`);
+      results.push(okModels);
+      const need = ['tfidf', 'w2v-avg', 'w2v-tfidf', 'hybrid'];
+      const have = info.methods.map(m => m.method);
+      const okM = need.every(m => have.includes(m));
+      mark('a-methods', okM, okM ? `自動核對 ✓ 方法 ${have.join(' · ')}；覆蓋率 ${info.coverage ? (info.coverage.types_share * 100).toFixed(1) + '% 詞型 / ' + (info.coverage.tokens_share * 100).toFixed(1) + '% 詞元' : '–'}` : `自動核對 ✗ 缺 ${need.filter(m => !have.includes(m)).join(', ')}`);
+      results.push(okM);
+
+      const q = await api('/api/reuters/queries');
+      const topics = new Set(q.queries.map(x => x.topic));
+      const byTopic = {};
+      q.queries.forEach(x => { (byTopic[x.topic] = byTopic[x.topic] || new Set()).add(x.relevant); });
+      const okQ = q.queries.length === 20 && [...topics].every(t => ['earn', 'acq', 'crude', 'grain', 'trade'].includes(t)) && Object.values(byTopic).every(s => s.size === 1);
+      mark('a-queries', okQ, okQ ? `自動核對 ✓ 20 題、主題 ${[...topics].join('/')}、同主題 relevant 一致` : `自動核對 ✗ ${q.queries.length} 題、主題 ${[...topics].join('/')}`);
+      results.push(okQ);
+
+      const names = info.models.map(m => m.name);
+      const pick = (arch, dim) => info.models.find(m => m.model === arch && m.dim === dim && m.window === 5 && m.epochs === 5) || info.models.find(m => m.model === arch);
+      const sgM = pick('skip-gram', 100), cbM = pick('cbow', 100);
+      const models = [sgM, cbM].filter(Boolean).map(m => m.name).join(',');
+      const ev = await api('/api/reuters/eval?' + new URLSearchParams({ methods: 'tfidf,w2v-avg,w2v-tfidf,hybrid', models, k: 10, alpha: 0.5 }));
+      const A = ev.runs.find(r => r.method === 'tfidf');
+      const B = ev.runs.find(r => r.method === 'w2v-tfidf' && sgM && r.model === sgM.name) || ev.runs.find(r => r.method === 'w2v-tfidf');
+      const okEv = ev.runs.every(r => ['P@10', 'MRR', 'nDCG@10'].every(k => typeof r.mean[k] === 'number' && r.mean[k] >= 0 && r.mean[k] <= 1));
+      mark('a-eval', okEv, okEv ? `自動核對 ✓ ${ev.runs.length} runs × P@10 / MRR / nDCG@10 皆在 0–1` : '自動核對 ✗ 指標缺失');
+      results.push(okEv);
+      if (A && B) {
+        const kinds = ['topic', 'domain', 'synonym', 'semantic'];
+        const aK = kinds.map(k => A.by_kind[k]['P@10']), bK = kinds.map(k => B.by_kind[k]['P@10']);
+        const gain = kinds.map((k, i) => bK[i] - aK[i]);
+        const okAB = gain[2] > 0 && gain[3] > 0 && gain[3] >= gain[0];   // the gain grows with the distance of the wording
+        mark('a-ab', okAB, okAB ? `自動核對 ✓ B − A 的 P@10 增益：主題詞 ${f(gain[0], 2)} · 慣用詞 ${f(gain[1], 2)} · 同義 ${f(gain[2], 2)} · 情境 ${f(gain[3], 2)}` : `自動核對 ⚠ 增益模式與預期不同：${gain.map(g => f(g, 2)).join(' / ')}`);
+        results.push(okAB);
+        const wins = (x, y) => x.per_query.filter((p, i) => p['P@10'] > y.per_query[i]['P@10']).length;
+        $('#live-out').innerHTML = `<table><tr><th>run</th><th class="n">P@10</th><th class="n">MRR</th><th class="n">nDCG@10</th><th class="n">MAP</th>${kinds.map(k => `<th class="n">${k}</th>`).join('')}</tr>
+          ${ev.runs.map(r => `<tr><td>${r.letter} ${r.method}${r.model ? ' · ' + r.model : ''}</td><td class="n">${f(r.mean['P@10'])}</td><td class="n">${f(r.mean.MRR)}</td><td class="n">${f(r.mean['nDCG@10'])}</td><td class="n">${f(r.mean.MAP)}</td>${kinds.map(k => `<td class="n">${f(r.by_kind[k]['P@10'], 2)}</td>`).join('')}</tr>`).join('')}</table>
+          <p>右四欄 = P@10 依查詢用字。逐題 P@10：B（${B.model}）勝 ${wins(B, A)} 題、A 勝 ${wins(A, B)} 題、平手 ${20 - wins(A, B) - wins(B, A)} 題。模型：${names.join(', ')}。</p>`;
+      }
+    } catch (e) {
+      $('#live-out').innerHTML = `<b style="color:var(--bad)">無法連到 API：${e.message}</b> — 請確認 <code>python3 app.py</code> 正在執行，且本頁是從同一個伺服器開啟（/static/project4-guide.html）。`;
+      $$('.auto').forEach(el => { if (el.textContent === '自動核對') { el.className = 'auto bad'; el.textContent = '自動核對 ✗ 無法連線'; } });
+    }
+    const ok = results.filter(Boolean).length;
+    $('#autosum').textContent = results.length ? `${ok} / ${results.length} 項通過` : '無法執行';
+  })();
+})();
+</script>
+</body>
+</html>

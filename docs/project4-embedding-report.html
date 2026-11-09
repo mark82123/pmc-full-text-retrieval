@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project 4 Word Embedding Retrieval</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--paper:#fff;--desk:#e9ebef;--ink:#1d2333;--muted:#5f6778;--line:#d9dde6;--rule:#1d2333;--accent:#1f5fbf;--soft:#eef3fb;--code:#f1f3f7;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;--sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace,"Noto Sans TC"}
+*{box-sizing:border-box}
+body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--sans);font-size:7.65pt;line-height:1.22;padding:24px 16px}
+.page{background:var(--paper);width:210mm;min-height:297mm;max-width:100%;margin:0 auto;box-shadow:0 2px 12px rgba(20,30,60,.12);display:flex;flex-direction:column}
+.inner{padding:5mm 10mm 0;flex:1;min-width:0}
+footer{display:flex;justify-content:space-between;gap:12px;padding:0 10mm 3mm;font-size:7.2pt;color:var(--muted);font-family:var(--mono);line-height:1.3}
+h1{font-family:var(--serif);font-size:15pt;line-height:1.25;margin:2px 0 3px}
+h2{font-family:var(--serif);font-size:10.2pt;margin:0 0 3px;padding-bottom:1px;border-bottom:1.5px solid var(--rule)}
+h2 span{font-family:var(--mono);font-weight:500;color:var(--accent);font-size:8.6pt;margin-right:6px}
+h3{font-family:var(--serif);font-size:8.8pt;margin:3px 0 2px}
+p{margin:0 0 2px}
+.eyebrow{font-family:var(--mono);font-size:7.6pt;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
+.meta{font-size:7.9pt;color:var(--muted);margin:0 0 4px;line-height:1.35}
+.facts{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:4px 0 6px}
+.facts div{background:var(--soft);border-radius:4px;padding:1px 7px}
+.facts b{display:block;font-family:var(--mono);font-size:9.4pt;font-weight:500;color:var(--accent);line-height:1.2}
+.facts small{font-size:6.8pt;color:var(--muted);line-height:1.2;display:block}
+section{margin-bottom:4px;min-width:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 6mm;align-items:start}.two>*{min-width:0}
+.two.w{grid-template-columns:1.25fr 1fr}.two.w3{grid-template-columns:1.6fr 1fr}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 4mm;align-items:start}.three>*{min-width:0}
+code{font-family:var(--mono);font-size:.92em;background:var(--code);padding:0 2px;border-radius:2px}
+table.t{border-collapse:collapse;width:100%;font-size:7.0pt;margin:2px 0 3px;font-variant-numeric:tabular-nums;line-height:1.22}
+table.t th{text-align:left;background:var(--soft);padding:1.5px 4px;border-bottom:1px solid var(--line);font-weight:600;vertical-align:bottom}
+table.t td{padding:1.5px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+table.num td:not(:first-child),table.num th:not(:first-child){text-align:right;white-space:nowrap}
+table.t td.k{font-weight:600;white-space:nowrap}table.t td b{color:var(--accent)}
+table.t tr.sel td{background:var(--soft)}
+table.nb td{font-size:6.75pt;line-height:1.2}table.nb td.k{font-family:var(--mono);font-weight:500}
+ul{padding-left:12px;margin:0 0 2px}li{margin-bottom:1px}
+.verdict{background:var(--soft);border-left:3px solid var(--accent);padding:2px 6px;margin:2px 0 2px;font-size:7.4pt}
+.verdict b{color:var(--accent)}ul.verdict{padding-left:1.1em;margin:2px 0 2px}ul.verdict li{margin:0}
+figure{margin:0;min-width:0}figure svg{width:100%;height:auto;display:block;border:1px solid var(--line)}figcaption{font-size:7.2pt;color:var(--muted);line-height:1.3;margin-top:1px}
+.muted{color:var(--muted)}
+.tc{display:inline-block;font-size:6.8pt;font-weight:600;padding:0 5px;border-radius:999px;border:1px solid var(--line);font-family:var(--mono)}
+.tc.earn{background:#dcfce7}.tc.acq{background:#dbeafe}.tc.crude{background:#fee2e2}.tc.grain{background:#fef3c7}.tc.trade{background:#ede9fe}
+.appendix{margin-top:60px}.appendix .inner{padding:8mm 10mm 4mm}.appendix h2{margin-top:6px}.appendix table.t{font-size:7.3pt}
+@media (max-width:640px){.two,.facts{grid-template-columns:1fr 1fr}.page{min-height:0}.inner{padding:6mm 5mm}}
+@media print{body{background:none;padding:0}.page{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:0;overflow:hidden}.appendix{page-break-before:always;margin-top:0}@page{size:A4 portrait;margin:0}}
+</style>
+</head>
+<body>
+<section class="page"><div class="inner">
+
+<p class="eyebrow">AI Information Retrieval（人工智慧資訊檢索）· Project #4 Reuters-21578：從 TF-IDF 到 Word Embedding</p>
+<p class="meta">胡元楨（P77141105）· 繳交 2026-11-10 · 純 Python 標準函式庫；<code>ir/reuters.py</code>、<code>ir/embedding.py</code>、<code>ir/word2vec.py</code>、<code>ir/tfidf.py</code>、<code>ir/evaluation.py</code>；網頁分頁 <code>/#emb</code>；CLI <code>cli.py reuters …</code>；詳文 <code>REPORT_embedding.md</code></p>
+<div class="facts">
+<div><b>9,603 / 3,299</b><small>ModApte train（word2vec 訓練）/ test（檢索集合）；相關性 = TOPICS 標籤</small></div>
+<div><b>9,996</b><small>詞向量詞彙（min_count 5）；覆蓋 test 詞元 93%、詞型 46%；6 個模型（sg / CBOW × d50 / d100…）</small></div>
+<div><b>A · B · C · D</b><small>TF-IDF · TF-IDF 加權詞向量 · 詞向量平均 · 融合；同一組詞、同一 cosine 排序</small></div>
+<div><b>20</b><small>查詢 = 5 主題 × 4 種用字（主題詞／路透慣用詞／同義改寫／情境描述）</small></div>
+<div><b>0.730 → 0.865</b><small>P@10：A → B（skip-gram d100）；MRR 0.824 → 0.942；nDCG@10 0.605 → 0.735</small></div>
+<div><b>0.64 → 0.80</b><small>同義改寫查詢的 P@10；主題詞查詢 0.92 = 0.92：收益全來自用字不同的查詢</small></div>
+</div>
+
+<section>
+<h2><span>1</span>資料、模型與四種文件表示</h2>
+<div class="two w">
+<div>
+<p>Reuters-21578（22 個 SGML 檔、21,578 則 1987 年新聞）自行解析：實體解碼、移除控制字元與 "Reuter" 署名、硬換行段落接回句子。<b>ModApte</b> = <code>TOPICS="YES"</code> 且 LEWISSPLIT TRAIN／TEST。train 9,603 篇（68K 句、763K 詞元）訓練 word2vec（negative sampling、dynamic window；skip-gram d100 5 epochs 21 分鐘、CBOW 6.7 分鐘）；test 3,299 篇是檢索集合（平均 74.5 詞、詞彙 17,295）。</p>
+<p>所有方法用<b>同一組詞</b>（小寫、去停用詞、不 stemming）與 cosine：<b>A</b> TF-IDF <code>ltc</code>；<b>C</b> 詞向量平均 Σ tf·v；<b>B</b> TF-IDF 加權平均 Σ (1+ln tf)·idf·v；<b>D</b> α·cos<sub>A</sub> + (1−α)·cos<sub>B</sub>；A₀ = Project #3 的 Porter-stemmed TF-IDF（對照）。</p>
+<p>相關性：查詢針對一個主題，test 文件帶該主題即相關（grade 2 = 唯一主題）。TOPICS 由路透編目員指派，與檢索方法無關。</p>
+</div>
+<div>
+<table class="t num"><tr><th>topic</th><th>train</th><th>test</th><th>test 唯一主題</th><th>查詢例（同義改寫類）</th></tr>
+<tr><td><span class="tc earn">earn</span> 獲利</td><td>2,877</td><td>1,087</td><td>1,083</td><td style="text-align:left">corporate financial performance for the year</td></tr>
+<tr><td><span class="tc acq">acq</span> 併購</td><td>1,650</td><td>719</td><td>696</td><td style="text-align:left">merger agreement between two firms</td></tr>
+<tr><td><span class="tc crude">crude</span> 原油</td><td>389</td><td>189</td><td>121</td><td style="text-align:left"><b>petroleum</b> production and output</td></tr>
+<tr><td><span class="tc grain">grain</span> 穀物</td><td>433</td><td>149</td><td>10</td><td style="text-align:left"><b>cereal</b> crop production forecast</td></tr>
+<tr><td><span class="tc trade">trade</span> 貿易</td><td>369</td><td>117</td><td>75</td><td style="text-align:left">import tariffs and export restrictions</td></tr>
+</table>
+<p class="muted" style="font-size:7.2pt">每主題另有主題詞（crude oil prices）、路透慣用詞（OPEC barrel output quota）、情境描述（energy exploration and drilling）三個查詢；全部 20 個見附錄。</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2><span>2</span>Word-level：Top-5 最近鄰（skip-gram d100 ／ CBOW d100）</h2>
+<div class="two w">
+<div>
+<table class="t nb"><tr><th>詞</th><th>skip-gram</th><th>CBOW</th></tr>
+<tr><td class="k">oil</td><td>crude .74 · gas .69 · petroleum .64 · pipeline .62 · natural .61</td><td>crude .80 · natural .80 · fuel .76 · pipeline .76 · postings .76</td></tr>
+<tr><td class="k">petroleum</td><td>king .70 · xon .69 · esso .69 · gas .68 · inland .68</td><td>mines .92 · columbia .86 · mining .84 · pty .84 · pacific .83</td></tr>
+<tr><td class="k">opec</td><td>bpd .78 · lukman .77 · nazer .77 · arabia .77 · ceiling .76</td><td>producer .90 · colombia .86 · arabia .85 · import .85 · coffee .84</td></tr>
+<tr><td class="k">profit</td><td>loss .79 · oper .78 · pre-tax .77 · profits .75 · comalco .75</td><td>pre-tax .88 · loss .86 · profits .85 · pretax .83 · attributable .82</td></tr>
+<tr><td class="k">acquisition</td><td>transaction .77 · merger .76 · buyout .72 · acquisitions .71 · comdata .70</td><td>buyout .92 · lbo .87 · merger .87 · borg-warner .86 · leveraged .86</td></tr>
+<tr><td class="k">grain</td><td>corn .77 · wheat .77 · cotton .72 · feed .71 · soybeans .71</td><td>soybeans .93 · winter .93 · corn .92 · feed .92 · grains .92</td></tr>
+<tr><td class="k">cereal <span class="muted">(n=24)</span></td><td>grants .92 · bread .89 · spanish .89 · non-ec .89 · levies .88</td><td>availability .95 · ghana .95 · fixing .95 · featured .95 · artificially .94</td></tr>
+<tr><td class="k">trade</td><td>yeutter .64 · gatt .62 · surpluses .61 · tariffs .60 · bilateral .60</td><td>tariffs .71 · taiwan .67 · bilateral .67 · korea .67 · yeutter .66</td></tr>
+<tr><td class="k">deficit</td><td>surplus .86 · deficits .78 · widened .74 · narrowed .74 · invisibles .73</td><td>surplus .96 · balance .84 · account .83 · invisibles .82 · narrowed .82</td></tr>
+</table>
+</div>
+<div>
+<ul class="verdict">
+<li><b>合理的語意／用法關係：</b>oil–crude–gas、grain–corn–wheat、acquisition–merger–buyout、deficit–surplus；詞形變化 profit / profits、deficit / deficits 也靠近（stemming 用規則做的事）。</li>
+<li><b>情境共現（同一類新聞的固定班底）：</b>opec–lukman–nazer–ceiling（同篇 6–42、PMI 3.8–4.7）、trade–yeutter–gatt–korea、acquisition–borg-warner。<b>反義詞 profit / loss .79、rise / fall .87、buy / sell .77</b>：同句位互換，向量只知「用法相同」不知「意思相反」→ 相近 ≠ 同義。</li>
+<li><b>不符預期：</b>petroleum 的鄰居是公司名／礦業詞——語料裡它多半是 British / Pacific / Esso <i>Petroleum</i> 的一部分，含它的 test 文件只 44% 是 crude、29% 是 acq；cereal、tariff（訓練 24 / 38 次）鄰居隨機且 cosine 虛高（.88–.96），兩模型 Top-5 零重疊；CBOW 向量較平滑，cosine 普遍偏高、無關鄰居較多（opec–coffee 同篇 0）。</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section>
+<h2><span>3</span>Document-level：20 個主題查詢的檢索評估</h2>
+<div class="two w3">
+<div>
+<table class="t num"><tr><th>run（test 3,299 篇）</th><th>P@10</th><th>MRR</th><th>nDCG@10</th><th>MAP</th><th>主題詞</th><th>慣用詞</th><th>同義改寫</th><th>情境描述</th></tr>
+<tr><td class="k">A₀ TF-IDF stems</td><td>.745</td><td>.824</td><td>.623</td><td>.369</td><td>.90</td><td>.88</td><td>.64</td><td>.56</td></tr>
+<tr><td class="k">A TF-IDF</td><td>.730</td><td>.824</td><td>.605</td><td>.341</td><td><b>.92</b></td><td>.92</td><td>.64</td><td>.44</td></tr>
+<tr><td class="k">C 平均 · CBOW</td><td>.755</td><td>.762</td><td>.630</td><td>.610</td><td>.90</td><td>.86</td><td>.56</td><td>.70</td></tr>
+<tr><td class="k">C 平均 · skip-gram</td><td>.830</td><td>.912</td><td>.714</td><td>.638</td><td>.92</td><td>.88</td><td>.76</td><td>.76</td></tr>
+<tr><td class="k">B 加權 · CBOW</td><td>.790</td><td>.870</td><td>.670</td><td>.605</td><td>.90</td><td>.86</td><td>.66</td><td>.74</td></tr>
+<tr class="sel"><td class="k">B 加權 · skip-gram</td><td><b>.865</b></td><td><b>.942</b></td><td><b>.735</b></td><td><b>.644</b></td><td>.92</td><td><b>.94</b></td><td><b>.80</b></td><td><b>.80</b></td></tr>
+<tr><td class="k">D 融合 α=.5 · skip-gram</td><td>.815</td><td>.942</td><td>.705</td><td>.640</td><td>.96</td><td>.90</td><td>.74</td><td>.66</td></tr>
+<tr><td class="k">D 融合 α=.2 · skip-gram</td><td>.885</td><td>.963</td><td>.757</td><td>.649</td><td>1.00</td><td>.92</td><td>.80</td><td>.82</td></tr>
+</table>
+<p class="muted" style="font-size:7.2pt">右四欄 = P@10 依查詢用字分類。MAP 的大差距反映 TF-IDF 的召回上限（只對含查詢詞的文件給分，c03 只檢回 284 篇），不是前十名品質；主要指標是 P@10 / MRR / nDCG@10。逐題 P@10：B 勝 9、A 勝 5（c01 g01 g03 g04 t03）、平手 6。</p>
+</div>
+<div>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="Helvetica, Arial, sans-serif"><rect width="100%" height="100%" fill="#ffffff"/><text x="56" y="22" font-size="15" font-weight="bold" fill="#1d2333">P@10 by query kind: how far the query wording is from the documents' vocabulary</text><line x1="56" x2="744" y1="260.0" y2="260.0" stroke="#e5e7ef"/><text x="48" y="264.0" font-size="11" text-anchor="end" fill="#6b7280">0.0</text><line x1="56" x2="744" y1="221.7" y2="221.7" stroke="#e5e7ef"/><text x="48" y="225.7" font-size="11" text-anchor="end" fill="#6b7280">0.2</text><line x1="56" x2="744" y1="183.5" y2="183.5" stroke="#e5e7ef"/><text x="48" y="187.5" font-size="11" text-anchor="end" fill="#6b7280">0.4</text><line x1="56" x2="744" y1="145.2" y2="145.2" stroke="#e5e7ef"/><text x="48" y="149.2" font-size="11" text-anchor="end" fill="#6b7280">0.6</text><line x1="56" x2="744" y1="107.0" y2="107.0" stroke="#e5e7ef"/><text x="48" y="111.0" font-size="11" text-anchor="end" fill="#6b7280">0.8</text><line x1="56" x2="744" y1="68.7" y2="68.7" stroke="#e5e7ef"/><text x="48" y="72.7" font-size="11" text-anchor="end" fill="#6b7280">1.0</text><rect x="60.0" y="87.8" width="30.8" height="172.2" fill="#2a78d6"/><rect x="92.8" y="84.0" width="30.8" height="176.0" fill="#eb6834"/><rect x="125.6" y="84.0" width="30.8" height="176.0" fill="#1baf7a"/><rect x="158.4" y="84.0" width="30.8" height="176.0" fill="#eda100"/><rect x="191.2" y="76.3" width="30.8" height="183.7" fill="#2a78d6"/><text x="142.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">topic word</text><rect x="232.0" y="91.7" width="30.8" height="168.3" fill="#2a78d6"/><rect x="264.8" y="84.0" width="30.8" height="176.0" fill="#eb6834"/><rect x="297.6" y="91.7" width="30.8" height="168.3" fill="#1baf7a"/><rect x="330.4" y="80.2" width="30.8" height="179.8" fill="#eda100"/><rect x="363.2" y="87.8" width="30.8" height="172.2" fill="#2a78d6"/><text x="314.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">Reuters vocabulary</text><rect x="404.0" y="137.6" width="30.8" height="122.4" fill="#2a78d6"/><rect x="436.8" y="137.6" width="30.8" height="122.4" fill="#eb6834"/><rect x="469.6" y="114.6" width="30.8" height="145.4" fill="#1baf7a"/><rect x="502.4" y="107.0" width="30.8" height="153.0" fill="#eda100"/><rect x="535.2" y="118.4" width="30.8" height="141.6" fill="#2a78d6"/><text x="486.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">synonym / paraphrase</text><rect x="576.0" y="152.9" width="30.8" height="107.1" fill="#2a78d6"/><rect x="608.8" y="175.8" width="30.8" height="84.2" fill="#eb6834"/><rect x="641.6" y="114.6" width="30.8" height="145.4" fill="#1baf7a"/><rect x="674.4" y="107.0" width="30.8" height="153.0" fill="#eda100"/><rect x="707.2" y="133.7" width="30.8" height="126.3" fill="#2a78d6"/><text x="658.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">semantic description</text><text transform="translate(16 150.0) rotate(-90)" font-size="12" text-anchor="middle" fill="#6b7280">P@10</text><rect x="56" y="308" width="14" height="14" fill="#2a78d6"/><text x="76" y="319" font-size="12" fill="#1d2333">A₀ tfidf-stem</text><rect x="175.8" y="308" width="14" height="14" fill="#eb6834"/><text x="195.8" y="319" font-size="12" fill="#1d2333">A tfidf</text><rect x="256.0" y="308" width="14" height="14" fill="#1baf7a"/><text x="276.0" y="319" font-size="12" fill="#1d2333">C w2v-avg</text><rect x="349.4" y="308" width="14" height="14" fill="#eda100"/><text x="369.4" y="319" font-size="12" fill="#1d2333">B w2v-tfidf</text><rect x="456.0" y="308" width="14" height="14" fill="#2a78d6"/><text x="476.0" y="319" font-size="12" fill="#1d2333">D hybrid</text></svg><figcaption>P@10 依查詢用字：用字離新聞詞彙越遠（往右），TF-IDF 掉得越多；B（橙）維持 0.80。</figcaption></figure>
+</div>
+</div>
+</section>
+
+<section>
+<h2><span>4</span>研究問題的結論</h2>
+<ul class="verdict">
+<li><b>RQ1 詞層級。</b>接近有三種來源——同語意場／同句型、同一類新聞的共現、稀有詞雜訊——要用同篇數、PMI 與主題分布才分得開；反義詞 cosine 高達 .77–.92，向量相近不代表同義。</li>
+<li><b>RQ2 詞彙 vs 語意匹配。</b>主題詞與慣用詞查詢 TF-IDF 與 B 同為 .92；同義改寫 .64 → .80、情境描述 .44 → .80。stemming（A₀）是 TF-IDF 自己的有限語意匹配（.44 → .56）。語意匹配的代價：情境相近但主題不同的誤配（鋅、鋁產量）、稀有查詢詞的不穩定向量（t03 .9 → .7）。</li>
+<li><b>RQ3 核心 A vs B。</b>skip-gram：P@10 +18%、MRR +14%、nDCG@10 +21%，收益全在用字不同的查詢；CBOW 收益減半。這不是「詞向量一定較好」：C · CBOW 的 MRR（.762）低於 TF-IDF（.824）。</li>
+<li><b>RQ4 CBOW vs skip-gram。</b>5 epochs 下 skip-gram 較好（逐題 7 : 2 : 11）；但 CBOW 10 epochs 反而退步（loss 1.95 → 1.65，P@10 .790 → .770）、skip-gram 視窗 2 退到 .800、維度 50 / 100 幾乎無差（sg-d50 .885）。763K 詞元的小語料上差距受參數與 seed 左右，不應預設 skip-gram 必勝；詞層級 Top-5 只重疊 1–3 個，但文件層級差距小得多——文件向量把個別鄰居的差異平均掉了。</li>
+<li><b>RQ5 加權與融合。</b>不加權平均 C 讓 said、mln、dlrs 把所有文件拉向同一方向（MRR .912 vs B .942；CBOW .762 vs .870）；融合在 α = .2 最佳（nDCG@10 .757），預設 α = .5 比純 B 差。限制：加權平均不保留詞序與否定；相關性只來自 TOPICS；每主題 4 題、共 20 題，差距 &lt; .05 不應視為顯著；結論限於小型新聞語料。</li>
+</ul>
+</section>
+
+</div>
+<footer><span>Reuters-21578, Distribution 1.0（Lewis）· ModApte · 詞向量訓練純 Python：sg d100 21 min、CBOW d100 6.7 min</span><span>python3 cli.py reuters eval · similar · compare · alpha · svg</span></footer>
+</section>
+
+<section class="page appendix"><div class="inner">
+<h2><span>A</span>附錄：20 個查詢與逐題 P@10（A TF-IDF vs B 加權 · skip-gram d100）</h2>
+<table class="t num"><tr><th>id</th><th>topic</th><th>kind</th><th style="text-align:left">query</th><th>relevant</th><th>grade 2</th><th>A P@10</th><th>B P@10</th><th>A nDCG@10</th><th>B nDCG@10</th></tr>
+<tr><td>e01</td><td><span class="tc earn">earn</span></td><td>topic</td><td style="text-align:left">quarterly net profit results</td><td>1,087</td><td>1,083</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
+<tr><td>e02</td><td><span class="tc earn">earn</span></td><td>domain</td><td style="text-align:left">company reports earnings per share</td><td>1,087</td><td>1,083</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
+<tr><td>e03</td><td><span class="tc earn">earn</span></td><td>synonym</td><td style="text-align:left">corporate financial performance for the year</td><td>1,087</td><td>1,083</td><td>0.40</td><td><b>0.80</b></td><td>0.40</td><td><b>0.84</b></td></tr>
+<tr><td>e04</td><td><span class="tc earn">earn</span></td><td>semantic</td><td style="text-align:left">income statement with revenue and sales figures</td><td>1,087</td><td>1,083</td><td>0.70</td><td><b>0.90</b></td><td>0.75</td><td><b>0.94</b></td></tr>
+<tr><td>a01</td><td><span class="tc acq">acq</span></td><td>topic</td><td style="text-align:left">acquisition of a company</td><td>719</td><td>696</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
+<tr><td>a02</td><td><span class="tc acq">acq</span></td><td>domain</td><td style="text-align:left">takeover bid for shares</td><td>719</td><td>696</td><td>0.90</td><td><b>1.00</b></td><td>0.89</td><td><b>1.00</b></td></tr>
+<tr><td>a03</td><td><span class="tc acq">acq</span></td><td>synonym</td><td style="text-align:left">merger agreement between two firms</td><td>719</td><td>696</td><td>0.90</td><td><b>1.00</b></td><td>0.94</td><td><b>1.00</b></td></tr>
+<tr><td>a04</td><td><span class="tc acq">acq</span></td><td>semantic</td><td style="text-align:left">buying a controlling stake in a business</td><td>719</td><td>696</td><td>0.50</td><td><b>1.00</b></td><td>0.43</td><td><b>1.00</b></td></tr>
+<tr><td>c01</td><td><span class="tc crude">crude</span></td><td>topic</td><td style="text-align:left">crude oil prices</td><td>189</td><td>121</td><td><b>1.00</b></td><td>0.90</td><td><b>1.00</b></td><td>0.86</td></tr>
+<tr><td>c02</td><td><span class="tc crude">crude</span></td><td>domain</td><td style="text-align:left">OPEC barrel output quota</td><td>189</td><td>121</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
+<tr><td>c03</td><td><span class="tc crude">crude</span></td><td>synonym</td><td style="text-align:left">petroleum production and output</td><td>189</td><td>121</td><td>0.20</td><td><b>0.80</b></td><td>0.14</td><td><b>0.48</b></td></tr>
+<tr><td>c04</td><td><span class="tc crude">crude</span></td><td>semantic</td><td style="text-align:left">energy exploration and drilling</td><td>189</td><td>121</td><td>0.30</td><td><b>0.90</b></td><td>0.23</td><td><b>0.45</b></td></tr>
+<tr><td>g01</td><td><span class="tc grain">grain</span></td><td>topic</td><td style="text-align:left">grain exports</td><td>149</td><td>10</td><td><b>1.00</b></td><td>0.80</td><td><b>0.56</b></td><td>0.47</td></tr>
+<tr><td>g02</td><td><span class="tc grain">grain</span></td><td>domain</td><td style="text-align:left">wheat and corn harvest</td><td>149</td><td>10</td><td>1.00</td><td>1.00</td><td>0.33</td><td><b>0.38</b></td></tr>
+<tr><td>g03</td><td><span class="tc grain">grain</span></td><td>synonym</td><td style="text-align:left">cereal crop production forecast</td><td>149</td><td>10</td><td><b>0.80</b></td><td>0.70</td><td><b>0.26</b></td><td>0.26</td></tr>
+<tr><td>g04</td><td><span class="tc grain">grain</span></td><td>semantic</td><td style="text-align:left">agriculture department crop report</td><td>149</td><td>10</td><td><b>0.50</b></td><td>0.40</td><td>0.14</td><td><b>0.17</b></td></tr>
+<tr><td>t01</td><td><span class="tc trade">trade</span></td><td>topic</td><td style="text-align:left">international trade dispute</td><td>117</td><td>75</td><td>0.60</td><td><b>0.90</b></td><td>0.52</td><td><b>0.93</b></td></tr>
+<tr><td>t02</td><td><span class="tc trade">trade</span></td><td>domain</td><td style="text-align:left">trade deficit and surplus</td><td>117</td><td>75</td><td>0.70</td><td>0.70</td><td><b>0.59</b></td><td>0.54</td></tr>
+<tr><td>t03</td><td><span class="tc trade">trade</span></td><td>synonym</td><td style="text-align:left">import tariffs and export restrictions</td><td>117</td><td>75</td><td><b>0.90</b></td><td>0.70</td><td><b>0.70</b></td><td>0.53</td></tr>
+<tr><td>t04</td><td><span class="tc trade">trade</span></td><td>semantic</td><td style="text-align:left">protectionism and talks between countries</td><td>117</td><td>75</td><td>0.20</td><td><b>0.80</b></td><td>0.21</td><td><b>0.86</b></td></tr>
+</table>
+<p class="muted" style="font-size:7.2pt">kind：topic = 主題詞、domain = 路透慣用詞、synonym = 同義／改寫、semantic = 情境描述。相關 = test 文件帶該主題；grade 2 = 該主題是文件唯一主題。</p>
+<p style="margin-top:3px"><b>c03「petroleum production and output」</b>：A 的前 10 名是 3 篇工業產出（ipi）、2 篇併購（British Petroleum 股權）、穀物、jet fuel、汽車產量，只有 2 篇 crude（P@10 .20、RR .14）；B 的前 10 名 8 篇 crude（Malaysia / Saudi / Norway oil output、API 庫存週報——其中 2 篇不含任何查詢詞，靠 petroleum→oil .77、output→bpd .75 配到），誤配是鋅、鋁產量（P@10 .80、RR 1.0）。</p>
+
+<h2><span>B</span>附錄：所有模型的評估（B 加權詞向量方法；P@10 / MRR / nDCG@10 / MAP）</h2>
+<table class="t num"><tr><th>模型</th><th>架構</th><th>dim</th><th>window</th><th>epochs</th><th>loss</th><th>訓練時間</th><th>P@10</th><th>MRR</th><th>nDCG@10</th><th>MAP</th><th>C 平均 P@10</th><th>D α=.5 P@10</th></tr>
+<tr class="sel"><td class="k">sg-d100-w5-m5-e5</td><td>skip-gram</td><td>100</td><td>5</td><td>5</td><td>2.117</td><td>21.3 min</td><td><b>.865</b></td><td><b>.942</b></td><td><b>.735</b></td><td>.644</td><td>.830</td><td>.815</td></tr>
+<tr><td class="k">sg-d50-w5-m5-e5</td><td>skip-gram</td><td>50</td><td>5</td><td>5</td><td>2.141</td><td>11.5 min</td><td>.885</td><td>.942</td><td>.725</td><td>.642</td><td>.835</td><td>.830</td></tr>
+<tr><td class="k">sg-d100-w2-m5-e5</td><td>skip-gram</td><td>100</td><td>2</td><td>5</td><td>2.054</td><td>13.3 min</td><td>.800</td><td>.840</td><td>.656</td><td>.610</td><td>.770</td><td>.795</td></tr>
+<tr class="sel"><td class="k">cbow-d100-w5-m5-e5</td><td>CBOW</td><td>100</td><td>5</td><td>5</td><td>1.951</td><td>6.7 min</td><td>.790</td><td>.870</td><td>.670</td><td>.605</td><td>.755</td><td>.810</td></tr>
+<tr><td class="k">cbow-d50-w5-m5-e5</td><td>CBOW</td><td>50</td><td>5</td><td>5</td><td>1.947</td><td>3.5 min</td><td>.800</td><td>.873</td><td>.680</td><td>.611</td><td>.740</td><td>.810</td></tr>
+<tr><td class="k">cbow-d100-w5-m5-e10</td><td>CBOW</td><td>100</td><td>5</td><td>10</td><td>1.647</td><td>13.5 min</td><td>.770</td><td>.860</td><td>.664</td><td>.634</td><td>.750</td><td>.835</td></tr>
+<tr><td class="k">A TF-IDF（無模型）</td><td colspan="6" class="muted">surface words, ltc</td><td>.730</td><td>.824</td><td>.605</td><td>.341</td><td>–</td><td>–</td></tr>
+<tr><td class="k">A₀ TF-IDF stems</td><td colspan="6" class="muted">Porter, ltc</td><td>.745</td><td>.824</td><td>.623</td><td>.369</td><td>–</td><td>–</td></tr>
+</table>
+<div class="three">
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="Helvetica, Arial, sans-serif"><rect width="100%" height="100%" fill="#ffffff"/><text x="56" y="22" font-size="15" font-weight="bold" fill="#1d2333">P@10, nDCG@10 and MRR per method (20 topic queries, 3299 test documents)</text><line x1="56" x2="744" y1="260.0" y2="260.0" stroke="#e5e7ef"/><text x="48" y="264.0" font-size="11" text-anchor="end" fill="#6b7280">0.0</text><line x1="56" x2="744" y1="221.7" y2="221.7" stroke="#e5e7ef"/><text x="48" y="225.7" font-size="11" text-anchor="end" fill="#6b7280">0.2</text><line x1="56" x2="744" y1="183.5" y2="183.5" stroke="#e5e7ef"/><text x="48" y="187.5" font-size="11" text-anchor="end" fill="#6b7280">0.4</text><line x1="56" x2="744" y1="145.2" y2="145.2" stroke="#e5e7ef"/><text x="48" y="149.2" font-size="11" text-anchor="end" fill="#6b7280">0.6</text><line x1="56" x2="744" y1="107.0" y2="107.0" stroke="#e5e7ef"/><text x="48" y="111.0" font-size="11" text-anchor="end" fill="#6b7280">0.8</text><line x1="56" x2="744" y1="68.7" y2="68.7" stroke="#e5e7ef"/><text x="48" y="72.7" font-size="11" text-anchor="end" fill="#6b7280">1.0</text><rect x="60.0" y="117.5" width="41.2" height="142.5" fill="#2a78d6"/><rect x="103.2" y="140.8" width="41.2" height="119.2" fill="#eb6834"/><rect x="146.4" y="102.4" width="41.2" height="157.6" fill="#1baf7a"/><text x="124.8" y="275" font-size="11" text-anchor="middle" fill="#1d2333">A₀ tfidf-stem</text><rect x="197.6" y="120.3" width="41.2" height="139.7" fill="#2a78d6"/><rect x="240.8" y="144.2" width="41.2" height="115.8" fill="#eb6834"/><rect x="284.0" y="102.4" width="41.2" height="157.6" fill="#1baf7a"/><text x="262.4" y="275" font-size="11" text-anchor="middle" fill="#1d2333">A tfidf</text><rect x="335.2" y="101.2" width="41.2" height="158.8" fill="#2a78d6"/><rect x="378.4" y="123.4" width="41.2" height="136.6" fill="#eb6834"/><rect x="421.6" y="85.4" width="41.2" height="174.6" fill="#1baf7a"/><text x="400.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">C w2v-avg</text><rect x="472.8" y="94.5" width="41.2" height="165.5" fill="#2a78d6"/><rect x="516.0" y="119.4" width="41.2" height="140.6" fill="#eb6834"/><rect x="559.2" y="79.8" width="41.2" height="180.2" fill="#1baf7a"/><text x="537.6" y="275" font-size="11" text-anchor="middle" fill="#1d2333">B w2v-tfidf</text><rect x="610.4" y="104.1" width="41.2" height="155.9" fill="#2a78d6"/><rect x="653.6" y="125.1" width="41.2" height="134.9" fill="#eb6834"/><rect x="696.8" y="79.8" width="41.2" height="180.2" fill="#1baf7a"/><text x="675.2" y="275" font-size="11" text-anchor="middle" fill="#1d2333">D hybrid</text><text transform="translate(16 150.0) rotate(-90)" font-size="12" text-anchor="middle" fill="#6b7280">mean over queries</text><rect x="56" y="308" width="14" height="14" fill="#2a78d6"/><text x="76" y="319" font-size="12" fill="#1d2333">P@10</text><rect x="116.4" y="308" width="14" height="14" fill="#eb6834"/><text x="136.4" y="319" font-size="12" fill="#1d2333">nDCG@10</text><rect x="196.6" y="308" width="14" height="14" fill="#1baf7a"/><text x="216.6" y="319" font-size="12" fill="#1d2333">MRR</text></svg><figcaption>P@10、nDCG@10、MRR per method（active model = skip-gram d100）。</figcaption></figure>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="Helvetica, Arial, sans-serif"><rect width="100%" height="100%" fill="#ffffff"/><text x="56" y="22" font-size="15" font-weight="bold" fill="#1d2333">nDCG@10 by topic</text><line x1="56" x2="744" y1="260.0" y2="260.0" stroke="#e5e7ef"/><text x="48" y="264.0" font-size="11" text-anchor="end" fill="#6b7280">0.0</text><line x1="56" x2="744" y1="221.7" y2="221.7" stroke="#e5e7ef"/><text x="48" y="225.7" font-size="11" text-anchor="end" fill="#6b7280">0.2</text><line x1="56" x2="744" y1="183.5" y2="183.5" stroke="#e5e7ef"/><text x="48" y="187.5" font-size="11" text-anchor="end" fill="#6b7280">0.4</text><line x1="56" x2="744" y1="145.2" y2="145.2" stroke="#e5e7ef"/><text x="48" y="149.2" font-size="11" text-anchor="end" fill="#6b7280">0.6</text><line x1="56" x2="744" y1="107.0" y2="107.0" stroke="#e5e7ef"/><text x="48" y="111.0" font-size="11" text-anchor="end" fill="#6b7280">0.8</text><line x1="56" x2="744" y1="68.7" y2="68.7" stroke="#e5e7ef"/><text x="48" y="72.7" font-size="11" text-anchor="end" fill="#6b7280">1.0</text><rect x="60.0" y="120.0" width="23.9" height="140.0" fill="#2a78d6"/><rect x="85.9" y="109.6" width="23.9" height="150.4" fill="#eb6834"/><rect x="111.8" y="90.0" width="23.9" height="170.0" fill="#1baf7a"/><rect x="137.8" y="79.6" width="23.9" height="180.4" fill="#eda100"/><rect x="163.7" y="102.8" width="23.9" height="157.2" fill="#2a78d6"/><text x="124.8" y="275" font-size="11" text-anchor="middle" fill="#1d2333">earn</text><rect x="197.6" y="77.0" width="23.9" height="183.0" fill="#2a78d6"/><rect x="223.5" y="104.4" width="23.9" height="155.6" fill="#eb6834"/><rect x="249.4" y="68.7" width="23.9" height="191.3" fill="#1baf7a"/><rect x="275.4" y="68.7" width="23.9" height="191.3" fill="#eda100"/><rect x="301.3" y="72.2" width="23.9" height="187.8" fill="#2a78d6"/><text x="262.4" y="275" font-size="11" text-anchor="middle" fill="#1d2333">acq</text><rect x="335.2" y="138.8" width="23.9" height="121.2" fill="#2a78d6"/><rect x="361.1" y="146.4" width="23.9" height="113.6" fill="#eb6834"/><rect x="387.0" y="102.9" width="23.9" height="157.1" fill="#1baf7a"/><rect x="413.0" y="126.6" width="23.9" height="133.4" fill="#eda100"/><rect x="438.9" y="124.1" width="23.9" height="135.9" fill="#2a78d6"/><text x="400.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">crude</text><rect x="472.8" y="200.3" width="23.9" height="59.7" fill="#2a78d6"/><rect x="498.7" y="197.9" width="23.9" height="62.1" fill="#eb6834"/><rect x="524.6" y="206.0" width="23.9" height="54.0" fill="#1baf7a"/><rect x="550.6" y="199.0" width="23.9" height="61.0" fill="#eda100"/><rect x="576.5" y="199.0" width="23.9" height="61.0" fill="#2a78d6"/><text x="537.6" y="275" font-size="11" text-anchor="middle" fill="#1d2333">grain</text><rect x="610.4" y="167.8" width="23.9" height="92.2" fill="#2a78d6"/><rect x="636.3" y="162.9" width="23.9" height="97.1" fill="#eb6834"/><rect x="662.2" y="149.2" width="23.9" height="110.8" fill="#1baf7a"/><rect x="688.2" y="122.9" width="23.9" height="137.1" fill="#eda100"/><rect x="714.1" y="127.7" width="23.9" height="132.3" fill="#2a78d6"/><text x="675.2" y="275" font-size="11" text-anchor="middle" fill="#1d2333">trade</text><text transform="translate(16 150.0) rotate(-90)" font-size="12" text-anchor="middle" fill="#6b7280">nDCG@10</text><rect x="56" y="308" width="14" height="14" fill="#2a78d6"/><text x="76" y="319" font-size="12" fill="#1d2333">A₀ tfidf-stem</text><rect x="175.8" y="308" width="14" height="14" fill="#eb6834"/><text x="195.8" y="319" font-size="12" fill="#1d2333">A tfidf</text><rect x="256.0" y="308" width="14" height="14" fill="#1baf7a"/><text x="276.0" y="319" font-size="12" fill="#1d2333">C w2v-avg</text><rect x="349.4" y="308" width="14" height="14" fill="#eda100"/><text x="369.4" y="319" font-size="12" fill="#1d2333">B w2v-tfidf</text><rect x="456.0" y="308" width="14" height="14" fill="#2a78d6"/><text x="476.0" y="319" font-size="12" fill="#1d2333">D hybrid</text></svg><figcaption>nDCG@10 依主題：grain 是唯一 TF-IDF 較好的主題（詞彙固定，且 grade 2 只有 10 篇使理想 DCG 偏高）。</figcaption></figure>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 340" font-family="Helvetica, Arial, sans-serif"><rect width="100%" height="100%" fill="#ffffff"/><text x="70" y="22" font-size="15" font-weight="bold" fill="#1d2333">Hybrid α·TF-IDF + (1 − α)·weighted embedding (sg-d100-w5-m5-e5)</text><line x1="70" x2="600" y1="262.0" y2="262.0" stroke="#e5e7ef"/><text x="62" y="266.0" font-size="11" text-anchor="end" fill="#6b7280">0.0</text><line x1="70" x2="600" y1="237.7" y2="237.7" stroke="#e5e7ef"/><text x="62" y="241.7" font-size="11" text-anchor="end" fill="#6b7280">0.1</text><line x1="70" x2="600" y1="213.3" y2="213.3" stroke="#e5e7ef"/><text x="62" y="217.3" font-size="11" text-anchor="end" fill="#6b7280">0.2</text><line x1="70" x2="600" y1="189.0" y2="189.0" stroke="#e5e7ef"/><text x="62" y="193.0" font-size="11" text-anchor="end" fill="#6b7280">0.3</text><line x1="70" x2="600" y1="164.7" y2="164.7" stroke="#e5e7ef"/><text x="62" y="168.7" font-size="11" text-anchor="end" fill="#6b7280">0.4</text><line x1="70" x2="600" y1="140.3" y2="140.3" stroke="#e5e7ef"/><text x="62" y="144.3" font-size="11" text-anchor="end" fill="#6b7280">0.5</text><line x1="70" x2="600" y1="116.0" y2="116.0" stroke="#e5e7ef"/><text x="62" y="120.0" font-size="11" text-anchor="end" fill="#6b7280">0.6</text><line x1="70" x2="600" y1="91.6" y2="91.6" stroke="#e5e7ef"/><text x="62" y="95.6" font-size="11" text-anchor="end" fill="#6b7280">0.7</text><line x1="70" x2="600" y1="67.3" y2="67.3" stroke="#e5e7ef"/><text x="62" y="71.3" font-size="11" text-anchor="end" fill="#6b7280">0.8</text><line x1="70" x2="600" y1="43.0" y2="43.0" stroke="#e5e7ef"/><text x="62" y="47.0" font-size="11" text-anchor="end" fill="#6b7280">0.9</text><line x1="70.0" x2="70.0" y1="40" y2="262" stroke="#e5e7ef"/><text x="70.0" y="278" font-size="11" text-anchor="middle" fill="#6b7280">0.0</text><line x1="172.9" x2="172.9" y1="40" y2="262" stroke="#e5e7ef"/><text x="172.9" y="278" font-size="11" text-anchor="middle" fill="#6b7280">0.2</text><line x1="275.8" x2="275.8" y1="40" y2="262" stroke="#e5e7ef"/><text x="275.8" y="278" font-size="11" text-anchor="middle" fill="#6b7280">0.4</text><line x1="378.7" x2="378.7" y1="40" y2="262" stroke="#e5e7ef"/><text x="378.7" y="278" font-size="11" text-anchor="middle" fill="#6b7280">0.6</text><line x1="481.7" x2="481.7" y1="40" y2="262" stroke="#e5e7ef"/><text x="481.7" y="278" font-size="11" text-anchor="middle" fill="#6b7280">0.8</text><line x1="584.6" x2="584.6" y1="40" y2="262" stroke="#e5e7ef"/><text x="584.6" y="278" font-size="11" text-anchor="middle" fill="#6b7280">1.0</text><text x="335.0" y="298" font-size="12" text-anchor="middle" fill="#6b7280">α  (0 = embedding only, 1 = TF-IDF only)</text><text transform="translate(16 151.0) rotate(-90)" font-size="12" text-anchor="middle" fill="#6b7280">mean over queries</text><path d="M70.0 83.1 L121.5 80.7 L172.9 77.7 L224.4 84.1 L275.8 86.6 L327.3 90.5 L378.7 94.1 L430.2 98.2 L481.7 103.3 L533.1 107.5 L584.6 114.7" fill="none" stroke="#2a78d6" stroke-width="2" stroke-linejoin="round"/><line x1="70" x2="90" y1="326" y2="326" stroke="#2a78d6" stroke-width="3"/><text x="96" y="330" font-size="12" fill="#1d2333">nDCG@10</text><path d="M70.0 51.5 L121.5 50.3 L172.9 46.6 L224.4 52.7 L275.8 55.1 L327.3 63.7 L378.7 68.5 L430.2 71.0 L481.7 75.8 L533.1 79.5 L584.6 84.3" fill="none" stroke="#eb6834" stroke-width="2" stroke-linejoin="round"/><line x1="162.2" x2="182.2" y1="326" y2="326" stroke="#eb6834" stroke-width="3"/><text x="188.2" y="330" font-size="12" fill="#1d2333">P@10</text><path d="M70.0 105.3 L121.5 104.5 L172.9 104.0 L224.4 104.0 L275.8 104.7 L327.3 106.3 L378.7 108.8 L430.2 112.7 L481.7 118.2 L533.1 126.2 L584.6 179.0" fill="none" stroke="#1baf7a" stroke-width="2" stroke-linejoin="round"/><line x1="234.6" x2="254.6" y1="326" y2="326" stroke="#1baf7a" stroke-width="3"/><text x="260.6" y="330" font-size="12" fill="#1d2333">MAP</text></svg><figcaption>D 的 α 掃描（skip-gram）：少量 TF-IDF（α = 0.2）最佳；α ≥ 0.5 逐漸退回 TF-IDF。CBOW 的最佳 α = 0.7，僅 +0.006。</figcaption></figure>
+</div>
+
+<h2><span>C</span>附錄：詞對的 cosine（skip-gram d100）與方法的計算方式</h2>
+<div class="two">
+<div>
+<table class="t num"><tr><th>a</th><th>b</th><th>cosine</th><th>同篇（train）</th><th>PMI</th><th>關係</th></tr>
+<tr><td>oil</td><td>crude</td><td>.743</td><td>216</td><td>2.4</td><td style="text-align:left">同義／同場</td></tr>
+<tr><td>oil</td><td>petroleum</td><td>.637</td><td>194</td><td>2.1</td><td style="text-align:left">同義（但 petroleum 多為公司名）</td></tr>
+<tr><td>grain</td><td>wheat</td><td>.765</td><td>82</td><td>2.7</td><td style="text-align:left">上下位</td></tr>
+<tr><td>grain</td><td>cereal</td><td>.549</td><td>3</td><td>1.9</td><td style="text-align:left">同義，但 cereal 稀有</td></tr>
+<tr><td>acquisition</td><td>merger</td><td>.756</td><td>61</td><td>1.4</td><td style="text-align:left">近義</td></tr>
+<tr><td>trade</td><td>tariff</td><td>.452</td><td>17</td><td>2.0</td><td style="text-align:left">相關；tariff 稀有</td></tr>
+<tr><td>profit</td><td>loss</td><td><b>.793</b></td><td>569</td><td>1.8</td><td style="text-align:left"><b>反義</b>，同句位</td></tr>
+<tr><td>rise</td><td>fall</td><td><b>.866</b></td><td>147</td><td>1.6</td><td style="text-align:left"><b>反義</b></td></tr>
+<tr><td>buy</td><td>sell</td><td><b>.771</b></td><td>99</td><td>1.2</td><td style="text-align:left"><b>反義</b></td></tr>
+</table>
+</div>
+<div>
+<p><b>前處理（所有方法相同）</b>：<code>WORD_RE</code> 取字母開頭、可含連字號的詞 → 小寫 → 移除停用詞與單字母 → 純數字丟棄；不做 stemming（A₀ 除外）。</p>
+<p><b>A</b> w(t,d) = (1 + ln tf)·ln(N/df)，查詢同；兩側 L2 正規化 → 內積 = cosine。<b>C</b> d = Σ tf·v<sub>t</sub> / Σ tf。<b>B</b> d = Σ (1+ln tf)·idf·v<sub>t</sub> / Σ w；查詢 q 同式；再 L2 正規化；score = q·d。<b>D</b> score = α·cos<sub>A</sub> + (1−α)·cos<sub>B</sub>，兩側皆無正分的文件不檢回（α = 1 即 A）。</p>
+<p><b>OOV</b>：不在 9,996 詞彙中的詞跳過（test 詞型 54%、詞元 7%）；查詢全 OOV → 空排名。<b>解釋</b>：每筆結果列出查詢詞是否在文件中，以及每個查詢詞在該文件中 cosine 最高的 3 個詞（語意／情境匹配的證據）。</p>
+<p><b>評估</b>：P@k、R@k、RR、AP、nDCG@k（gain 2<sup>g</sup>−1、log₂ 折扣）由 <code>ir/evaluation.py</code>（Project #3）計算；未檢回文件視為不相關。</p>
+</div>
+</div>
+</div>
+<footer><span>REPORT_embedding.md · tests/test_project4.py（19 tests）· docs/screenshots/project4-emb-*.png</span><span>python3 app.py → http://127.0.0.1:8090/#emb</span></footer>
+</section>
+</body>
+</html>

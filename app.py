@@ -39,6 +39,17 @@ Endpoints
     GET  /api/vsm/queries        the evaluation queries and their relevant sets;  /api/vsm/relevant?id=q01&scheme=ltc
     POST /api/vsm/judge?id=q01&doc=PMID..&grade=0|1|2|   manual relevance judgement (empty grade = remove)
     POST /api/vsm/collect        (body: JSON {term, n, name}) download a collection with MeSH into data/vsm/
+    GET  /api/reuters/info       Project #4: Reuters-21578 ModApte statistics, test-split vocabulary, methods, models, coverage
+    GET  /api/reuters/models     the word2vec models trained on the train split (data/reuters/w2v/)
+    GET  /api/reuters/similar?words=oil,petroleum&models=m1,m2&n=5   top-n nearest neighbours + co-occurrence + topic profile
+    GET  /api/reuters/pairs?pairs=oil,petroleum;profit,loss&model=    cosine of word pairs
+    GET  /api/reuters/search?q=..&method=tfidf|w2v-avg|w2v-tfidf|hybrid&model=&alpha=0.5&k=10
+    GET  /api/reuters/compare?q=..&methods=tfidf,w2v-tfidf&model=&alpha=&k=10     the same query under several methods
+    GET  /api/reuters/eval?methods=..&models=..&k=10&alpha=0.5       P@k / MRR / nDCG@k / MAP per method, kind and topic
+    GET  /api/reuters/alpha?model=&k=10        hybrid weight sweep      GET /api/reuters/queries   GET /api/reuters/relevant?id=c03&method=
+    GET  /api/reuters/doc?id=R14854&model=&method=
+    POST /api/reuters/train      (body: JSON {model, dim, window, negative, min_count, epochs, seed}) train on the train split (queued)
+    POST /api/reuters/select?name=     make a model the active one      POST /api/reuters/build (body: JSON {dir}) parse the SGML files
     POST /api/collect            (body: JSON {term, n, name}) build a PubMed abstract collection
     POST /api/upload?filename=x.xml   (body: raw XML)  add a document to the index
     POST /api/fetch?replace=0|1  (body: JSON {"ids": "..."} or plain text)
@@ -201,6 +212,33 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(engine.vsm_query_list())
             if path == "/api/vsm/relevant":
                 return self._json(engine.vsm_relevant(qs.get("id", ""), qs.get("scheme", "ltc"), qs.get("qscheme", "nnc")))
+            if path == "/api/reuters/info":
+                return self._json(engine.reuters_info())
+            if path == "/api/reuters/models":
+                return self._json({"models": engine.reuters_models_info(), "active": engine.reuters_active, "jobs": engine.w2v_status()["jobs"]})
+            if path == "/api/reuters/similar":
+                return self._json(engine.reuters_neighbours(qs.get("words", ""), qs.get("models", ""), max(1, min(int(qs.get("n", 5)), 20))))
+            if path == "/api/reuters/pairs":
+                return self._json(engine.reuters_similarity(qs.get("pairs", ""), qs.get("model") or None))
+            if path == "/api/reuters/search":
+                return self._json(engine.reuters_search(qs.get("q", ""), qs.get("method", "w2v-tfidf"), qs.get("model") or None,
+                                                        float(qs.get("alpha", 0.5)), max(1, min(int(qs.get("k", 10)), 100))))
+            if path == "/api/reuters/compare":
+                return self._json(engine.reuters_compare(qs.get("q", ""), qs.get("methods", ""), qs.get("model") or None,
+                                                         float(qs.get("alpha", 0.5)), max(1, min(int(qs.get("k", 10)), 50))))
+            if path == "/api/reuters/eval":
+                return self._json(engine.reuters_eval(qs.get("methods", ""), qs.get("models", ""), max(1, min(int(qs.get("k", 10)), 50)),
+                                                      float(qs.get("alpha", 0.5))))
+            if path == "/api/reuters/alpha":
+                return self._json(engine.reuters_alpha_sweep(qs.get("model") or None, max(1, min(int(qs.get("k", 10)), 50))))
+            if path == "/api/reuters/queries":
+                return self._json(engine.reuters_query_list())
+            if path == "/api/reuters/relevant":
+                return self._json(engine.reuters_relevant(qs.get("id", ""), qs.get("method", "w2v-tfidf"), qs.get("model") or None,
+                                                          float(qs.get("alpha", 0.5))))
+            if path == "/api/reuters/doc":
+                return self._json(engine.reuters_doc(qs.get("id", "").strip(), qs.get("model") or None, qs.get("method", "w2v-tfidf"),
+                                                     max(5, min(int(qs.get("top", 20)), 200))))
             if path == "/api/vocab":
                 return self._json(engine.vocabulary(qs.get("prefix", ""), int(qs.get("limit", 200))))
             self.send_error(404)
@@ -241,6 +279,17 @@ class Handler(BaseHTTPRequestHandler):
             if url.path == "/api/vsm/judge":
                 g = qs.get("grade", "")
                 return self._json(engine.vsm_judge(qs.get("id", ""), qs.get("doc", ""), int(g) if g.strip().lstrip("-").isdigit() else None))
+            if url.path == "/api/reuters/train":
+                payload = json.loads(body.decode("utf-8") or "{}")
+                jobs = payload if isinstance(payload, list) else [payload]
+                return self._json({"jobs": [engine.reuters_train(j) for j in jobs[:12]]})
+            if url.path == "/api/reuters/select":
+                return self._json(engine.reuters_select(qs.get("name", "")))
+            if url.path == "/api/reuters/build":
+                p = json.loads(body.decode("utf-8") or "{}")
+                if not str(p.get("dir", "")).strip():
+                    raise ValueError("give the directory with the reut2-*.sgm files")
+                return self._json(engine.reuters_build(str(p["dir"]).strip()))
             if url.path == "/api/vsm/collect":
                 p = json.loads(body.decode("utf-8") or "{}")
                 if not str(p.get("term", "")).strip():
