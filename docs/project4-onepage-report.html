@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Project 4 一頁式報告 — Reuters-21578 TF-IDF vs Word Embedding</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--paper:#fff;--desk:#e9ebef;--ink:#1d2333;--muted:#5f6778;--line:#d9dde6;--rule:#1d2333;--accent:#1f5fbf;--soft:#eef3fb;--code:#f1f3f7;--ok:#0b7a4b;--warn:#b45309;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;--sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace,"Noto Sans TC"}
+*{box-sizing:border-box}
+body{margin:0;background:var(--desk);color:var(--ink);font-family:var(--sans);font-size:7.0pt;line-height:1.15;padding:24px 16px}
+.page{background:var(--paper);width:210mm;min-height:297mm;max-width:100%;margin:0 auto;box-shadow:0 2px 12px rgba(20,30,60,.12);display:flex;flex-direction:column}
+.inner{padding:3.5mm 9mm 0;flex:1;min-width:0}
+footer{display:flex;justify-content:space-between;gap:12px;padding:0 9mm 2.5mm;font-size:6.6pt;color:var(--muted);font-family:var(--mono);line-height:1.3}
+h1{font-family:var(--serif);font-size:13pt;line-height:1.15;margin:1px 0 2px}
+h2{font-family:var(--serif);font-size:9.4pt;margin:0 0 2px;padding-bottom:1px;border-bottom:1.4px solid var(--rule);display:flex;align-items:baseline;gap:6px}
+h2 span{font-family:var(--mono);font-weight:500;color:var(--accent);font-size:7.6pt}
+h2 em{font-style:normal;font-family:var(--sans);font-weight:400;color:var(--muted);font-size:6.8pt;margin-left:auto}
+p{margin:0 0 2px}
+.eyebrow{font-family:var(--mono);font-size:7.2pt;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
+.meta{font-size:6.8pt;color:var(--muted);margin:0 0 3px;line-height:1.3}
+.facts{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:2px 0 4px}
+.facts div{background:var(--soft);border-radius:4px;padding:1px 6px}
+.facts b{display:block;font-family:var(--mono);font-size:8.4pt;font-weight:500;color:var(--accent);line-height:1.2}
+.facts small{font-size:6.1pt;color:var(--muted);line-height:1.2;display:block}
+section{margin-bottom:2.5px;min-width:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 5mm;align-items:start}.two>*{min-width:0}
+.two.w{grid-template-columns:1.2fr 1fr}.two.w3{grid-template-columns:1.8fr 1fr}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 4mm;align-items:start}.three>*{min-width:0}
+code{font-family:var(--mono);font-size:.92em;background:var(--code);padding:0 2px;border-radius:2px}
+table.t{border-collapse:collapse;width:100%;font-size:6.45pt;margin:2px 0 2px;font-variant-numeric:tabular-nums;line-height:1.18}
+table.t th{text-align:left;background:var(--soft);padding:1.2px 3.5px;border-bottom:1px solid var(--line);font-weight:600;vertical-align:bottom}
+table.t td{padding:1.2px 3.5px;border-bottom:1px solid var(--line);vertical-align:top}
+table.num td:not(:first-child),table.num th:not(:first-child){text-align:right;white-space:nowrap}
+table.t td.wrap,table.t th.wrap{white-space:normal;text-align:left}
+table.t td.k{font-weight:600;white-space:nowrap}table.t td b{color:var(--accent)}
+table.t tr.sel td{background:var(--soft)}
+table.nb td{font-size:6.2pt;line-height:1.15}table.nb td.k{font-family:var(--mono);font-weight:500}
+ul{padding-left:11px;margin:0 0 2px}li{margin-bottom:1px}
+.verdict{background:var(--soft);border-left:3px solid var(--accent);padding:2px 6px;margin:2px 0;font-size:6.8pt}
+.verdict b{color:var(--accent)}ul.verdict{padding-left:1.05em;margin:2px 0}ul.verdict li{margin:0}
+figure{margin:0;min-width:0}figure svg{width:100%;height:auto;display:block;border:1px solid var(--line)}figcaption{font-size:6.7pt;color:var(--muted);line-height:1.25;margin-top:1px}
+.muted{color:var(--muted)}.ok{color:var(--ok)}.warn{color:var(--warn)}
+.tc{display:inline-block;font-size:6.4pt;font-weight:600;padding:0 4px;border-radius:999px;border:1px solid var(--line);font-family:var(--mono)}
+.tc.earn{background:#dcfce7}.tc.acq{background:#dbeafe}.tc.crude{background:#fee2e2}.tc.grain{background:#fef3c7}.tc.trade{background:#ede9fe}
+.formula{font-family:var(--mono);font-size:6.5pt;background:var(--code);padding:1.5px 5px;border-radius:3px;display:block;margin:1px 0 2px;line-height:1.35}
+.q{display:grid;grid-template-columns:auto 1fr;gap:0 5px}.q b{white-space:nowrap}
+@media (max-width:640px){.two,.three,.facts{grid-template-columns:1fr 1fr}.page{min-height:0}.inner{padding:6mm 5mm}}
+@media print{body{background:none;padding:0}.page{box-shadow:none;margin:0;width:210mm;height:297mm;min-height:0;overflow:hidden}@page{size:A4 portrait;margin:0}}
+</style>
+</head>
+<body>
+<section class="page"><div class="inner">
+
+<p class="eyebrow">AI Information Retrieval（人工智慧資訊檢索）· Project #4 · 一頁式報告</p>
+<h1>Reuters-21578：從 TF-IDF 到 Word Embedding 的新聞檢索實驗</h1>
+<p class="meta">胡元楨（P77141105）· 繳交 2026-11-10 · 全部以純 Python 標準函式庫自行實作：<code>ir/reuters.py</code>（SGML 解析、ModApte、TOPICS 相關性）、<code>ir/embedding.py</code>（文件向量、融合、共現）、<code>ir/word2vec.py</code>（CBOW / skip-gram）、<code>ir/tfidf.py</code>、<code>ir/evaluation.py</code>；網頁 <code>/#emb</code>、CLI <code>cli.py reuters …</code>、單元測試 <code>tests/test_project4.py</code>（19）；詳文 <code>REPORT_embedding.md</code>，數字皆可由頁尾指令重現。</p>
+<div class="facts">
+<div><b>9,603 / 3,299</b><small>ModApte train（訓練詞向量）/ test（檢索集合）；相關性 = TOPICS 標籤，與方法無關</small></div>
+<div><b>9,996 詞</b><small>word2vec 詞彙（min_count 5）；覆蓋 test 詞元 93%、詞型 46%；6 個模型 sg / CBOW × d50 / d100</small></div>
+<div><b>A · B · C · D</b><small>TF-IDF · TF-IDF 加權詞向量 · 詞向量平均 · 融合；同一組詞、同一 cosine</small></div>
+<div><b>20 查詢</b><small>5 主題 × 4 種用字：主題詞／路透慣用詞／同義改寫／情境描述</small></div>
+<div><b>.730 → .865</b><small>P@10 A → B（skip-gram d100）；MRR .824 → .942；nDCG@10 .605 → .735</small></div>
+<div><b>.92 = .92</b><small>主題詞查詢 A 與 B 打平；收益全在用字不同的查詢（同義改寫 .64 → .80、情境 .44 → .80）</small></div>
+</div>
+
+<section>
+<h2><span>任務一</span>資料集、相關性判斷、TF / DF / IDF / TF-IDF 與 cosine<em>spec 1–3</em></h2>
+<div class="two w">
+<div>
+<p><b>資料。</b>自行解析 22 個 SGML 檔（21,578 則 1987 年新聞）。<b>ModApte</b> = <code>TOPICS="YES"</code> 且 LEWISSPLIT TRAIN / TEST → train 9,603 篇（68K 句、763K 詞元）只用來訓練 word2vec；test 3,299 篇（平均 74.5 詞、詞彙 17,295）是檢索集合。
+<b>相關性</b>：每個查詢針對一個主題，test 文件帶該主題即相關（唯一主題 = grade 2，否則 grade 1）；TOPICS 由路透編目員指派，與查詢字和方法無關。</p>
+<p><b>TF-IDF。</b>沿用 Project #3 的向量空間模型：tf(t,d)、df(t)、idf = ln(N/df)，<code>ltc</code> 權重 (1+ln tf)·idf 後 L2 正規化，分數 = 內積 = cosine。TF-IDF 與詞向量使用<b>完全相同的詞</b>（小寫、去停用詞、不 stemming）；Porter-stemmed 的 Project #3 管線另列為 A₀ 對照。
+df 越大 idf 越小：said df 2,026 → idf 0.49、mln 1,609 → 0.72、dlrs 1,451 → 0.82；petroleum df 90 → 3.60、output 92 → 3.58、production 180 → 2.91。TF-IDF 只對含查詢詞的文件打分（c03 只有 284 / 3,299 篇有分數），這也是後面 MAP 偏低的原因。</p>
+</div>
+<div>
+<table class="t num"><tr><th>topic</th><th>train</th><th>test</th><th>唯一主題</th><th class="wrap">查詢例（主題詞 · 同義改寫／情境描述）</th></tr>
+<tr><td><span class="tc earn">earn</span> 獲利</td><td>2,877</td><td>1,087</td><td>1,083</td><td class="wrap">quarterly net profit results · corporate financial performance for the year</td></tr>
+<tr><td><span class="tc acq">acq</span> 併購</td><td>1,650</td><td>719</td><td>696</td><td class="wrap">acquisition of a company · merger agreement between two firms</td></tr>
+<tr><td><span class="tc crude">crude</span> 原油</td><td>389</td><td>189</td><td>121</td><td class="wrap">crude oil prices · <b>petroleum</b> production and output</td></tr>
+<tr><td><span class="tc grain">grain</span> 穀物</td><td>433</td><td>149</td><td>10</td><td class="wrap">grain exports · <b>cereal</b> crop production forecast</td></tr>
+<tr><td><span class="tc trade">trade</span> 貿易</td><td>369</td><td>117</td><td>75</td><td class="wrap">trade deficit figures · import tariffs and export restrictions</td></tr>
+</table>
+<p class="muted" style="font-size:6.5pt">每主題 4 題（主題詞 / 路透慣用詞 / 同義改寫 / 情境描述），共 20 題：「查詢用字離新聞詞彙多遠」成為可控變因。</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2><span>任務二</span>Word2Vec：CBOW 與 skip-gram 在 train 切分上訓練<em>spec 4</em></h2>
+<div class="two w3">
+<div>
+<p><code>ir/word2vec.py</code>（Project #2 自行實作：negative sampling 5、dynamic window、sub-sampling 1e-3）。<b>skip-gram</b> 以中心詞預測每個上下文詞（每個中心詞產生 2b 個樣本，訓練慢、稀有詞更新多）；<b>CBOW</b> 以上下文平均預測中心詞（快、向量較平滑）。六個模型同一份 train → 詞彙都是 9,996；loss 隨 epoch 下降（CBOW 5 → 10 epochs：1.95 → 1.65），skip-gram 時間約為 CBOW 的 3 倍；loss 不能跨架構比較。
+覆蓋率：test 詞型 46%、詞元 93%（OOV 多是公司名、人名、hapax）；沒有任何 test 文件完全沒有向量。</p>
+</div>
+<div>
+<table class="t num"><tr><th>模型</th><th>架構</th><th>dim</th><th>win</th><th>ep</th><th>loss</th><th>分鐘</th></tr>
+<tr class="sel"><td class="k">sg-d100-w5-m5-e5</td><td>skip-gram</td><td>100</td><td>5</td><td>5</td><td>2.117</td><td>21.3</td></tr>
+<tr class="sel"><td class="k">cbow-d100-w5-m5-e5</td><td>CBOW</td><td>100</td><td>5</td><td>5</td><td>1.951</td><td>6.7</td></tr>
+<tr><td class="k">sg-d50-w5-m5-e5</td><td>skip-gram</td><td>50</td><td>5</td><td>5</td><td>2.141</td><td>11.5</td></tr>
+<tr><td class="k">cbow-d50-w5-m5-e5</td><td>CBOW</td><td>50</td><td>5</td><td>5</td><td>1.947</td><td>3.5</td></tr>
+<tr><td class="k">sg-d100-w2-m5-e5</td><td>skip-gram</td><td>100</td><td>2</td><td>5</td><td>2.054</td><td>13.3</td></tr>
+<tr><td class="k">cbow-d100-w5-m5-e10</td><td>CBOW</td><td>100</td><td>5</td><td>10</td><td>1.647</td><td>13.5</td></tr>
+</table>
+</div>
+</div>
+</section>
+
+<section>
+<h2><span>任務三</span>Word-level：每個詞的 Top-5 最近鄰與三個問題<em>spec 5 · skip-gram d100 ／ CBOW d100</em></h2>
+<div class="two w">
+<div>
+<table class="t nb"><tr><th>詞</th><th>skip-gram（cosine）</th><th>CBOW（cosine）</th></tr>
+<tr><td class="k">oil</td><td>crude .74 · gas .69 · petroleum .64 · pipeline .62 · natural .61</td><td>crude .80 · natural .80 · fuel .76 · pipeline .76 · postings .76</td></tr>
+<tr><td class="k">petroleum</td><td>king .70 · xon .69 · esso .69 · gas .68 · inland .68</td><td>mines .92 · columbia .86 · mining .84 · pty .84 · pacific .83</td></tr>
+<tr><td class="k">opec</td><td>bpd .78 · lukman .77 · nazer .77 · arabia .77 · ceiling .76</td><td>producer .90 · colombia .86 · arabia .85 · import .85 · coffee .84</td></tr>
+<tr><td class="k">profit</td><td>loss .79 · oper .78 · pre-tax .77 · profits .75 · comalco .75</td><td>pre-tax .88 · loss .86 · profits .85 · pretax .83 · attributable .82</td></tr>
+<tr><td class="k">acquisition</td><td>transaction .77 · merger .76 · buyout .72 · acquisitions .71 · comdata .70</td><td>buyout .92 · lbo .87 · merger .87 · borg-warner .86 · leveraged .86</td></tr>
+<tr><td class="k">grain</td><td>corn .77 · wheat .77 · cotton .72 · feed .71 · soybeans .71</td><td>soybeans .93 · winter .93 · corn .92 · feed .92 · grains .92</td></tr>
+<tr><td class="k">cereal <span class="muted">n=24</span></td><td>grants .92 · bread .89 · spanish .89 · non-ec .89 · levies .88</td><td>availability .95 · ghana .95 · fixing .95 · featured .95 · artificially .94</td></tr>
+</table>
+</div>
+<div>
+<ul class="verdict">
+<li><b>合理的語意／使用情境關係：</b>oil–crude–gas–petroleum、grain–corn–wheat–soybeans、acquisition–merger–buyout、deficit–surplus；詞形變化 profit / profits、deficit / deficits 也靠近（stemming 用規則做的事，詞向量從分布學到）。</li>
+<li><b>因相似新聞情境而共現：</b>opec–lukman–nazer–ceiling（OPEC 報導的固定班底：同篇 6–42 次、PMI 3.8–4.7）、trade–yeutter–gatt、acquisition–borg-warner。這些是「同一類新聞」而非同義。</li>
+<li><b>不符預期，原因：</b>(1) 語料用法偏移——petroleum 在語料裡多是 British / Esso / Pacific <i>Petroleum</i> 公司名，鄰居變成公司與礦業詞（含 petroleum 的 test 文件只 44% 是 crude）；(2) 稀有詞——cereal、tariff 只訓練 24 / 38 次，鄰居隨機、cosine 虛高（.88–.96），兩模型 Top-5 零重疊；(3) CBOW 向量較平滑，cosine 普遍偏高、無關鄰居較多（opec–coffee 同篇 0）。</li>
+<li><b>向量相近 ≠ 同義：</b>反義詞 profit / loss .79、rise / fall .87、buy / sell .77、deficit / surplus .86（CBOW 更高：.86 / .92 / .87）——它們在同一句位互換出現，向量只知「用法相同」不知「意思相反」。</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section>
+<h2><span>任務四</span>用詞向量表示文件：四種表示法<em>spec 6</em></h2>
+<div class="three">
+<div><span class="formula">A  TF-IDF ltc：w = (1+ln tf)·ln(N/df)，L2 正規化 → cos<br>A₀ 同上但 Porter stems（Project #3 管線，對照）</span>
+<p>只有含查詢詞的文件有分數；前 10 名詞彙重疊必 &gt; 0。</p></div>
+<div><span class="formula">C  詞向量平均：d = Σ<sub>t</sub> tf·v(t) / Σ tf<br>B  TF-IDF 加權平均：d = Σ<sub>t</sub> (1+ln tf)·idf·v(t)，L2 正規化</span>
+<p>每篇文件都有向量（3,299 / 3,299 篇有分數）；B 讓 said、mln 等高 df 詞幾乎不拉動文件向量；OOV 詞跳過並回報覆蓋率。</p></div>
+<div><span class="formula">D  融合：score = α·cos<sub>A</sub> + (1−α)·cos<sub>B</sub>（預設 α = 0.5，掃描 0–1）</span>
+<p>查詢向量用同一公式；B 的查詢詞權重與 idf 成正比。檢索系統：查詢 → 前處理 → 建向量 → 與每篇 test 新聞算 cosine → 排序 → 前 k 名；每筆列出 TOPICS、rel 等級、查詢詞是否命中、查詢詞在文件中最相近的詞（可解釋為何配到）。</p></div>
+</div>
+</section>
+
+<section>
+<h2><span>任務五</span>Document-level：新聞檢索系統與 20 個查詢的評估<em>spec 7–11 · k = 10 · test 3,299 篇</em></h2>
+<div class="two w3">
+<div>
+<table class="t num"><tr><th>run（B 其他模型見結論）</th><th>P@10</th><th>MRR</th><th>nDCG@10</th><th>MAP</th><th>主題詞</th><th>慣用詞</th><th>同義</th><th>情境</th></tr>
+<tr><td class="k">A₀ TF-IDF stems</td><td>.745</td><td>.824</td><td>.623</td><td>.369</td><td>.90</td><td>.88</td><td>.64</td><td>.56</td></tr>
+<tr><td class="k">A TF-IDF</td><td>.730</td><td>.824</td><td>.605</td><td>.341</td><td>.92</td><td>.92</td><td>.64</td><td>.44</td></tr>
+<tr><td class="k">C 平均 · CBOW</td><td>.755</td><td>.762</td><td>.630</td><td>.610</td><td>.90</td><td>.86</td><td>.56</td><td>.70</td></tr>
+<tr><td class="k">C 平均 · skip-gram</td><td>.830</td><td>.912</td><td>.714</td><td>.638</td><td>.92</td><td>.88</td><td>.76</td><td>.76</td></tr>
+<tr><td class="k">B 加權 · CBOW</td><td>.790</td><td>.870</td><td>.670</td><td>.605</td><td>.90</td><td>.86</td><td>.66</td><td>.74</td></tr>
+<tr class="sel"><td class="k">B 加權 · skip-gram</td><td><b>.865</b></td><td><b>.942</b></td><td><b>.735</b></td><td>.644</td><td>.92</td><td><b>.94</b></td><td><b>.80</b></td><td><b>.80</b></td></tr>
+<tr><td class="k">D 融合 α=.5 · skip-gram</td><td>.815</td><td>.942</td><td>.705</td><td>.640</td><td>.96</td><td>.90</td><td>.74</td><td>.66</td></tr>
+<tr><td class="k">D 融合 α=.2 · skip-gram</td><td>.885</td><td>.963</td><td>.757</td><td><b>.649</b></td><td>1.00</td><td>.92</td><td>.80</td><td>.82</td></tr>
+</table>
+<p class="muted" style="font-size:6.7pt">右四欄 = P@10 依查詢用字（每類 5 題）。R@10 全在 .03 左右（earn 有 1,087 篇相關）；MAP 的大差距反映 TF-IDF 的召回上限（沒檢回的相關文件算 0），不是前十名品質，因此主要指標是 P@10 / MRR / nDCG@10。逐題 P@10：<b>B 勝 9、A 勝 5</b>（c01 g01 g03 g04 t03）、平手 6。</p>
+</div>
+<div>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="Helvetica, Arial, sans-serif"><rect width="100%" height="100%" fill="#ffffff"/><text x="56" y="22" font-size="15" font-weight="bold" fill="#1d2333">P@10 by query kind: how far the query wording is from the documents' vocabulary</text><line x1="56" x2="744" y1="260.0" y2="260.0" stroke="#e5e7ef"/><text x="48" y="264.0" font-size="11" text-anchor="end" fill="#6b7280">0.0</text><line x1="56" x2="744" y1="221.7" y2="221.7" stroke="#e5e7ef"/><text x="48" y="225.7" font-size="11" text-anchor="end" fill="#6b7280">0.2</text><line x1="56" x2="744" y1="183.5" y2="183.5" stroke="#e5e7ef"/><text x="48" y="187.5" font-size="11" text-anchor="end" fill="#6b7280">0.4</text><line x1="56" x2="744" y1="145.2" y2="145.2" stroke="#e5e7ef"/><text x="48" y="149.2" font-size="11" text-anchor="end" fill="#6b7280">0.6</text><line x1="56" x2="744" y1="107.0" y2="107.0" stroke="#e5e7ef"/><text x="48" y="111.0" font-size="11" text-anchor="end" fill="#6b7280">0.8</text><line x1="56" x2="744" y1="68.7" y2="68.7" stroke="#e5e7ef"/><text x="48" y="72.7" font-size="11" text-anchor="end" fill="#6b7280">1.0</text><rect x="60.0" y="87.8" width="30.8" height="172.2" fill="#2a78d6"/><rect x="92.8" y="84.0" width="30.8" height="176.0" fill="#eb6834"/><rect x="125.6" y="84.0" width="30.8" height="176.0" fill="#1baf7a"/><rect x="158.4" y="84.0" width="30.8" height="176.0" fill="#eda100"/><rect x="191.2" y="76.3" width="30.8" height="183.7" fill="#2a78d6"/><text x="142.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">topic word</text><rect x="232.0" y="91.7" width="30.8" height="168.3" fill="#2a78d6"/><rect x="264.8" y="84.0" width="30.8" height="176.0" fill="#eb6834"/><rect x="297.6" y="91.7" width="30.8" height="168.3" fill="#1baf7a"/><rect x="330.4" y="80.2" width="30.8" height="179.8" fill="#eda100"/><rect x="363.2" y="87.8" width="30.8" height="172.2" fill="#2a78d6"/><text x="314.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">Reuters vocabulary</text><rect x="404.0" y="137.6" width="30.8" height="122.4" fill="#2a78d6"/><rect x="436.8" y="137.6" width="30.8" height="122.4" fill="#eb6834"/><rect x="469.6" y="114.6" width="30.8" height="145.4" fill="#1baf7a"/><rect x="502.4" y="107.0" width="30.8" height="153.0" fill="#eda100"/><rect x="535.2" y="118.4" width="30.8" height="141.6" fill="#2a78d6"/><text x="486.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">synonym / paraphrase</text><rect x="576.0" y="152.9" width="30.8" height="107.1" fill="#2a78d6"/><rect x="608.8" y="175.8" width="30.8" height="84.2" fill="#eb6834"/><rect x="641.6" y="114.6" width="30.8" height="145.4" fill="#1baf7a"/><rect x="674.4" y="107.0" width="30.8" height="153.0" fill="#eda100"/><rect x="707.2" y="133.7" width="30.8" height="126.3" fill="#2a78d6"/><text x="658.0" y="275" font-size="11" text-anchor="middle" fill="#1d2333">semantic description</text><text transform="translate(16 150.0) rotate(-90)" font-size="12" text-anchor="middle" fill="#6b7280">P@10</text><rect x="56" y="308" width="14" height="14" fill="#2a78d6"/><text x="76" y="319" font-size="12" fill="#1d2333">A₀ tfidf-stem</text><rect x="175.8" y="308" width="14" height="14" fill="#eb6834"/><text x="195.8" y="319" font-size="12" fill="#1d2333">A tfidf</text><rect x="256.0" y="308" width="14" height="14" fill="#1baf7a"/><text x="276.0" y="319" font-size="12" fill="#1d2333">C w2v-avg</text><rect x="349.4" y="308" width="14" height="14" fill="#eda100"/><text x="369.4" y="319" font-size="12" fill="#1d2333">B w2v-tfidf</text><rect x="456.0" y="308" width="14" height="14" fill="#2a78d6"/><text x="476.0" y="319" font-size="12" fill="#1d2333">D hybrid</text></svg><figcaption>P@10 依查詢用字：用字離新聞詞彙越遠（往右），TF-IDF（A）掉得越多；B 加權詞向量維持 .80；主題詞查詢兩者相同。</figcaption></figure>
+</div>
+</div>
+</section>
+
+<section>
+<h2><span>結論</span>差異分析：詞彙匹配、語意相似度、文件排序<em>spec 9–11 · RQ1–RQ5</em></h2>
+<ul class="verdict">
+<li><b>核心比較 A vs B（spec 9）。</b>保留 TF-IDF 對重要詞的辨識力、再引入上下文表示<b>有</b>改善：skip-gram P@10 +18%、MRR +14%、nDCG@10 +21%；但收益<b>全部來自用字與新聞不同的查詢</b>（同義改寫 .64 → .80、情境描述 .44 → .80），主題詞與慣用詞查詢持平（.92）。c03 <i>petroleum production and output</i>：A .20 → B .80（前十重疊只 2 篇）。反例：g03 <i>cereal</i>（.8 → .7）、t03 <i>tariff</i>（.9 → .7）——稀有查詢詞的向量不穩定時，字面比對反而較好。</li>
+<li><b>CBOW vs skip-gram（spec 10）。</b>同參數下 skip-gram 較好（B 方法 .865 vs .790；逐題 7 : 2 : 11），但不是架構決定一切：CBOW 10 epochs 反而退步（loss 1.95 → 1.65，P@10 .790 → .770）、skip-gram 視窗 2 掉到 .800、d50 不輸 d100（.885）；詞層級 Top-5 兩架構只重疊 1–3 個，文件層級差距卻小得多（文件向量把鄰居差異平均掉）。小語料上差距受資料量、詞頻與參數左右，結論只能是「在此語料與參數下 skip-gram 較好」。</li>
+<li><b>詞彙匹配 vs 語意相似度 vs 排序（spec 11）。</b>詞彙匹配：A 的「無查詢詞」結果永遠 0；語意匹配：B 可排進不含任何查詢詞的文件（c03 有 2 篇，如 API 庫存週報），相關就是收益、不相關就是誤配（鋅、鋁產量）；排序：A 與 B 前十重疊常不到一半。加權的因果：不加權的 C 讓 said、mln、dlrs 把所有文件拉向同一方向（MRR .912 vs B .942；CBOW .762 vs .870）。融合 D 在 α = .2 最佳（nDCG@10 .757），預設 α = .5 反而比純 B 差——融合權重不能假設。</li>
+<li><b>限制。</b>加權平均不保留詞序與否定；相關性只來自 TOPICS；20 題，差距 &lt; .05 不顯著；詞向量只用 train 訓練（test 詞型 OOV 54%）；結論限於小型新聞語料——Word Embedding 不保證優於 TF-IDF，必須以 document-level 的檢索評估驗證。</li>
+</ul>
+</section>
+
+</div>
+<footer><span>Reuters-21578 Distribution 1.0（Lewis）· ModApte · 純 Python；sg d100 21 min、CBOW d100 6.7 min · 圖：report/emb_*.svg</span><span>重現：python3 cli.py reuters info · models · similar · pairs · compare · eval · alpha · svg report/ ；python3 -m unittest tests.test_project4</span></footer>
+</section>
+</body>
+</html>

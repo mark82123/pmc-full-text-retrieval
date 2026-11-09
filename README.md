@@ -177,7 +177,7 @@ REPORT.md           Project #2 written analysis (Zipf questions, CF/DF, TF-IDF, 
 REPORT_w2v.md       Project #2 word-embedding report (pre-processing, vocabulary, training, similarity, PCA / t-SNE, RQ1–RQ5)
 REPORT_tfidf.md     Project #3 term-weighting report (tasks 1–5, RQ1–RQ5, limitations of the judgements)
 REPORT_embedding.md Project #4 report (Reuters-21578, word-level and document-level analysis, RQ1–RQ5)
-docs/               A4 one-page reports (HTML + PDF) of Projects #2, #3 and #4
+docs/               A4 one-page reports (HTML + PDF) of Projects #2, #3 and #4; project4-onepage-report.html / .pdf = strictly one page, structured by the Project #4 spec (tasks 1-5)
 ```
 
 ## Web UI
