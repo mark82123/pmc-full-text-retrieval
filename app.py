@@ -10,6 +10,8 @@ Endpoints
     GET  /api/corpus             corpus statistics + per-document table
     GET  /api/vocab?prefix=..    vocabulary browser
     GET  /api/stopwords          the Snowball list and the biomedical additions
+    GET  /api/info               server addresses (LAN URLs for the classroom), port, index size
+    GET  /api/qr.svg?text=..     QR code of a text / URL as SVG (ir/qr.py, standard library only)
     GET  /api/stem?word=a,b      Porter stem of each word with the step-by-step trace
     GET  /api/analyze?text=..    tokenise / lower-case / stop-word / stem a text; sentence split
     GET  /api/zipf               Zipf analysis of the abstract collection (4 pre-processing conditions)
@@ -63,6 +65,7 @@ import argparse
 import json
 import mimetypes
 import re
+import socket
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -74,12 +77,36 @@ sys.path.insert(0, str(ROOT))
 from ir import zipf  # noqa: E402
 from ir.engine import Engine  # noqa: E402
 from ir.porter import stem_trace  # noqa: E402
+from ir.qr import qr_svg  # noqa: E402
 from ir.sentence import naive_split, split_sentences  # noqa: E402
 from ir.spell import edit_matrix  # noqa: E402
 from ir.stopwords import BIOMEDICAL_STOP_WORDS, SMART_STOP_WORDS, SNOWBALL_STOP_WORDS, STOP_WORDS  # noqa: E402
 
 STATIC = ROOT / "static"
 engine: Engine
+SERVER = {"host": "127.0.0.1", "port": 8090}
+
+
+def lan_addresses() -> list[str]:
+    """IPv4 addresses of this machine that other devices in the room can reach (best effort)."""
+    found: list[str] = []
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("10.255.255.255", 1))          # no packet is sent; picks the default route's interface
+        found.append(s.getsockname()[0])
+        s.close()
+    except OSError:
+        pass
+    try:
+        for info in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET):
+            found.append(info[4][0])
+    except OSError:
+        pass
+    out: list[str] = []
+    for ip in found:
+        if ip and not ip.startswith("127.") and ip not in out:
+            out.append(ip)
+    return out
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -132,6 +159,27 @@ class Handler(BaseHTTPRequestHandler):
                 doc_id = path[len("/api/doc/"):]
                 d = engine.document(doc_id, qs.get("q", ""), qs.get("op", "AND"))
                 return self._json(d if d else {"error": "not found"}, 200 if d else 404)
+            if path == "/api/info":
+                host, port = SERVER["host"], SERVER["port"]
+                ips = lan_addresses() if host in ("0.0.0.0", "", "::") else [host]
+                return self._json({"host": host, "port": port, "bound_to_all": host in ("0.0.0.0", "", "::"),
+                                   "urls": ["http://%s:%d/" % (ip, port) for ip in ips],
+                                   "documents": len(engine.index.docs),
+                                   "terms": len(engine.index.postings)})
+            if path == "/api/qr.svg":
+                text = qs.get("text", "").strip()
+                if not text:
+                    return self._json({"error": "text required"}, 400)
+                try:
+                    svg = qr_svg(text).encode("utf-8")
+                except ValueError as e:
+                    return self._json({"error": str(e)}, 400)
+                self.send_response(200)
+                self.send_header("Content-Type", "image/svg+xml; charset=utf-8")
+                self.send_header("Content-Length", str(len(svg)))
+                self.send_header("Cache-Control", "no-store")
+                self.end_headers()
+                return self.wfile.write(svg)
             if path == "/api/corpus":
                 return self._json(engine.corpus())
             if path == "/api/stopwords":
@@ -319,6 +367,7 @@ def main() -> None:
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8090)
     args = ap.parse_args()
+    SERVER.update(host=args.host, port=args.port)
     engine = Engine(args.data)
     n = engine.load()
     print(f"Indexed {n} documents ({len(engine.index.postings)} terms) in {engine.build_time:.2f}s", flush=True)

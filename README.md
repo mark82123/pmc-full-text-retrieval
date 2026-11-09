@@ -164,10 +164,12 @@ ir/relevance.py     label-based (MeSH / keyword) relevance judgements with manua
 ir/reuters.py       Reuters-21578 SGML parser, ModApte split, topic statistics, topic-based relevance queries
 ir/embedding.py     word tokeniser shared with word2vec, document embeddings (mean / TF-IDF weighted), hybrid fusion, co-occurrence / topic profile
 ir/svgplot.py       static SVG figures for the reports
-static/             index.html, style.css, app.js, project2.js, w2v.js, tfidf.js, embed.js (front-end)
+ir/qr.py            QR code encoder (byte mode, versions 1-10) for the classroom link
+static/             index.html, style.css, app.js, project2.js, w2v.js, tfidf.js, embed.js, demo.js (front-end; demo.js = classroom tools)
 tests/test_ir.py    unit tests (stemmer, tokenizer, splitter, parser, index, search, engine)
 tests/test_project2.py   unit tests (Zipf, edit distance, spelling, fuzzy search, word2vec, collection)
 tests/test_project3.py   unit tests (tf / idf variants, vectors, cosine ranking, measures, judgements, collection)
+tests/test_qr.py    unit tests (Reed-Solomon vector, byte-mode header, version choice, matrix structure)
 tests/test_project4.py   unit tests (SGML parsing, ModApte split, topic relevance, word tokeniser, document embeddings, hybrid, engine)
 data/               PMC XML corpus, pubmed_*.jsonl abstract collections, w2v/<name>.json trained embeddings
 data/vsm/           Project #3: pubmed_glp1_3000.jsonl (3,000 abstracts with MeSH), queries_glp1.json (queries + judgements)
@@ -233,6 +235,34 @@ docs/               A4 one-page reports (HTML + PDF) of Projects #2, #3 and #4; 
   Alternatively upload PMC XML files by hand. The tab also lists every indexed
   document with a *Remove* button.
 
+## Classroom demo tools (課堂展示)
+
+The **🎬 展示** button in the header (or the key `P`) opens a side panel made for
+presenting the tool in class; everything is in `static/demo.js` and needs no
+extra software:
+
+* **投影模式** – zoom the whole page to 115–175 % for the projector (`+` / `-`),
+  hide the subtitle and footer, and *focus* a single card (the `⤢` button on
+  any card heading, or `F` while the mouse is over it; `Esc` shows everything
+  again). A **cursor spotlight** (`S`) draws a halo around the mouse so the
+  audience can follow it.
+* **學生連線** – the server's LAN address and a QR code so students can open
+  the same page on their phones or laptops. Start the server with
+  `--host 0.0.0.0`; `Q` shows a full-screen QR code. The QR encoder is
+  `ir/qr.py` (pure standard library, byte mode, versions 1–10, ECC level M;
+  verified module-for-module against the *segno* library).
+* **展示腳本** – a 35-step guided tour through Projects 1–4 (boolean, phrase,
+  wildcard and field queries, spelling correction, BM25 vs TF-IDF, sentence
+  detection, Porter tracing, Zipf, word2vec, TF-IDF schemes and evaluation,
+  Reuters embedding retrieval, edit distance). `←` / `→` (or PageUp / PageDown)
+  move between steps; each step opens the right tab, fills in the inputs,
+  presses the button and scrolls to (optionally focuses) the card, while a
+  caption bar at the bottom shows what to point out. The current step and
+  zoom are remembered across reloads; `/?demo=1&step=12` opens the panel at
+  a given step (handy as a bookmark on the podium PC).
+* Digits `1`–`9`, `0` switch tabs. Shortcuts are ignored while typing in a
+  field.
+
 ## API
 
 ```
@@ -241,6 +271,8 @@ GET  /api/doc/<PMC id>?q=<query>
 GET  /api/corpus
 GET  /api/vocab?prefix=immun&limit=100
 GET  /api/stopwords
+GET  /api/info                       server addresses (LAN URLs for the classroom), port, index size
+GET  /api/qr.svg?text=<url>          QR code of a text / URL as SVG (ir/qr.py)
 GET  /api/stem?word=immunotherapies,sars
 GET  /api/analyze?text=WHO+reported+SARS-CoV-2
 GET  /api/zipf
