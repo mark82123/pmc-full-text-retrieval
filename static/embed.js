@@ -29,22 +29,41 @@
       const i = await api('/api/reuters/info');
       st.info = i;
       const ds = i.dataset, te = i.test, cov = i.coverage;
-      box.innerHTML = `<div class="tiles kv-tiles">
-        <div class="tile"><b>${fmt(ds.documents)}</b><span>ModApte documents · train ${fmt(ds.splits.train)} / test ${fmt(ds.splits.test)} · ${ds.topics_total} distinct topics · ${fmt(ds.without_body)} BRIEF without body</span></div>
-        <div class="tile accent"><b>${fmt(te.documents)}</b><span>test documents = search collection · ${fmt(te.tokens)} word tokens → ${fmt(te.index_terms)} terms · ${te.avg_length} per document (${te.min_length}–${te.max_length})</span></div>
-        <div class="tile"><b>${fmt(te.vocabulary)}</b><span>test vocabulary (surface words) · ${fmt(te.hapax_df)} with df = 1</span></div>
-        <div class="tile"><b>${cov ? fmt(cov.model_vocabulary) : '–'}</b><span>embedding vocabulary (min_count 5, train split)${cov ? ` · covers ${pct(cov.types_share)} of the test word types, ${pct(cov.tokens_share)} of the tokens` : ''}</span></div>
-        <div class="tile"><b>${i.queries}</b><span>topic queries · 4 kinds × 5 topics · relevance from TOPICS</span></div>
-        <div class="tile"><b>${i.build_time_s} s</b><span>test vector space build time (pure Python)</span></div>
+      const all = 21578;                              // size of the full collection (the dataset's name); only the ModApte part is stored
+      box.innerHTML = `<div class="p4-flow">
+        <div class="box"><b>${fmt(all)}</b><span>Reuters-21578 全部新聞</span></div><i>→</i>
+        <div class="box"><b>${fmt(ds.documents)}</b><span>ModApte 切分（經人工主題編目）</span></div><i>→</i>
+        <div class="split"><div class="box"><b>${fmt(ds.splits.train)}</b><span>train：只用來訓練 word2vec</span></div>
+          <div class="box accent"><b>${fmt(ds.splits.test)}</b><span>test：檢索集合，所有查詢都在這裡找</span></div></div>
       </div>
+      <p class="p4-flow-note">其餘 ${fmt(all - ds.documents)} 篇不在 ModApte 切分內（未經主題標記，或被標為不使用），照慣例不用。相關性 = 新聞的 TOPICS 人工標記：${i.queries} 個查詢、5 個主題。</p>
       <div class="two">
-        <div><h4>推薦的五個主題（文件數）</h4><table class="grid num"><tr><th>topic</th><th>name</th><th>all</th><th>train</th><th>test</th><th>test, only topic (grade 2)</th></tr>
-          ${ds.rows.map(r => `<tr><td>${tchip(r.topic)}</td><td>${esc(r.name)} <span class="muted">${esc(r.name_zh)}</span></td><td>${fmt(r.total)}</td><td>${fmt(r.train)}</td><td>${fmt(r.test)}</td><td>${fmt(r.test_only)}</td></tr>`).join('')}</table>
-          <p class="hint" style="margin-top:6px">grain 新聞幾乎都同時帶 wheat / corn 等子主題，所以 grade 2（唯一主題）很少；earn 新聞幾乎都只有 earn 一個主題。</p></div>
-        <div><h4>每篇文件的主題數</h4>${hbarChart(ds.topics_per_document.slice(0, 7).map(x => [x.topics + ' topic' + (x.topics === 1 ? '' : 's'), x.documents]), { width: 420, barH: 14, labelW: 90 })}
+        <div><h4>五個主題各有幾篇（母體：ModApte ${fmt(ds.documents)} 篇）</h4><table class="grid num"><tr><th>topic</th><th>name</th><th>all</th><th>train</th><th>test</th><th>test, only topic (grade 2)</th></tr>
+          ${ds.rows.map(r => `<tr><td>${tchip(r.topic)}</td><td>${esc(r.name)} <span class="muted">${esc(r.name_zh)}</span></td><td>${fmt(r.total)}</td><td>${fmt(r.train)}</td><td>${fmt(r.test)}</td><td>${fmt(r.test_only)}</td></tr>`).join('')}
+          ${ds.any_of ? `<tr class="sum"><td colspan="2">至少帶五個主題之一（不重複計算）</td><td>${fmt(ds.any_of.total)}</td><td>${fmt(ds.any_of.train)}</td><td>${fmt(ds.any_of.test)}</td><td></td></tr>
+          <tr class="sum"><td colspan="2">其他主題或沒有主題</td><td>${fmt(ds.documents - ds.any_of.total)}</td><td>${fmt(ds.splits.train - ds.any_of.train)}</td><td>${fmt(ds.splits.test - ds.any_of.test)}</td><td></td></tr>` : ''}
+          <tr class="sum total"><td colspan="2">ModApte 全部</td><td>${fmt(ds.documents)}</td><td>${fmt(ds.splits.train)}</td><td>${fmt(ds.splits.test)}</td><td></td></tr></table>
+          <p class="hint" style="margin-top:6px">一篇新聞可以帶多個主題，所以五列相加會大於「至少帶其一」的篇數。grain 新聞幾乎都同時帶 wheat / corn 等子主題，所以 grade 2（唯一主題）很少。</p></div>
+        <div><h4>每篇文件的主題數（合計 ${fmt(ds.documents)} 篇）</h4>${(() => {
+            const tp = ds.topics_per_document, head = tp.filter(x => x.topics < 6), rest = tp.filter(x => x.topics >= 6).reduce((a, x) => a + x.documents, 0);
+            const rows = head.map(x => [x.topics + ' topic' + (x.topics === 1 ? '' : 's'), x.documents]);
+            if (rest) rows.push(['6+ topics', rest]);
+            return hbarChart(rows, { width: 420, barH: 14, labelW: 90 }); })()}
           <h4 style="margin-top:10px">test 集合 df 最高的詞（idf 最低）</h4><div class="chips">${i.test_top_df.map(r => `<span class="chip" title="cf ${fmt(r.cf)}">${esc(r.term)} <small>df ${fmt(r.df)}</small></span>`).join('')}</div>
           <p class="hint" style="margin-top:6px">said、mln、dlrs、pct、vs 出現在大半新聞中：TF-IDF 給它們極低權重，而「詞向量平均」（方法 C）對每個詞一視同仁——這正是方法 B 用 TF-IDF 加權的理由。</p></div>
       </div>`;
+      const ZH = {
+        tfidf: ['var(--m-a)', '詞彙匹配', '文件與查詢要有<b>相同的字</b>才有分數；稀有的字權重高。', '基準'],
+        'w2v-tfidf': ['var(--m-b)', '語意匹配', '把文件裡每個詞的向量加起來，<b>用 TF-IDF 當權重</b>：重要的詞說話比較大聲。', '主角：和 A 比'],
+        'w2v-avg': ['var(--m-c)', '語意匹配', '每個詞的向量<b>直接平均</b>，said、mln 這類常見詞和關鍵詞一樣重。', '和 B 比：加權有沒有用'],
+        hybrid: ['var(--m-d)', '兩者融合', '分數 = α × A + (1 − α) × B，同時看字面與語意。', '能不能兩邊的優點都拿到'],
+        'tfidf-stem': ['var(--muted)', '詞彙匹配', 'Project #3 的做法：先做 Porter stemming 再算 TF-IDF。', '對照：和 A 比 stemming 的影響'],
+      };
+      const order = ['tfidf', 'w2v-tfidf', 'w2v-avg', 'hybrid', 'tfidf-stem'];
+      const ms = order.map(id => i.methods.find(m => m.method === id)).filter(Boolean);
+      $('#emb-methods').innerHTML = `<table class="grid p4-methods"><tr><th></th><th>方法</th><th>類型</th><th>怎麼表示一篇文件</th><th>在實驗中的角色</th></tr>
+        ${ms.map(m => { const z = ZH[m.method] || ['var(--muted)', '', esc(m.formula), '']; return `<tr><td><span class="p4-letter" style="background:${z[0]}">${esc(m.letter)}</span></td><td><b>${esc(m.name)}</b> ${m.method === 'tfidf' || m.method === 'w2v-tfidf' ? '<span class="grade g2">規格指定</span>' : '<span class="chip">自行加入</span>'}<br><span class="muted">${esc(m.formula)}</span></td><td>${z[1]}</td><td>${z[2]}</td><td>${z[3]}</td></tr>`; }).join('')}</table>
+        <p class="p4-flow-note" style="margin:10px 0 0">所有方法都用同一批 test 新聞、同樣的前處理，最後都以 cosine 排序；差別只在「文件怎麼變成向量」。作業規格只指定 <b>A 與 B</b>，這是核心比較；C、D、A₀ 是另外加入的對照。</p>`;
     } catch (e) { err(box, e); }
   }
 
@@ -54,8 +73,15 @@
   function renderModels(models, active) {
     const box = $('#emb-models');
     if (!models.length) { box.innerHTML = '<p class="muted">尚無模型。用下方表單訓練，或在終端機執行 <code>python3 cli.py reuters train --model sg --dim 100 --epochs 5</code>。</p>'; return; }
-    box.innerHTML = `<div class="tscroll"><table class="grid num"><tr><th></th><th>model</th><th>architecture</th><th>dim</th><th>window</th><th>min_count</th><th>epochs</th><th>vocabulary</th><th>final loss</th><th>train time</th><th>coverage (types / tokens)</th><th>trained</th><th></th></tr>
-      ${models.map(m => `<tr class="${m.active ? 'sel' : ''}"><td><i class="dot" style="background:${modelColor(m.name)};width:10px;height:10px;border-radius:50%;display:inline-block"></i></td><td><b>${esc(m.name)}</b>${m.active ? ' <span class="grade g2">active</span>' : ''}</td><td>${esc(m.model)}</td><td>${m.dim}</td><td>${m.window}</td><td>${m.min_count}</td><td>${m.epochs}</td><td>${fmt(m.vocabulary)}</td><td>${f(m.final_loss, 3)}</td><td>${m.train_seconds ? Math.round(m.train_seconds / 60) + ' min' : '–'}</td><td>${m.coverage ? pct(m.coverage.types_share) + ' / ' + pct(m.coverage.tokens_share) : '<span class="muted">(after first use)</span>'}</td><td>${esc(m.trained || '')}</td><td>${m.active ? '' : `<button class="small" data-use="${esc(m.name)}">use</button>`}</td></tr>`).join('')}</table></div>
+    // one colour per training parameter; a cell is filled when its value differs from the base model's
+    const base = models.find(m => m.model === 'skip-gram' && m.dim === 100 && m.window === 5 && m.epochs === 5) || models[0];
+    const PARAMS = [['model', 'architecture', 'a'], ['dim', 'dim', 'b'], ['window', 'window', 'c'], ['min_count', 'min_count', 'e'], ['epochs', 'epochs', 'd']];
+    const pcell = (m, [k, , c]) => `<td><span class="pv${m[k] !== base[k] ? ' ch p-' + c : ''}">${esc(String(m[k]))}</span></td>`;
+    const rows = [base, ...models.filter(m => m !== base)];
+    box.innerHTML = `<p class="pv-legend">基準模型 <b>${esc(base.name)}</b>；有顏色的格子 = 這個模型和基準不同的設定：${PARAMS.map(p => `<span><i class="pv-key p-${p[2]}"></i>${p[1]}</span>`).join('')}</p>
+      <div class="tscroll"><table class="grid num"><tr><th></th><th>model</th>${PARAMS.map(p => `<th><i class="pv-key p-${p[2]}"></i>${p[1]}</th>`).join('')}<th>vocabulary</th><th>final loss</th><th>train time</th><th>coverage (types / tokens)</th><th>trained</th><th></th></tr>
+      ${rows.map(m => `<tr class="${m.active ? 'sel' : ''}"><td><i class="dot" style="background:${modelColor(m.name)};width:10px;height:10px;border-radius:50%;display:inline-block"></i></td><td><b>${esc(m.name)}</b>${m === base ? ' <span class="chip">基準</span>' : ''}${m.active ? ' <span class="grade g2">active</span>' : ''}</td>${PARAMS.map(p => pcell(m, p)).join('')}<td>${fmt(m.vocabulary)}</td><td>${f(m.final_loss, 3)}</td><td>${m.train_seconds ? Math.max(1, Math.round(m.train_seconds / 60)) + ' min' : '–'}</td><td>${m.coverage ? pct(m.coverage.types_share) + ' / ' + pct(m.coverage.tokens_share) : '<span class="muted">(after first use)</span>'}</td><td>${esc(m.trained || '')}</td><td>${m.active ? '' : `<button class="small" data-use="${esc(m.name)}">use</button>`}</td></tr>`).join('')}</table></div>
+      <p class="p4-flow-note" style="margin-top:8px">vocabulary 與 coverage 每列都相同是正常的：它們只由「train 語料 + min_count」決定，而這兩者在所有模型都一樣。</p>
       <p class="hint" style="margin-top:6px">loss = 每個訓練樣本的平均 negative-sampling loss（skip-gram 與 CBOW 的樣本定義不同，loss 不能跨架構比較）。所有模型都在同一份 train 切分（9,603 篇、約 68K 句）上訓練，min_count 5 → 9,996 個詞。</p>`;
     $$('button[data-use]', box).forEach(b => b.addEventListener('click', async () => { await post('/api/reuters/select?name=' + encodeURIComponent(b.dataset.use)); await refreshModels(); }));
     fillModelPickers(models, active);
@@ -228,7 +254,7 @@
         ${r.queries.map(q => `<tr><td>${esc(q.id)}</td><td class="t"><b>${esc(q.text)}</b></td><td>${tchip(q.topic)}</td><td>${esc(q.kind_name)}</td><td style="text-align:right">${fmt(q.relevant)}</td><td style="text-align:right">${fmt(q.grade2)}</td><td class="t" style="font-size:12px">${esc(q.description)}</td><td><a href="#" data-rel="${esc(q.id)}">relevant set</a> · <a href="#" data-run="${esc(q.text)}">search</a></td></tr>`).join('')}</table></div>
         <p class="hint" style="margin-top:6px">${fmt(r.documents)} test documents; file <code>${esc(r.file)}</code>. ${esc(r.notes)}</p>`;
       $$('a[data-rel]', box).forEach(a => a.addEventListener('click', e => { e.preventDefault(); relevantSet(a.dataset.rel); }));
-      $$('a[data-run]', box).forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('#eq').value = a.dataset.run; $('#ec-q').value = a.dataset.run; search(); compare(); $('#emb-s4').scrollIntoView(); }));
+      $$('a[data-run]', box).forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('#eq').value = a.dataset.run; $('#ec-q').value = a.dataset.run; search(); compare(); if (window.IR.showcase) window.IR.showcase.reveal('#emb-s4'); $('#emb-s4').scrollIntoView(); }));
     } catch (e) { err(box, e); }
   }
 
@@ -318,19 +344,19 @@
       const w = word => nb.words.find(x => x.word === word);
       const first = (word, i = 0) => { const x = w(word); const m = x && x.models.find(y => y.in_model); return m && m.neighbours[i] ? `${m.neighbours[i].word} (${f(m.neighbours[i].similarity, 2)})` : '–'; };
       const list = word => { const x = w(word); const m = x && x.models.find(y => y.in_model); return m ? m.neighbours.map(n => n.word).join(', ') : '–'; };
-      nbText = `<p><b>RQ1 Word-level：哪些詞在向量空間中接近，為什麼。</b> 以第 3 節的結果（第一個模型）：<span class="n">oil</span> → ${esc(list('oil'))}；<span class="n">profit</span> → ${esc(list('profit'))}；<span class="n">petroleum</span> → ${esc(list('petroleum'))}；<span class="n">grain</span> → ${esc(list('grain'))}。
+      nbText = `<p><b>RQ1 Word-level：哪些詞在向量空間中接近，為什麼。</b> 以 Word-level 步驟的結果（第一個模型）：<span class="n">oil</span> → ${esc(list('oil'))}；<span class="n">profit</span> → ${esc(list('profit'))}；<span class="n">petroleum</span> → ${esc(list('petroleum'))}；<span class="n">grain</span> → ${esc(list('grain'))}。
         合理的語意／用法關係（oil–crude、profit–loss–pretax、grain–wheat–corn）來自相同句型；<b>情境共現</b>標記的鄰近詞（同篇多、PMI 高）是因為常在同一類新聞裡出現，不是同義；
         <b>不符預期</b>的例子是 petroleum：在路透語料裡它大多是公司名的一部分（… Petroleum Corp、Pacific Petroleum），所以鄰近詞是公司名／礦業詞而非 oil、crude——向量學到的是「這個詞的上下文」，而語料裡 petroleum 的上下文是併購新聞。profit / loss 反義卻相近，說明向量相近 ≠ 同義。</p>`;
     }
     box.innerHTML = `<div class="rq">${nbText}
       <p><b>RQ2 詞彙匹配 vs 語意匹配（document-level）。</b> TF-IDF 只對含查詢詞的文件給分：在 ${r.queries.length} 個查詢中，依查詢用字分四類，P@10 為 主題詞 ${kind(A, 'topic', 'P@10')} / 路透慣用詞 ${kind(A, 'domain', 'P@10')} / 同義改寫 ${kind(A, 'synonym', 'P@10')} / 情境描述 ${kind(A, 'semantic', 'P@10')}（A）；
         加權詞向量（B${B ? '，' + esc(B.model) : ''}）為 ${kind(B, 'topic', 'P@10')} / ${kind(B, 'domain', 'P@10')} / ${kind(B, 'synonym', 'P@10')} / ${kind(B, 'semantic', 'P@10')}。
-        查詢用字越接近文件詞彙，TF-IDF 越難被超越；用字一旦離開文件詞彙（petroleum、cereal、energy exploration），TF-IDF 的 P@10 掉得比嵌入法多。第 4 節的 c03「petroleum production and output」是教科書例子：TF-IDF 只找得到含 petroleum / production / output 的新聞，其中多半是工業產出（ipi）新聞；嵌入法把不含這些詞的 crude 新聞排上來。</p>
+        查詢用字越接近文件詞彙，TF-IDF 越難被超越；用字一旦離開文件詞彙（petroleum、cereal、energy exploration），TF-IDF 的 P@10 掉得比嵌入法多。Document-level 步驟的 c03「petroleum production and output」是教科書例子：TF-IDF 只找得到含 petroleum / production / output 的新聞，其中多半是工業產出（ipi）新聞；嵌入法把不含這些詞的 crude 新聞排上來。</p>
       <p><b>RQ3 核心比較：A TF-IDF vs B TF-IDF 加權詞向量。</b> ${d(A, B, 'P@10')}、${d(A, B, 'MRR')}、${d(A, B, 'nDCG@10')}、${d(A, B, 'MAP')}。逐題（P@10）：B 勝 ${wins(B, A, 'P@10')} 題、A 勝 ${wins(A, B, 'P@10')} 題、平手 ${ties(A, B, 'P@10')} 題。
         依主題：${r.topics.map(t => `${t.topic} ${A && A.by_topic[t.topic] ? f(A.by_topic[t.topic]['nDCG@10'], 2) : '–'} → ${B && B.by_topic[t.topic] ? f(B.by_topic[t.topic]['nDCG@10'], 2) : '–'}`).join('；')}（nDCG@10）。
         結論必須分情況：B 在同義／情境查詢上較好，在主題詞查詢上不一定；MAP 的大差距主要反映 TF-IDF 的召回上限（未含查詢詞的相關文件永遠排不進來），而非前十名的品質。${A0 ? ` 參考：Porter stemming 的 TF-IDF（A₀）P@10 ${f(A0.mean['P@10'], 3)}、nDCG@10 ${f(A0.mean['nDCG@10'], 3)}——stemming 把 prices / price、exports / export 合併，是 TF-IDF 自己的「有限語意匹配」。` : ''}</p>
-      <p><b>RQ4 CBOW vs skip-gram。</b> ${sg && cbow ? `同樣的 B 方法：skip-gram（${esc(sg.model)}）P@10 ${f(sg.mean['P@10'], 3)}、nDCG@10 ${f(sg.mean['nDCG@10'], 3)}、MRR ${f(sg.mean.MRR, 3)}；CBOW（${esc(cbow.model)}）P@10 ${f(cbow.mean['P@10'], 3)}、nDCG@10 ${f(cbow.mean['nDCG@10'], 3)}、MRR ${f(cbow.mean.MRR, 3)}。逐題 P@10：sg 勝 ${wins(sg, cbow, 'P@10')}、CBOW 勝 ${wins(cbow, sg, 'P@10')}、平手 ${ties(sg, cbow, 'P@10')}。` : '在第 6 節同時勾選一個 skip-gram 與一個 CBOW 模型即可比較。'}
-        在 763K 詞元的小語料上兩者差距小，且會隨 seed、維度與 epochs 變動（第 2 節可訓練更多變體）；不能預設 skip-gram 一定較好。第 3 節顯示兩種架構的 Top-5 鄰近詞重疊通常只有 2–3 個，但文件層級的排名差異比詞層級小——文件向量是上百個詞向量的加權和，個別鄰近詞的差異被平均掉了。</p>
+      <p><b>RQ4 CBOW vs skip-gram。</b> ${sg && cbow ? `同樣的 B 方法：skip-gram（${esc(sg.model)}）P@10 ${f(sg.mean['P@10'], 3)}、nDCG@10 ${f(sg.mean['nDCG@10'], 3)}、MRR ${f(sg.mean.MRR, 3)}；CBOW（${esc(cbow.model)}）P@10 ${f(cbow.mean['P@10'], 3)}、nDCG@10 ${f(cbow.mean['nDCG@10'], 3)}、MRR ${f(cbow.mean.MRR, 3)}。逐題 P@10：sg 勝 ${wins(sg, cbow, 'P@10')}、CBOW 勝 ${wins(cbow, sg, 'P@10')}、平手 ${ties(sg, cbow, 'P@10')}。` : '在「評估」步驟的進階表同時勾選一個 skip-gram 與一個 CBOW 模型即可比較。'}
+        在 763K 詞元的小語料上兩者差距小，且會隨 seed、維度與 epochs 變動（「詞向量」步驟可訓練更多變體）；不能預設 skip-gram 一定較好。Word-level 步驟顯示兩種架構的 Top-5 鄰近詞重疊通常只有 2–3 個，但文件層級的排名差異比詞層級小——文件向量是上百個詞向量的加權和，個別鄰近詞的差異被平均掉了。</p>
       <p><b>RQ5 加權方式與融合。</b> 詞向量平均（C）vs TF-IDF 加權平均（B）：${d(C, B, 'P@10')}、${d(C, B, 'nDCG@10')}、${d(C, B, 'MRR')}——不加權時 said、mln、dlrs 這類高頻詞拉著每篇文件的向量往同一個方向，查詢向量跟所有文件都「差不多像」；idf 加權後文件向量跟著有辨識力的詞走。
         融合（D，α = ${D ? D.alpha : '–'}）：${d(B, D, 'P@10')}、${d(B, D, 'nDCG@10')}、${d(B, D, 'MRR')}${st.alpha ? `；α 掃描的最佳 nDCG@10 在 α = ${st.alpha.best_alpha}（純 TF-IDF ${f(st.alpha.rows[st.alpha.rows.length - 1]['nDCG@10'], 3)}、純 B ${f(st.alpha.rows[0]['nDCG@10'], 3)}）` : ''}。
         限制：加權平均不保留詞序、否定與片語（"not acquire" 與 "acquire" 向量幾乎相同）；相關性來自 TOPICS 標籤，一篇講石油公司併購的新聞對 crude 查詢可能只標 acq；結果只能推論到小型新聞語料，不能直接推到大型現代語言模型。</p>

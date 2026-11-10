@@ -348,6 +348,22 @@ class EngineTests(unittest.TestCase):
         c = self.eng.reuters_compare("crude oil prices", "tfidf,w2v-avg,w2v-tfidf,hybrid", k=3)
         self.assertEqual([m["method"] for m in c["methods"]], ["tfidf", "w2v-avg", "w2v-tfidf", "hybrid"])
         self.assertEqual(c["methods"][0]["overlap"], 1.0)
+        top = c["methods"][2]["top"][0]                                   # ranks of one document under every method
+        self.assertEqual(set(top["ranks"]), {"tfidf", "w2v-avg", "w2v-tfidf", "hybrid"})
+        self.assertEqual((top["ranks"]["w2v-tfidf"], top["ranks"]["tfidf"]), (1, top["rank_base"]))
+        # an ad hoc query has no relevant set unless it is judged against a topic
+        free = self.eng.reuters_compare("oil output", "tfidf,w2v-tfidf", k=3)
+        self.assertEqual((free["query_id"], free["methods"][0]["measures"], free["methods"][0]["top"][0]["grade"]), ("", None, None))
+        judged = self.eng.reuters_compare("oil output", "tfidf,w2v-tfidf", k=3, topic="crude")
+        self.assertEqual((judged["query_id"], judged["topic"]), ("topic:crude", "crude"))
+        self.assertEqual(judged["relevant"], len(self.eng.reuters_queries().topic_qrels("crude")))
+        self.assertIn("P@10", judged["methods"][0]["measures"])
+        self.assertEqual([w["word"] for w in judged["query_words"]], ["oil", "output"])
+        js = self.eng.reuters_search("oil output", "tfidf", k=3, topic="crude")
+        self.assertEqual((js["query_id"], js["topic"]), ("topic:crude", "crude"))
+        self.assertEqual(self.eng.reuters_compare("crude oil prices", "tfidf", k=3, topic="acq")["query_id"], "c01")   # evaluation queries keep their own topic
+        with self.assertRaises(ValueError):
+            self.eng.reuters_compare("oil output", "tfidf", k=3, topic="nonsense")
         e = self.eng.reuters_eval("tfidf,w2v-tfidf", "", 5)
         self.assertEqual([x["method"] for x in e["runs"]], ["tfidf", "w2v-tfidf"])
         self.assertEqual(len(e["runs"][0]["per_query"]), len(e["queries"]))

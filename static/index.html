@@ -323,32 +323,60 @@
   </section>
 
   <section id="tab-emb" class="panel">
-    <div class="card help">
-      <h2>Reuters-21578：從 TF-IDF 到 Word Embedding 的新聞檢索實驗（Project #4）</h2>
-      <p>以 Reuters-21578 的 <b>ModApte</b> 切分為實驗資料：9,603 篇 train 新聞用來訓練 word2vec（<code>ir/word2vec.py</code>，skip-gram 與 CBOW），3,299 篇 test 新聞是檢索集合；
-        相關性以 <b>TOPICS</b> 欄位判斷（earn、acq、crude、grain、trade）。<code>ir/embedding.py</code> 以同一組詞（小寫、去停用詞、不做 stemming）建立四種文件表示並以 cosine 排序：
-        <b>A</b> TF-IDF、<b>B</b> TF-IDF 加權詞向量平均、<b>C</b> 詞向量平均、<b>D</b> A 與 B 的分數融合；另附 Project #3 的 Porter-stemmed TF-IDF（A₀）作對照。
-        <code>ir/evaluation.py</code> 計算 P@10、MRR、nDCG@10。重點：詞向量相近 ≠ 適合檢索同一批文件，所以 word-level（第 3 節）與 document-level（第 4–6 節）分開分析。</p>
-      <nav class="subnav" id="emb-nav">
-        <a href="#emb-s1">1 資料集</a><a href="#emb-s2">2 詞向量模型</a><a href="#emb-s3">3 Word-level：最近鄰</a>
-        <a href="#emb-s4">4 Document-level：檢索</a><a href="#emb-s5">5 方法對照</a><a href="#emb-s6">6 評估</a><a href="#emb-s7">7 RQ 結論</a>
-        <a href="/static/project4-guide.html" target="_blank" style="border-color:var(--accent-line);background:var(--accent-soft)">✓ 驗收導讀（因果檢核）</a>
-      </nav>
+    <div class="card p4-top">
+      <h2>Project #4：TF-IDF vs Word Embedding 新聞檢索 <a class="p4-guide" href="/static/project4-guide.html" target="_blank">驗收導讀 ↗</a></h2>
+      <div class="p4-steps" id="p4-steps"></div>
+      <p class="p4-ask" id="p4-ask"></p>
+    </div>
+
+    <!-- steps 3 + 4: one-click scenarios (word level / document level) -->
+    <div class="card" id="emb-s0" data-step="3 4">
+      <h2 id="sc-h">選一個例子</h2>
+      <div id="sc-buttons"></div>
+      <div class="try sc-free"><input id="sc-q" placeholder="或輸入自己的查詢，例如 Icahn TWA（相關判定選 acq）">
+        <label>相關判定 <select id="sc-topic"></select></label>
+        <button id="sc-go" class="primary">A / B 對決</button>
+        <details class="sc-opts"><summary>設定</summary>
+          <label>模型 <select id="sc-model"></select></label>
+          <label>D 的 α <input id="sc-alpha" type="number" min="0" max="1" step="0.1" value="0.2" style="width:60px"></label></details></div>
+      <div id="sc-out"></div>
+    </div>
+
+    <!-- step 5: experiment data -->
+    <div class="card" id="emb-s0b" data-step="5">
+      <h2>20 個查詢的平均：A TF-IDF → B 詞向量</h2>
+      <div id="sc-data"><p class="muted">loading…</p></div>
     </div>
 
     <!-- 1 dataset -->
-    <div class="card" id="emb-s1">
-      <h2>1. 資料集：Reuters-21578 ModApte</h2>
+    <div class="card" id="emb-s1" data-step="1">
+      <h2>資料集：Reuters-21578 ModApte</h2>
       <p class="hint">22 個 SGML 檔（reut2-000 … 021，21,578 則 1987 年路透新聞）由 <code>ir/reuters.py</code> 解析：解碼 Latin-1 與實體、移除控制字元與 "Reuter" 署名、把硬換行的段落接回完整句子。
         ModApte = <code>TOPICS="YES"</code> 且 <code>LEWISSPLIT</code> 為 TRAIN / TEST 的文件。TOPICS 由路透與 Carnegie Group 的編目員人工指派，與任何檢索方法無關，因此可作相關性判斷：grade 2 = 該主題是文件唯一主題，grade 1 = 多個主題之一。</p>
       <div id="emb-info"><p class="muted">loading…</p></div>
     </div>
 
+    <!-- the methods under comparison (step 1) -->
+    <div class="card" id="emb-s1m" data-step="1">
+      <h2>比較的檢索方法：規格指定 2 種 + 自行加入 3 種對照</h2>
+      <div id="emb-methods"><p class="muted">loading…</p></div>
+    </div>
+
     <!-- 2 models -->
-    <div class="card" id="emb-s2">
-      <h2>2. 詞向量模型（在 train 切分上訓練）</h2>
+    <div class="card" id="emb-s2" data-step="2">
+      <h2>詞向量模型（在 train 切分上訓練）</h2>
       <p class="hint">純 Python word2vec（negative sampling、dynamic window、sub-sampling；Project #2 的實作）。模型存在 <code>data/reuters/w2v/</code>，可同時保留多個以比較 CBOW / skip-gram、維度、視窗與 epochs。
         下方「覆蓋率」= test 集合中有向量的詞型 / 詞元比例：不在 train 詞彙（或 min_count 以下）的詞（OOV）在嵌入法中會被忽略。</p>
+      <div class="w2v-fig">
+        <svg width="0" height="0" style="position:absolute"><defs><marker id="w2v-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="context-stroke"/></marker></defs></svg>
+        <p class="w2v-sent">同一個句子、視窗 ±2：<span>opec</span> <span class="c">cut</span> <span class="c">crude</span> <b>oil</b> <span class="c">output</span> <span class="c">rose</span></p>
+        <div class="two">
+          <div><h4>CBOW：周圍的詞 → 中間的詞</h4><svg viewBox="0 0 420 170" width="100%" style="max-width:420px;display:block" role="img" aria-label="CBOW"><text class="lab" x="0" y="18">輸入</text><text class="lab" x="0" y="114">預測</text><rect class="in" x="16" y="28" width="74" height="32" rx="8"/><text x="52" y="49" text-anchor="middle">cut</text><line x1="52" y1="63" x2="191" y2="115" marker-end="url(#w2v-arr)"/><rect class="in" x="120" y="28" width="74" height="32" rx="8"/><text x="158" y="49" text-anchor="middle">crude</text><line x1="158" y1="63" x2="204" y2="115" marker-end="url(#w2v-arr)"/><rect class="in" x="226" y="28" width="74" height="32" rx="8"/><text x="262" y="49" text-anchor="middle">output</text><line x1="262" y1="63" x2="216" y2="115" marker-end="url(#w2v-arr)"/><rect class="in" x="330" y="28" width="74" height="32" rx="8"/><text x="368" y="49" text-anchor="middle">rose</text><line x1="368" y1="63" x2="229" y2="115" marker-end="url(#w2v-arr)"/><rect class="out" x="173" y="122" width="74" height="32" rx="8"/><text x="210" y="143" text-anchor="middle">oil</text></svg>
+            <p>把周圍 4 個詞的向量平均，猜中間是哪個詞。<br>一個位置 1 個樣本：訓練快，高頻詞學得穩。</p></div>
+          <div><h4>Skip-gram：中間的詞 → 周圍每個詞</h4><svg viewBox="0 0 420 170" width="100%" style="max-width:420px;display:block" role="img" aria-label="Skip-gram"><text class="lab" x="0" y="18">輸入</text><text class="lab" x="0" y="114">預測</text><rect class="in" x="173" y="28" width="74" height="32" rx="8"/><text x="210" y="49" text-anchor="middle">oil</text><line x1="191" y1="63" x2="52" y2="115" marker-end="url(#w2v-arr)"/><rect class="out" x="16" y="122" width="74" height="32" rx="8"/><text x="52" y="143" text-anchor="middle">cut</text><line x1="204" y1="63" x2="158" y2="115" marker-end="url(#w2v-arr)"/><rect class="out" x="120" y="122" width="74" height="32" rx="8"/><text x="158" y="143" text-anchor="middle">crude</text><line x1="216" y1="63" x2="262" y2="115" marker-end="url(#w2v-arr)"/><rect class="out" x="226" y="122" width="74" height="32" rx="8"/><text x="262" y="143" text-anchor="middle">output</text><line x1="229" y1="63" x2="368" y2="115" marker-end="url(#w2v-arr)"/><rect class="out" x="330" y="122" width="74" height="32" rx="8"/><text x="368" y="143" text-anchor="middle">rose</text></svg>
+            <p>用中間的詞，分別去猜周圍的每一個詞。<br>一個位置 4 個樣本：訓練慢，低頻詞得到較多更新。</p></div>
+        </div>
+      </div>
       <div id="emb-models"><p class="muted">loading…</p></div>
       <div class="row" style="margin-top:10px;gap:10px">
         <span class="muted">訓練新模型：</span>
@@ -365,8 +393,8 @@
     </div>
 
     <!-- 3 word level -->
-    <div class="card" id="emb-s3">
-      <h2>3. Word-level：每個詞的 Top-5 最近鄰</h2>
+    <div class="card adv" id="emb-s3" data-step="3">
+      <h2>進階：自訂詞的最近鄰與詞對 cosine</h2>
       <p class="hint">每個詞在各模型中 cosine 最高的 5 個詞。為了判斷「為什麼近」，每個鄰近詞另附：<b>同篇</b> = 兩詞在 train 集合中共同出現的文件數、<b>PMI</b>（文件層級的點互資訊）、<b>主題</b> = test 集合中含該鄰近詞的文件最常帶的主題。
         自動標記只是提示：<span class="tag ctx">情境共現</span> 同篇多且 PMI 高（常在同一類新聞出現，不必然同義）、<span class="tag rare">稀有</span> 訓練次數少（向量不穩定）、<span class="tag topic">同主題</span> 鄰近詞與查詢詞的主要主題相同。</p>
       <div class="try"><input id="en-words" value="oil petroleum crude opec profit loss earnings acquisition takeover merger grain wheat cereal trade tariff deficit">
@@ -381,8 +409,8 @@
     </div>
 
     <!-- 4 document level search -->
-    <div class="card" id="emb-s4">
-      <h2>4. Document-level：新聞檢索系統</h2>
+    <div class="card adv" id="emb-s4" data-step="4">
+      <h2>進階：單一方法的檢索結果與逐詞解釋</h2>
       <p class="hint">查詢 → 同樣的前處理 → 依方法建立查詢向量 → 與每篇 test 新聞的向量算 cosine → 排序。每筆結果列出文件的 TOPICS、相關等級（若是評估查詢）、<b>查詢詞是否出現在文件中</b>（詞彙匹配），
         以及嵌入法「為什麼配到」：每個查詢詞在該文件中 cosine 最高的詞（語意／情境匹配）。方法 D 的 α 是 TF-IDF 分數的權重（1 = 純 TF-IDF，0 = 純 B）。</p>
       <div class="try"><input id="eq" value="petroleum production and output" placeholder="query">
@@ -396,8 +424,8 @@
     </div>
 
     <!-- 5 compare -->
-    <div class="card" id="emb-s5">
-      <h2>5. 同一查詢、不同文件表示法並排</h2>
+    <div class="card adv" id="emb-s5" data-step="4">
+      <h2>進階：多種方法完整並排（overlap、Kendall τ）</h2>
       <p class="hint">overlap@k 與 Kendall τ 以第一個方法為基準；<b>詞彙重疊</b> = 前 k 名文件平均含有的查詢詞比例；<b>無查詢詞</b> = 前 k 名中完全不含任何查詢詞的文件數（只有嵌入法才可能找到這類文件——它們是語意匹配，也是誤配的來源）。</p>
       <div class="row" style="margin-bottom:8px"><span class="muted">預設實驗：</span>
         <button class="small" data-exp="tfidf,w2v-tfidf" title="核心比較">A vs B（核心）</button>
@@ -412,8 +440,8 @@
     </div>
 
     <!-- 6 evaluation -->
-    <div class="card" id="emb-s6">
-      <h2>6. 評估：P@10、MRR、nDCG@10（20 個主題查詢）</h2>
+    <div class="card adv" id="emb-s6" data-step="5">
+      <h2>進階：20 個查詢、完整評估表與 α 掃描</h2>
       <p class="hint">每個主題 4 個查詢，依用字與相關新聞詞彙的距離分四種：<b>主題詞</b>（oil、grain、trade…）、<b>路透慣用詞</b>（takeover、barrel、tariff…）、<b>同義／改寫</b>（petroleum、cereal、firms…）、<b>情境描述</b>（energy exploration、crop report…）。
         相關集 = test 集合中帶該主題的文件（earn 1,087、acq 719、crude 189、grain 149、trade 117）。注意 TF-IDF 只對含查詢詞的文件給分，未檢回的相關文件會壓低 MAP 與 R@k；P@10、MRR、nDCG@10 只看排名前段，是本專案的主要指標。</p>
       <div id="ee-queries"><p class="muted">loading…</p></div>
@@ -426,10 +454,11 @@
     </div>
 
     <!-- 7 research questions -->
-    <div class="card" id="emb-s7">
-      <h2>7. 研究問題（由目前的數據計算）</h2>
-      <div id="er-out"><p class="muted">先執行第 3 節的最近鄰與第 6 節的評估。</p></div>
+    <div class="card" id="emb-s7" data-step="6">
+      <h2>研究問題（由目前的數據計算）</h2>
+      <div id="er-out"><p class="muted">計算中…</p></div>
     </div>
+    <div class="p4-nav"><button id="p4-prev">← 上一步</button><span id="p4-pos" class="muted"></span><button id="p4-next" class="primary">下一步 →</button></div>
   </section>
 
   <section id="tab-spell" class="panel">
@@ -643,6 +672,7 @@
 <script src="/static/w2v.js"></script>
 <script src="/static/tfidf.js"></script>
 <script src="/static/embed.js"></script>
+<script src="/static/showcase.js"></script>
 <script src="/static/demo.js"></script>
 </body>
 </html>

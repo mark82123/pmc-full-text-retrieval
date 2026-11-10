@@ -45,7 +45,7 @@ Endpoints
     GET  /api/reuters/models     the word2vec models trained on the train split (data/reuters/w2v/)
     GET  /api/reuters/similar?words=oil,petroleum&models=m1,m2&n=5   top-n nearest neighbours + co-occurrence + topic profile
     GET  /api/reuters/pairs?pairs=oil,petroleum;profit,loss&model=    cosine of word pairs
-    GET  /api/reuters/search?q=..&method=tfidf|w2v-avg|w2v-tfidf|hybrid&model=&alpha=0.5&k=10
+    GET  /api/reuters/search?q=..&method=tfidf|w2v-avg|w2v-tfidf|hybrid&model=&alpha=0.5&k=10&topic=   (topic: judge an ad hoc query against one TOPICS category)
     GET  /api/reuters/compare?q=..&methods=tfidf,w2v-tfidf&model=&alpha=&k=10     the same query under several methods
     GET  /api/reuters/eval?methods=..&models=..&k=10&alpha=0.5       P@k / MRR / nDCG@k / MAP per method, kind and topic
     GET  /api/reuters/alpha?model=&k=10        hybrid weight sweep      GET /api/reuters/queries   GET /api/reuters/relevant?id=c03&method=
@@ -270,10 +270,12 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(engine.reuters_similarity(qs.get("pairs", ""), qs.get("model") or None))
             if path == "/api/reuters/search":
                 return self._json(engine.reuters_search(qs.get("q", ""), qs.get("method", "w2v-tfidf"), qs.get("model") or None,
-                                                        float(qs.get("alpha", 0.5)), max(1, min(int(qs.get("k", 10)), 100))))
+                                                        float(qs.get("alpha", 0.5)), max(1, min(int(qs.get("k", 10)), 100)),
+                                                        qs.get("topic", "").strip()))
             if path == "/api/reuters/compare":
                 return self._json(engine.reuters_compare(qs.get("q", ""), qs.get("methods", ""), qs.get("model") or None,
-                                                         float(qs.get("alpha", 0.5)), max(1, min(int(qs.get("k", 10)), 50))))
+                                                         float(qs.get("alpha", 0.5)), max(1, min(int(qs.get("k", 10)), 50)),
+                                                         qs.get("topic", "").strip()))
             if path == "/api/reuters/eval":
                 return self._json(engine.reuters_eval(qs.get("methods", ""), qs.get("models", ""), max(1, min(int(qs.get("k", 10)), 50)),
                                                       float(qs.get("alpha", 0.5))))

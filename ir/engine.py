@@ -1331,7 +1331,8 @@ class Engine:
             a, b = ab
             if a in m and b in m:
                 co = cooccurrence(train_vs, a, b)
-                rows.append({"a": a, "b": b, "similarity": round(m.similarity(a, b), 3), "both": co["both"], "pmi": co["pmi"], "in_model": True})
+                rows.append({"a": a, "b": b, "similarity": round(m.similarity(a, b), 3), "both": co["both"], "pmi": co["pmi"], "in_model": True,
+                             "count_a": m.counts[m.index[a]], "count_b": m.counts[m.index[b]], "df_a": co["df_a"], "df_b": co["df_b"]})
             else:
                 rows.append({"a": a, "b": b, "similarity": None, "in_model": False})
         return {"model": name, "pairs": rows}
@@ -1356,18 +1357,28 @@ class Engine:
     def reuters_rank_ids(self, query: str, method: str, model: str | None = None, alpha: float = DEFAULT_ALPHA) -> list[str]:
         return [d for d, _ in self._reuters_run(query, method, model, alpha)[0]]
 
-    def _reuters_grades(self, query: str) -> tuple[str, dict[str, int]]:
+    def _reuters_grades(self, query: str, topic: str = "") -> tuple[str, dict[str, int], str]:
+        """(query id, qrels, topic).  An evaluation query brings its own
+        relevant set; any other query can be judged against one TOPICS
+        category (*topic*), which gives the id "topic:<name>"."""
         qs = self.reuters_queries()
         q = qs.by_text(query)
-        return (q.id, qs.qrels(q.id)) if q else ("", {})
+        if q:
+            return q.id, qs.qrels(q.id), q.topic
+        if topic:
+            if topic not in reuters_mod.TOPIC_IDS:
+                raise ValueError(f"unknown topic '{topic}' (expected one of {', '.join(reuters_mod.TOPIC_IDS)})")
+            return "topic:" + topic, qs.topic_qrels(topic), topic
+        return "", {}, ""
 
-    def reuters_search(self, query: str, method: str = DEFAULT_METHOD, model: str | None = None, alpha: float = DEFAULT_ALPHA, k: int = 10) -> dict:
+    def reuters_search(self, query: str, method: str = DEFAULT_METHOD, model: str | None = None, alpha: float = DEFAULT_ALPHA, k: int = 10,
+                       topic: str = "") -> dict:
         if not query.strip():
             raise ValueError("empty query")
         t0 = time.time()
         vs = self.reuters_vs()
         ranked, info = self._reuters_run(query, method, model, alpha)
-        qid, qrels = self._reuters_grades(query)
+        qid, qrels, qtopic = self._reuters_grades(query, topic)
         emb = self.reuters_embedder(model) if self.reuters_models else None
         qtf = emb.query_counts(query)[0] if emb else Counter()
         results = []
@@ -1386,22 +1397,25 @@ class Engine:
                "total": len(ranked), "k": k, "results": results, "query_id": qid, "time_ms": round((time.time() - t0) * 1000, 1),
                "collection": getattr(vs, "name", "")}
         if qid:
-            out["topic"] = self.reuters_queries().get(qid).topic
+            out["topic"] = qtopic
             out["measures"] = evaluation.evaluate_run([d for d, _ in ranked], qrels, ks=(5, 10, 20))
         return out
 
-    def reuters_compare(self, query: str, methods: str = "", model: str | None = None, alpha: float = DEFAULT_ALPHA, k: int = 10) -> dict:
+    def reuters_compare(self, query: str, methods: str = "", model: str | None = None, alpha: float = DEFAULT_ALPHA, k: int = 10,
+                        topic: str = "") -> dict:
         """The same query under several methods: top-k, overlap and Kendall
         tau against the first method, lexical overlap of the top-k, P@k / nDCG@k."""
         if not query.strip():
             raise ValueError("empty query")
         names = [m for m in self._words(methods) if m] or ["tfidf", "w2v-avg", "w2v-tfidf", "hybrid"]
         vs = self.reuters_vs()
-        qid, qrels = self._reuters_grades(query)
+        qid, qrels, qtopic = self._reuters_grades(query, topic)
         emb = self.reuters_embedder(model) if self.reuters_models else None
         qtf = emb.query_counts(query)[0] if emb else Counter(vs.query_terms(query)[0])
-        runs = {m: [d for d, _ in self._reuters_run(query, m, model, alpha)[0]] for m in names}
-        scores = {m: dict(self._reuters_run(query, m, model, alpha)[0][:k]) for m in names}
+        ranked = {m: self._reuters_run(query, m, model, alpha)[0] for m in names}
+        runs = {m: [d for d, _ in ranked[m]] for m in names}
+        scores = {m: dict(ranked[m][:k]) for m in names}
+        pos = {m: {d: i for i, d in enumerate(runs[m], 1)} for m in names}
         base = names[0]
         out = []
         for m in names:
@@ -1416,9 +1430,11 @@ class Engine:
                         "top": [{"rank": i, "doc_id": d, "score": round(scores[m].get(d, 0.0), 4), "title": vs.docs[d].title,
                                  "topics": vs.docs[d].topics, "grade": qrels.get(d, 0) if qid else None,
                                  "query_words": [t for t in qtf if t in vs.tf[d]],
-                                 "rank_base": next((j for j, x in enumerate(runs[base], 1) if x == d), 0)} for i, d in enumerate(top, 1)]})
-        return {"query": query, "k": k, "base": base, "query_id": qid, "model": emb.name if emb else None, "alpha": alpha,
-                "methods": out, "query_terms": list(qtf)}
+                                 "rank_base": pos[base].get(d, 0),
+                                 "ranks": {x: pos[x].get(d, 0) for x in names}} for i, d in enumerate(top, 1)]})
+        return {"query": query, "k": k, "base": base, "query_id": qid, "topic": qtopic, "relevant": len(qrels) if qid else None,
+                "model": emb.name if emb else None, "alpha": alpha, "methods": out, "query_terms": list(qtf),
+                "query_words": [{"word": w, "in_model": bool(emb and w in emb.model.index)} for w in qtf]}
 
     def reuters_eval(self, methods: str = "", models: str = "", k: int = 10, alpha: float = DEFAULT_ALPHA) -> dict:
         """P@k / MRR / nDCG@k (and MAP, R@k) of every method over the topic

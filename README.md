@@ -165,7 +165,7 @@ ir/reuters.py       Reuters-21578 SGML parser, ModApte split, topic statistics, 
 ir/embedding.py     word tokeniser shared with word2vec, document embeddings (mean / TF-IDF weighted), hybrid fusion, co-occurrence / topic profile
 ir/svgplot.py       static SVG figures for the reports
 ir/qr.py            QR code encoder (byte mode, versions 1-10) for the classroom link
-static/             index.html, style.css, app.js, project2.js, w2v.js, tfidf.js, embed.js, demo.js (front-end; demo.js = classroom tools)
+static/             index.html, style.css, app.js, project2.js, w2v.js, tfidf.js, embed.js, showcase.js, demo.js (front-end; showcase.js = Project #4 step-by-step walkthrough, demo.js = classroom tools)
 tests/test_ir.py    unit tests (stemmer, tokenizer, splitter, parser, index, search, engine)
 tests/test_project2.py   unit tests (Zipf, edit distance, spelling, fuzzy search, word2vec, collection)
 tests/test_project3.py   unit tests (tf / idf variants, vectors, cosine ranking, measures, judgements, collection)
@@ -179,7 +179,7 @@ REPORT.md           Project #2 written analysis (Zipf questions, CF/DF, TF-IDF, 
 REPORT_w2v.md       Project #2 word-embedding report (pre-processing, vocabulary, training, similarity, PCA / t-SNE, RQ1–RQ5)
 REPORT_tfidf.md     Project #3 term-weighting report (tasks 1–5, RQ1–RQ5, limitations of the judgements)
 REPORT_embedding.md Project #4 report (Reuters-21578, word-level and document-level analysis, RQ1–RQ5)
-docs/               A4 one-page reports (HTML + PDF) of Projects #2, #3 and #4; project4-onepage-report.html / .pdf = strictly one page, structured by the Project #4 spec (tasks 1-5)
+docs/               A4 one-page reports (HTML + PDF) of Projects #2, #3 and #4; project4-onepage-report.html / .pdf = strictly one page, organised by the five questions the spec raises
 ```
 
 ## Web UI
@@ -251,7 +251,7 @@ extra software:
   `--host 0.0.0.0`; `Q` shows a full-screen QR code. The QR encoder is
   `ir/qr.py` (pure standard library, byte mode, versions 1–10, ECC level M;
   verified module-for-module against the *segno* library).
-* **展示腳本** – a 35-step guided tour through Projects 1–4 (boolean, phrase,
+* **展示腳本** – a 45-step guided tour through Projects 1–4 (boolean, phrase,
   wildcard and field queries, spelling correction, BM25 vs TF-IDF, sentence
   detection, Porter tracing, Zipf, word2vec, TF-IDF schemes and evaluation,
   Reuters embedding retrieval, edit distance). `←` / `→` (or PageUp / PageDown)
@@ -262,6 +262,24 @@ extra software:
   a given step (handy as a bookmark on the podium PC).
 * Digits `1`–`9`, `0` switch tabs. Shortcuts are ignored while typing in a
   field.
+
+### Project #4 walkthrough (`/#emb`, `static/showcase.js`)
+
+The *Word Embedding 檢索* tab is a six-step walkthrough that shows one step at a time (step bar at the top,
+上一步 / 下一步 at the bottom); every number is computed live. Long explanations are folded behind each card's
+「說明」 button and the full tools are collapsed 「進階」 cards under the step they belong to.
+
+1. **資料** – 21,578 → ModApte 12,902 → train 9,603 (word2vec) / test 3,299 (search collection), the five topics.
+2. **詞向量** – the trained models and the training form.
+3. **Word-level** – one button per scenario: reasonable neighbours, news-context co-occurrence, the unexpected
+   `petroleum`, rare words, antonym pairs.
+4. **Document-level** – five buttons, each tagged with what it shows (B wins ×2, A wins on a rare word, antonyms,
+   OOV). The top 10 of A / B / C / D is drawn as a strip of cells (green = relevant by TOPICS, dashed = the
+   story contains no query word); the titles unfold below. Any other query can be typed in and judged against one
+   topic: `/api/reuters/compare?q=..&topic=trade` (also on `/api/reuters/search`).
+5. **評估** – A → B headline tiles and one chart at a time: by query wording, per query (click a row to open that
+   query's duel), method B under every trained model.
+6. **結論** – the research questions.
 
 ## API
 

@@ -13,6 +13,7 @@
   /* ---------------- the tour script ----------------
      tab    : tab to open          card : CSS selector (or "h2:text") of the card to scroll to / focus
      set    : {selector: value}    click: selector of a button to press after the inputs are set
+     scroll : element to scroll to once the step has run (a result box inside a tall card)
      query  : run a search (Search tab)       note : what to say / what to look at (shown in the caption bar) */
   const STEPS = [
     { group: 'Project 1 · 全文檢索', title: '布林查詢與查詢分析', tab: 'search', query: 'covid AND vaccine NOT pregnancy',
@@ -74,18 +75,38 @@
     { group: 'Project 3 · TF-IDF', title: '研究問題（由即時數據計算）', tab: 'vsm', card: '#vsm-s6',
       note: 'RQ1–RQ5 的答案直接由目前的索引算出，不是寫死的文字。' },
 
-    { group: 'Project 4 · Word Embedding 檢索', title: 'Reuters-21578 資料集', tab: 'emb', card: '#emb-s1',
-      note: 'ModApte 切分：train / test 篇數、主題分布、test 詞彙與 word2vec 覆蓋率。' },
-    { group: 'Project 4 · Word Embedding 檢索', title: 'Word-level：Top-5 近鄰', tab: 'emb', card: '#emb-s3', click: '#en-go',
-      note: 'oil → crude / petroleum / barrel…。旁邊的共現次數與主題分布說明近鄰為什麼合理。' },
-    { group: 'Project 4 · Word Embedding 檢索', title: 'Document-level：新聞檢索', tab: 'emb', card: '#emb-s4', click: '#eq-go',
-      note: '四種文件表示法：TF-IDF、詞向量平均、TF-IDF 加權平均、混合。同一查詢切換 method 看結果差異。' },
-    { group: 'Project 4 · Word Embedding 檢索', title: '同一查詢、不同表示法並排', tab: 'emb', card: '#emb-s5', click: '#ec-go',
-      note: '詞向量方法能找到不含查詢詞但語意相近的新聞（查 oil 找到 petroleum），TF-IDF 則嚴格依字面比對。' },
-    { group: 'Project 4 · Word Embedding 檢索', title: '評估：P@10、MRR、nDCG@10', tab: 'emb', card: '#emb-s6', click: '#ee-go',
-      note: '20 個主題查詢的整體指標，並依查詢種類與主題拆開。混合法的 α 權重掃描在下方。' },
-    { group: 'Project 4 · Word Embedding 檢索', title: '研究問題', tab: 'emb', card: '#emb-s7',
-      note: 'RQ1–RQ5 由目前模型與索引即時計算。' },
+    { group: 'Project 4 · Word Embedding 檢索', title: "Reuters-21578 資料集", tab: 'emb', card: '#emb-s1',
+      note: "ModApte 切分：train 9,603 篇只用來訓練 word2vec，test 3,299 篇是檢索集合；相關性來自 TOPICS 標籤，與任何檢索方法無關。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "Word-level：合理的語意關係（oil、crude）", tab: 'emb', card: '#emb-s0', scroll: '#sc-out', click: '[data-sc="w-oil"]',
+      note: "oil → crude、gas、petroleum、pipeline：同一個語意場的詞在相同句型互換出現。左右是 skip-gram 與 CBOW，注意 CBOW 的 cosine 普遍偏高。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "Word-level：鄰居是同類新聞的常客（opec）", tab: 'emb', card: '#emb-s0', scroll: '#sc-out', click: '[data-sc="w-opec"]',
+      note: "opec 的鄰居是 OPEC 官員的名字、國名與產量用語：沒有一個能替換 opec，是同一類新聞的固定班底。對照上一步：crude 可以替換 oil，cosine 卻一樣高。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "Word-level：不符預期（petroleum）", tab: 'emb', card: '#emb-s0', scroll: '#sc-out', click: '[data-sc="w-pet"]',
+      note: "預期 oil、crude，結果是公司名與礦業詞：petroleum 在這份語料裡多半是公司名的一部分。兩個模型的 Top-5 完全不重疊。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "Word-level：稀有詞（cereal、tariff）", tab: 'emb', card: '#emb-s0', scroll: '#sc-out', click: '[data-sc="w-rare"]',
+      note: "訓練次數只有幾十次：鄰居看不出關係、cosine 卻特別高，兩個模型的結果也不一致。cosine 高不代表可靠。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "Word-level：相近 ≠ 同義（反義詞對）", tab: 'emb', card: '#emb-s0', scroll: '#sc-out', click: '[data-sc="w-anto"]',
+      note: "profit / loss、rise / fall、buy / sell 的 cosine 比真正的同義詞 oil / petroleum 還高：向量只知道「用法相同」。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "核心比較：A vs B 的整體數據", tab: 'emb', card: '#emb-s0b', click: '[data-view="kind"]',
+      note: "上排三個主要指標 A → B；圖是重點：查詢用字離新聞詞彙越遠，TF-IDF 掉得越多，B 幾乎不動。主題詞查詢兩者打平。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "語意匹配勝出：petroleum production and output", tab: 'emb', card: '#emb-s0', scroll: '#sc-out', click: '[data-sc="c03"]',
+      note: "作業規格的例子。看格子：A 的前 10 名只有兩格綠；B 有八格，其中虛線框的兩篇完全不含查詢詞。展開「前 10 名的新聞標題」：B 的 #7、#10 是鋅與鋁的產量新聞——語意匹配的代價。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "語意匹配勝出：energy exploration and drilling", tab: 'emb', card: '#emb-s0', scroll: '#sc-out', click: '[data-sc="c04"]',
+      note: "A 的前 10 名多是鑽井公司的財報（topic = earn）：公司名裡有 drilling / energy 就命中。詞彙匹配分不出公司名與新聞主題。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "詞彙匹配更好：import tariffs and export restrictions", tab: 'emb', card: '#emb-s0', scroll: '#sc-out', click: '[data-sc="t03"]',
+      note: "B 輸較多的一題：前 10 名混進柳橙汁、油籽、植物油的貿易爭端新聞——情境相同，但標的主題是商品而不是 trade。語意匹配會帶進鄰近主題，不能預設嵌入法一定贏。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "限制：反義詞（profit ↔ loss）", tab: 'emb', card: '#emb-s0', scroll: '#sc-out', click: '[data-sc="anto"]',
+      note: "用 B 查 profit，前 10 名有多少篇標題寫著 LOSS？兩個查詢的 B 前 10 名重疊，而 A 完全不重疊。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "限制：OOV（沒有詞向量的詞）", tab: 'emb', card: '#emb-s0', scroll: '#sc-out', click: '[data-sc="oov"]',
+      note: "低於 min_count 的專有名詞沒有向量：B 回傳空排名，TF-IDF 只要字面出現一次就找得到。融合（D）可以補上這一塊。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "逐題 A → B", tab: 'emb', card: '#emb-s0b', click: '[data-view="query"]',
+      note: "每一列是一題：橘點在右 = B 較好。可勾「依差距排序」，點任一列直接看那一題的對決。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "不同詞向量模型（RQ4）", tab: 'emb', card: '#emb-s0b', click: '[data-view="model"]',
+      note: "同一個方法 B 換不同的詞向量模型，直線是 TF-IDF：CBOW / skip-gram、維度、視窗、epochs 的差距都不大。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "完整評估表與 α 掃描", tab: 'emb', card: '#emb-s6', click: '#ee-go',
+      note: "所有方法 × 模型的 P@5、P@10、MRR、MAP、nDCG；下方是融合權重 α 的掃描：最佳值不在 0.5。" },
+    { group: 'Project 4 · Word Embedding 檢索', title: "研究問題", tab: 'emb', card: '#emb-s7',
+      note: "RQ1–RQ5 由目前模型與索引即時計算。" },
 
     { group: '附錄 · Edit distance', title: '動態規劃表格', tab: 'spell', card: 'h2:Edit distance', click: '#ed-btn',
       note: 'DP 表每一格 = min(刪除、插入、取代)；回溯路徑顯示對齊方式。' },
@@ -336,6 +357,7 @@
       if (b) b.click();
     }
     await sleep(s.tab === 'zipf' ? 400 : 120);
+    if (s.tab === 'emb' && s.card && s.card[0] === '#' && window.IR.showcase) window.IR.showcase.reveal(s.card);   // stepper: show that step
     let card = findCard(s.card);
     if (!card && s.card && s.card.startsWith('h2:')) { await waitFor(() => findCard(s.card), 6000); card = findCard(s.card); }
     if (card) {
@@ -343,6 +365,11 @@
       else card.scrollIntoView({ behavior: 'smooth', block: 'start' });
       card.classList.add('demo-flash'); setTimeout(() => card.classList.remove('demo-flash'), 1600);
     } else if (!s.openFirst) window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (s.scroll) {                                  // a result box inside a tall card: bring it under the header
+      await sleep(700);
+      const el = $(s.scroll);
+      if (el && cur === i) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
   function stopTour() { cur = -1; store.set('step', -1); renderSteps(); setCaption(null); unfocus(); }
   $('#demo-prev', panel).addEventListener('click', () => runStep(Math.max(0, cur - 1)));

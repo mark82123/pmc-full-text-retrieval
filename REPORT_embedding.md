@@ -185,7 +185,7 @@ grain 是唯一 TF-IDF 較好的主題：grain 新聞的詞彙高度固定（USD
 | A | 1.0 | 1.0 | .4 | .7 | 1.0 | .9 | .9 | .5 | 1.0 | 1.0 | **.2** | .3 | 1.0 | 1.0 | .8 | .5 | .6 | .7 | .9 | .2 |
 | B | 1.0 | 1.0 | .8 | .9 | 1.0 | 1.0 | 1.0 | 1.0 | .9 | 1.0 | **.8** | .9 | .8 | 1.0 | .7 | .4 | .9 | .7 | .7 | .8 |
 
-B 勝 9 題、A 勝 5 題（c01、g01、g03、g04、t03）、平手 6 題。A 勝的五題都是查詢詞直接命中的情況（crude oil、grain、crop、tariffs / import / export）；B 在 t03「import tariffs and export restrictions」輸最多（0.9 → 0.7）：tariff 只訓練了 38 次、向量不穩（任務三），加權後它偏偏是查詢中 idf 最高、權重最大的詞。
+B 勝 9 題、A 勝 5 題（c01、g01、g03、g04、t03）、平手 6 題。A 勝的五題都是查詢詞直接命中的情況（crude oil、grain、crop、tariffs / import / export）；B 在 t03「import tariffs and export restrictions」輸 0.2（0.9 → 0.7）：B 的前 10 名混進柳橙汁、油籽、植物油的貿易爭端新聞，情境相同但 TOPICS 標的是商品而不是 trade。這不是稀有詞造成的：查詢詞是 tariffs（訓練 169 次，不同於任務三的 tariff 38 次），單獨查 tariffs 時 B 的 P@10 是 1.0，拿掉它反而降到 0.3。grain 的三題也是同樣的型態（排進油籽、糖、棉花的作物新聞）：語意匹配會帶進鄰近主題。
 
 **c03「petroleum production and output」（作業裡的例子）。** `python3 cli.py reuters compare "petroleum production and output" --methods tfidf,w2v-avg,w2v-tfidf,hybrid`
 

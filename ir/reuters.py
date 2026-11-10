@@ -211,7 +211,12 @@ def topic_statistics(docs: list[Document], topics: list[str] | None = None) -> d
             row[s + "_only"] = sum(1 for d in ds if d.topics == [t])
         rows.append(row)
     n_topics = Counter(len(d.topics) for d in docs)
-    return {"documents": len(docs), "splits": {s: len(ds) for s, ds in by_split.items()},
+    wanted = set(topics)
+    # distinct documents carrying at least one of the listed topics (the rows overlap, so they do not add up to this)
+    any_of = {"total": sum(1 for d in docs if wanted.intersection(d.topics))}
+    for s, ds in by_split.items():
+        any_of[s] = sum(1 for d in ds if wanted.intersection(d.topics))
+    return {"documents": len(docs), "splits": {s: len(ds) for s, ds in by_split.items()}, "any_of": any_of,
             "topics_total": len(all_counts), "rows": rows,
             "topics_per_document": [{"topics": k, "documents": v} for k, v in sorted(n_topics.items())],
             "without_body": sum(1 for d in docs if not d.abstract),
@@ -334,6 +339,15 @@ class TopicQuerySet:
 
     def qrels(self, qid: str) -> dict[str, int]:
         return self._qrels.get(qid, {})
+
+    def topic_qrels(self, topic: str) -> dict[str, int]:
+        """Relevant set of an ad hoc query judged against one TOPICS category
+        (same grading as the evaluation queries)."""
+        key = "topic:" + topic
+        if key not in self._qrels:
+            tq = TopicQuery({"id": key, "text": "", "topic": topic})
+            self._qrels[key] = {d.doc_id: g for d in self.docs.values() if (g := tq.judge(d)) > 0}
+        return self._qrels[key]
 
     def judged(self) -> set[str]:
         return set(self.docs)                         # every ModApte document was indexed for topics
